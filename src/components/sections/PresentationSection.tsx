@@ -49,9 +49,9 @@ export function PresentationSection() {
             </p>
 
             <p className="text-slate-500 text-sm leading-relaxed">
-              Isso significa que nossa equipe de campo conhece cada circuito, cada algoritmo de
-              dosagem e cada gargalo mecânico. Nós atuamos na causa raiz para garantir a máxima
-              eficiência global da sua planta.
+              Isso significa que nossa equipe de campo conhece cada circuito, cada etapa do processo
+              e cada gargalo mecânico. Nós atuamos na causa raiz para garantir a máxima eficiência
+              da sua planta.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
