@@ -187,7 +187,7 @@ export const PAIN_POINTS = [
     title: 'Tempo de Resposta Lento',
     description:
       'Sem contrato de SLA, o agendamento de técnicos para manutenção corretiva pode levar dias, prolongando a parada e multiplicando o impacto financeiro da falha.',
-    impact: 'Espera média de até 48h úteis por técnico.',
+    impact: 'Espera média de até 48h úteis por atendimento técnico presencial.',
   },
   {
     title: 'Documentação Técnica Fragmentada',
