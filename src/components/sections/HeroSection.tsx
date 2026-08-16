@@ -14,8 +14,8 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
       className="relative pt-8 pb-16 lg:pt-16 lg:pb-24 overflow-hidden bg-gradient-to-b from-slate-50 to-white"
     >
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          <div className="lg:col-span-7 space-y-6 text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-stretch">
+          <div className="lg:col-span-7 flex flex-col justify-between gap-6 lg:h-full text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#8CC63F]/10 border border-[#8CC63F]/30 text-[#4d7c0f] text-xs font-semibold tracking-wide">
               <Sparkles className="w-3.5 h-3.5 text-[#8CC63F]" />
               <span>Unidade de Serviços & Engenharia Preditiva</span>
@@ -105,7 +105,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
             </div>
           </div>
 
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-5 flex items-center lg:h-full">
             <SigaTabletMockup />
           </div>
         </div>
