@@ -26,20 +26,24 @@ export function PainPointsSection() {
             return (
               <div
                 key={item.title}
-                className="p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200 hover:border-amber-300 transition-all duration-300 hover:-translate-y-1 hover:shadow-elevation group"
+                className="p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200 hover:border-amber-300 transition-all duration-300 hover:-translate-y-1 hover:shadow-elevation group flex flex-col"
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 flex-1">
                   <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 text-amber-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <div className="space-y-2">
+                  <div className="flex flex-col flex-1">
                     <h3 className="text-lg font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-slate-600 leading-relaxed">{item.description}</p>
-                    <div className="pt-2 text-xs font-mono font-semibold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-md inline-block border border-amber-200">
-                      {item.impact}
-                    </div>
+                    <p className="text-sm text-slate-600 leading-relaxed mt-2 flex-1">
+                      {item.description}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-dashed border-slate-200">
+                  <div className="text-xs font-mono font-semibold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-md inline-block border border-amber-200">
+                    {item.impact}
                   </div>
                 </div>
               </div>

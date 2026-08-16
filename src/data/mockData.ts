@@ -180,14 +180,14 @@ export const PAIN_POINTS = [
   {
     title: 'Desvios de Calibração Silenciosos',
     description:
-      'Pequenos desvios na calibração de balanças e dosadores comprometem a qualidade do produto final, gerando retrabalho, desperdício e não conformidades em auditorias.',
-    impact: 'Até 3% de perda por erro de dosagem.',
+      'Pequenos desvios na calibração comprometem a qualidade do produto final, gerando retrabalho, desperdício e não conformidades em auditorias.',
+    impact: 'Perdas por erro de leitura e dosagem.',
   },
   {
     title: 'Tempo de Resposta Lento',
     description:
       'Sem contrato de SLA, o agendamento de técnicos para manutenção corretiva pode levar dias, prolongando a parada e multiplicando o impacto financeiro da falha.',
-    impact: 'Espera média de 48h por técnico.',
+    impact: 'Espera média de até 48h úteis por técnico.',
   },
   {
     title: 'Documentação Técnica Fragmentada',
