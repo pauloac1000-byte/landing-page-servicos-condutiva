@@ -174,7 +174,7 @@ export const PAIN_POINTS = [
   {
     title: 'Paradas Não Planejadas',
     description:
-      'Falhas súbitas em células de carga, painéis elétricos ou CLPs interrompem a produção sem aviso, gerando perdas significativas de receita e atrasos no cronograma de entrega.',
+      'Falhas súbitas em sensores, painéis elétricos ou CLPs interrompem a produção sem aviso, gerando perdas significativas de receita e atrasos no cronograma de entrega.',
     impact: 'Alto custo médio por hora de linha parada.',
   },
   {
