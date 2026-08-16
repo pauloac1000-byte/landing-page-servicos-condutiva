@@ -60,17 +60,15 @@ export function PresentationSection() {
                 <div>
                   <h4 className="font-bold text-sm text-slate-900">Engenharia Própria</h4>
                   <p className="text-xs text-slate-500">
-                    Suporte direto com os engenheiros de desenvolvimento.
+                    Suporte remoto direto com os engenheiros de desenvolvimento.
                   </p>
                 </div>
               </div>
               <div className="p-3.5 rounded-xl bg-white border border-slate-200 flex items-start gap-3">
                 <Shield className="w-5 h-5 text-[#8CC63F] shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-sm text-slate-900">Certificação RBC</h4>
-                  <p className="text-xs text-slate-500">
-                    Calibração rastreável com pesos padrão Inmetro.
-                  </p>
+                  <h4 className="font-bold text-sm text-slate-900">Técnicos Especializados</h4>
+                  <p className="text-xs text-slate-500">Time técnico experiente e capacitado.</p>
                 </div>
               </div>
             </div>

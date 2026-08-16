@@ -90,7 +90,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
                     {COMPANY_INFO.clientCount}+
                   </span>
                 </div>
-                <span className="text-xs text-slate-500">Plantas Atendidas</span>
+                <span className="text-xs text-slate-500">Clientes Atendidos</span>
               </div>
 
               <div className="flex flex-col">
