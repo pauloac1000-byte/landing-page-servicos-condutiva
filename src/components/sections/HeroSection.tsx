@@ -67,7 +67,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
                 href="#planos"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-slate-300 hover:border-slate-400 text-slate-700 font-semibold text-sm transition bg-white hover:bg-slate-50"
               >
-                Elaborar Plano de Manutenção
+                Personalize o Melhor Plano para a Sua Empresa
               </a>
             </div>
 
