@@ -59,7 +59,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
                 onClick={onOpenDiagnosticModal}
                 className="bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-base px-8 py-6 rounded-xl shadow-xl shadow-[#8CC63F]/25 hover:shadow-[#8CC63F]/40 transition-all flex items-center justify-center gap-3 group"
               >
-                <span>SOLICITAR DIAGNÓSTICO GRATUITO</span>
+                <span>ESOLICITAR DIAGNÓSTICO GRATUITO</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
 
@@ -67,7 +67,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
                 href="#planos"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-slate-300 hover:border-slate-400 text-slate-700 font-semibold text-sm transition bg-white hover:bg-slate-50"
               >
-                Conhecer Planos de Manutenção
+                Elaborar Plano de Manutenção
               </a>
             </div>
 
