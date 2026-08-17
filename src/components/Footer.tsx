@@ -22,7 +22,7 @@ export function Footer() {
             </div>
             <p className="text-sm text-slate-500 leading-relaxed max-w-md">
               Especialistas com mais de 20 anos de tradição em manutenção preventiva, calibração
-              rastreável RBC, automação industrial e sensoriamento preditivo para plantas
+              presencial e remota, automação industrial e manutenção preventiva para plantas
               operacionais exigentes.
             </p>
             <div className="flex items-center space-x-3 text-xs text-slate-700 pt-2">
@@ -55,8 +55,9 @@ export function Footer() {
               </li>
               <li>
                 <a href="#servicos" className="hover:text-[#4d7c0f] transition">
-                  Programação CLP / IHM / SCADA
+                  Programação e Integração CLP / IHM / S
                 </a>
+                upervisório
               </li>
               <li>
                 <a href="#servicos" className="hover:text-[#4d7c0f] transition">
