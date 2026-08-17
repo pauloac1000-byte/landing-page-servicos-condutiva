@@ -206,7 +206,7 @@ export const TRANSFORMATION = [
   {
     topic: 'Calibração',
     de: 'Eventual: calibração apenas quando há suspeita de erro ou demanda de auditoria.',
-    para: 'Programada: cronograma rastreável Inmetro com certificados RBC sempre válidos.',
+    para: 'Programada: cronograma rastreável com emissão de relatórios e laudos.',
   },
   {
     topic: 'Documentação',
