@@ -7,7 +7,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet'
-import { Menu, Phone, Sparkles, ChevronRight } from 'lucide-react'
+import { Menu, Phone, MessageCircle, Sparkles, ChevronRight } from 'lucide-react'
 import { COMPANY_INFO } from '@/data/mockData'
 import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/Logo'
@@ -63,13 +63,6 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
               </span>
               Plantão de Atendimento Industrial em Todo o Brasil
             </span>
-            <span className="hidden md:inline text-slate-300">|</span>
-            <a
-              href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
-              className="hidden md:inline hover:text-slate-900 transition"
-            >
-              {COMPANY_INFO.phoneLandline}
-            </a>
           </div>
 
           <div className="flex items-center space-x-3">
@@ -117,10 +110,44 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center space-x-3">
+        <div className="hidden md:flex items-center gap-6">
+          {/* Telefone Fixo */}
+          <a
+            href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
+            className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity"
+          >
+            <div className="w-9 h-9 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
+              <Phone className="w-5 h-5 text-[#8CC63F] stroke-[2.2]" />
+            </div>
+            <div className="flex flex-col text-left leading-tight">
+              <span className="text-[11px] font-normal text-slate-500">Telefone</span>
+              <span className="text-sm font-extrabold text-slate-900 group-hover:text-[#4d7c0f] transition-colors">
+                {COMPANY_INFO.phoneLandline}
+              </span>
+            </div>
+          </a>
+
+          {/* WhatsApp */}
+          <a
+            href={`https://wa.me/${COMPANY_INFO.whatsappRaw}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity"
+          >
+            <div className="w-9 h-9 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
+              <MessageCircle className="w-5 h-5 text-[#8CC63F] stroke-[2.2]" />
+            </div>
+            <div className="flex flex-col text-left leading-tight">
+              <span className="text-[11px] font-normal text-slate-500">Fale no WhatsApp</span>
+              <span className="text-sm font-extrabold text-slate-900 group-hover:text-[#4d7c0f] transition-colors">
+                {COMPANY_INFO.phoneWhatsapp}
+              </span>
+            </div>
+          </a>
+
           <Button
             onClick={onOpenDiagnosticModal}
-            className="bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold px-5 py-2.5 rounded-lg shadow-lg shadow-[#8CC63F]/25 hover:shadow-[#8CC63F]/40 transition-all flex items-center gap-2 group transform hover:-translate-y-0.5"
+            className="hidden lg:flex bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold px-5 py-2.5 rounded-lg shadow-lg shadow-[#8CC63F]/25 hover:shadow-[#8CC63F]/40 transition-all items-center gap-2 group transform hover:-translate-y-0.5 ml-2"
           >
             <Sparkles className="w-4 h-4 text-slate-950 fill-slate-950 animate-pulse" />
             <span>Diagnóstico Gratuito</span>
@@ -176,13 +203,24 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
                   >
                     Solicitar Diagnóstico
                   </Button>
-                  <a
-                    href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
-                    className="flex items-center justify-center gap-2 py-2 text-slate-600 border border-slate-300 rounded-md text-xs"
-                  >
-                    <Phone className="w-3.5 h-3.5 text-[#8CC63F]" />
-                    Ligar {COMPANY_INFO.phoneLandline}
-                  </a>
+                  <div className="grid grid-cols-1 gap-2 pt-2">
+                    <a
+                      href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
+                      className="flex items-center justify-center gap-2 py-2.5 px-3 text-slate-800 border border-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-50 transition-colors"
+                    >
+                      <Phone className="w-4 h-4 text-[#8CC63F]" />
+                      <span>Telefone: {COMPANY_INFO.phoneLandline}</span>
+                    </a>
+                    <a
+                      href={`https://wa.me/${COMPANY_INFO.whatsappRaw}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 py-2.5 px-3 text-slate-800 border border-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-50 transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4 text-[#8CC63F]" />
+                      <span>WhatsApp: {COMPANY_INFO.phoneWhatsapp}</span>
+                    </a>
+                  </div>{' '}
                 </div>
               </div>
             </SheetContent>

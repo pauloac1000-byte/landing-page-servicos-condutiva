@@ -1,9 +1,9 @@
 import type { ServiceItem, PlanItem, CaseStudy, Testimonial, FaqItem } from '@/types'
 
 export const COMPANY_INFO = {
-  phoneLandline: '(19) 3901-2000',
-  phoneWhatsapp: '(19) 99876-5432',
-  whatsappRaw: '5519998765432',
+  phoneLandline: '(19) 3032-1751',
+  phoneWhatsapp: '(19) 99341-3270',
+  whatsappRaw: '5519993413270',
   email: 'servicos@condutiva.com.br',
   address: 'Rua Condutiva, 500 - Distrito Industrial - Campinas/SP',
   experienceYears: 20,
