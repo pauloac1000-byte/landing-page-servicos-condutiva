@@ -44,8 +44,9 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="#servicos" className="hover:text-[#4d7c0f] transition">
-                  Calibração de Células de Carga
+                  Calibração de&nbsp;
                 </a>
+                Sensores de Umidade
               </li>
               <li>
                 <a href="#servicos" className="hover:text-[#4d7c0f] transition">
