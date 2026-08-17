@@ -10,7 +10,7 @@ export function DifferentiatorsSection() {
     {
       icon: Truck,
       title: 'Presença e Mobilidade em Campo',
-      desc: 'Veículos técnicos equipados com pesos padrão certificados Inmetro para aferição presencial imediata no seu parque fabril.',
+      desc: 'Veículos técnicos equipados com ferramentas e materiais adequadas para calibração presencial imediata na sua empresa.',
     },
     {
       icon: Settings2,
