@@ -10,7 +10,7 @@ export function DifferentiatorsSection() {
     {
       icon: Truck,
       title: 'Presença e Mobilidade em Campo',
-      desc: 'Veículos técnicos equipados com ferramentas e materiais adequadas para calibração presencial imediata na sua empresa.',
+      desc: 'Veículos técnicos equipados com ferramentas e materiais adequados para calibração presencial na sua empresa.',
     },
     {
       icon: Settings2,
