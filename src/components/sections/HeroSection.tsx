@@ -14,8 +14,8 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
       className="relative pt-8 pb-16 lg:pt-16 lg:pb-24 overflow-hidden bg-gradient-to-b from-slate-50 to-white"
     >
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-stretch">
-          <div className="flex flex-col justify-between gap-6 lg:h-full text-left w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 xl:gap-14 items-stretch w-full">
+          <div className="flex flex-col justify-between gap-6 lg:h-full text-left w-full min-w-0">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#8CC63F]/10 border border-[#8CC63F]/30 text-[#4d7c0f] text-xs font-semibold tracking-wide">
               <Sparkles className="w-3.5 h-3.5 text-[#8CC63F]" />
               <span>Unidade de Serviços & Engenharia Preditiva</span>
@@ -29,7 +29,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
               .
             </h1>
 
-            <p className="text-slate-600 text-base sm:text-lg leading-relaxed w-full font-normal">
+            <p className="text-slate-600 text-base sm:text-lg leading-relaxed w-full font-normal max-w-none">
               Serviços especializados de alta precisão em atendimento remoto prioritário, manutenção
               preventiva, calibração presencial, treinamentos operacionais, health check e solução
               de problemas&nbsp; para plantas industriais que desejam converter tecnologia em
@@ -105,7 +105,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
             </div>
           </div>
 
-          <div className="flex items-center justify-center lg:h-full w-full">
+          <div className="flex items-center justify-center lg:items-stretch lg:h-full w-full min-w-0">
             <SigaTabletMockup />
           </div>
         </div>
