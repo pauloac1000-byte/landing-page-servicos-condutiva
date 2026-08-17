@@ -15,10 +15,10 @@ export function SigaTabletMockup() {
   }, [])
 
   const sensors = [
-    { id: 'CL-01', name: 'Célula de Carga A1', value: '4.982 kg', status: 'ok' },
-    { id: 'CL-02', name: 'Célula de Carga A2', value: '5.014 kg', status: 'ok' },
-    { id: 'CL-03', name: 'Célula de Carga B1', value: '4.971 kg', status: 'warn' },
-    { id: 'CL-04', name: 'Célula de Carga B2', value: '5.003 kg', status: 'ok' },
+    { id: 'CL-01', name: 'Sensor A1', value: '4.982 kg', status: 'ok' },
+    { id: 'CL-02', name: 'Sensor A2', value: '5.014 kg', status: 'ok' },
+    { id: 'CL-03', name: 'Sensor B1', value: '4.971 kg', status: 'warn' },
+    { id: 'CL-04', name: 'Sensor B2', value: '5.003 kg', status: 'ok' },
   ]
 
   const alerts = [
@@ -26,7 +26,7 @@ export function SigaTabletMockup() {
       level: 'warn',
       icon: AlertTriangle,
       title: 'Tendência de desvio detectada',
-      desc: 'Célula CL-03 apresentando deriva de 0,4% nas últimas 24h.',
+      desc: 'Sensor CL-03 apresentando deriva de 0,4% nas últimas 24h.',
       time: 'há 12 min',
     },
     {

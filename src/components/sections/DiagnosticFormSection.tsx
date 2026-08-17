@@ -59,12 +59,12 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
             </span>
 
             <h2 className="text-3xl sm:text-4xl font-black font-display leading-tight text-slate-900">
-              Solicite seu Diagnóstico Gratuito na Planta
+              Solicite seu Diagnóstico Técnico Gratuito
             </h2>
 
             <p className="text-slate-600 text-sm leading-relaxed">
-              Preencha o formulário para que nossa equipe de engenharia analise seu segmento e
-              prepare o roteiro técnico do seu **Health-Check industrial**.
+              Preencha o formulário e nossa equipe de engenharia analisará seu segmento para
+              preparar o roteiro técnico de um Health-Check industrial sob medida para a sua planta.
             </p>
 
             <div className="space-y-4 pt-2">
@@ -94,7 +94,8 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                 Preferência por ligação telefônica direta?
               </span>
               <p>
-                Ligue para {COMPANY_INFO.phoneLandline} ou WhatsApp {COMPANY_INFO.phoneWhatsapp}
+                Ligue para {COMPANY_INFO.phoneLandline} ou fale no WhatsApp{' '}
+                {COMPANY_INFO.phoneWhatsapp}.
               </p>
             </div>
           </div>
@@ -126,21 +127,21 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                   <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-2">
                     <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-[#8CC63F]" />
-                      Formulário de Diagnóstico Técnico
+                      Dados para o Diagnóstico Técnico
                     </h3>
                     <span className="text-[10px] text-slate-400 font-mono">
-                      Gratuito / Sem Tarifas
+                      Gratuito · Sem compromisso
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs text-slate-700 font-semibold mb-1.5 block">
-                        Nome Completo *
+                        Nome do Responsável *
                       </label>
                       <Input
                         required
-                        placeholder="Ex: Carlos Silva"
+                        placeholder="Informe seu nome completo"
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                         className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#8CC63F]"
@@ -149,11 +150,11 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
 
                     <div>
                       <label className="text-xs text-slate-700 font-semibold mb-1.5 block">
-                        Empresa / Razão Social *
+                        Empresa *
                       </label>
                       <Input
                         required
-                        placeholder="Ex: Indústria Concreta S/A"
+                        placeholder="Razão social da sua indústria"
                         value={formData.company}
                         onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                         className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#8CC63F]"
@@ -169,7 +170,7 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                       <Input
                         required
                         type="email"
-                        placeholder="carlos@empresa.com.br"
+                        placeholder="seu.nome@empresa.com.br"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#8CC63F]"
@@ -182,7 +183,7 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                       </label>
                       <Input
                         required
-                        placeholder="(19) 99999-9999"
+                        placeholder="(00) 00000-0000"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#8CC63F]"
@@ -193,14 +194,14 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs text-slate-700 font-semibold mb-1.5 block">
-                        Segmento da Planta
+                        Segmento Industrial
                       </label>
                       <Select
                         value={formData.segment}
                         onValueChange={(val) => setFormData({ ...formData, segment: val })}
                       >
                         <SelectTrigger className="bg-white border-slate-300 text-slate-900">
-                          <SelectValue placeholder="Selecione o setor" />
+                          <SelectValue placeholder="Selecione o segmento" />
                         </SelectTrigger>
                         <SelectContent className="bg-white border-slate-300 text-slate-900">
                           {SECTORS.map((s) => (
@@ -215,14 +216,14 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
 
                     <div>
                       <label className="text-xs text-slate-700 font-semibold mb-1.5 block">
-                        Qtd. Balanças / Dosadores
+                        Quantidade de Equipamentos
                       </label>
                       <Select
                         value={formData.equipmentCount}
                         onValueChange={(val) => setFormData({ ...formData, equipmentCount: val })}
                       >
                         <SelectTrigger className="bg-white border-slate-300 text-slate-900">
-                          <SelectValue placeholder="Selecione a quantidade" />
+                          <SelectValue placeholder="Selecione a faixa" />
                         </SelectTrigger>
                         <SelectContent className="bg-white border-slate-300 text-slate-900">
                           <SelectItem value="1-5">1 a 5 equipamentos</SelectItem>
@@ -236,11 +237,11 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
 
                   <div>
                     <label className="text-xs text-slate-700 font-semibold mb-1.5 block">
-                      Principal Desafio ou Necessidade
+                      Descreva sua necessidade técnica
                     </label>
                     <Textarea
                       rows={3}
-                      placeholder="Descreva resumidamente se precisa de calibração, manutenção emergencial de painel ou sistema preditivo..."
+                      placeholder="Ex.: calibração de sensores, manutenção emergencial de painel elétrico, implantação de monitoramento preditivo…"
                       value={formData.mainChallenge}
                       onChange={(e) => setFormData({ ...formData, mainChallenge: e.target.value })}
                       className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#8CC63F]"
@@ -252,12 +253,12 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                     className="w-full bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-base py-6 rounded-xl shadow-xl shadow-[#8CC63F]/20 flex items-center justify-center gap-2 mt-4"
                   >
                     <Send className="w-5 h-5" />
-                    SOLICITAR MEU DIAGNÓSTICO GRATUITO
+                    SOLICITAR DIAGNÓSTICO GRATUITO
                   </Button>
 
                   <p className="text-[10px] text-slate-400 text-center flex items-center justify-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-[#8CC63F]" />
-                    Seus dados estão protegidos sob a LGPD. Não enviamos spam.
+                    Dados protegidos pela LGPD. Sem compartilhamento com terceiros.
                   </p>
                 </form>
               )}

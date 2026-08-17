@@ -116,12 +116,12 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
             href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
             className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity"
           >
-            <div className="w-9 h-9 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
-              <Phone className="w-5 h-5 text-[#8CC63F] stroke-[2.2]" />
+            <div className="w-7 h-7 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
+              <Phone className="w-3.5 h-3.5 text-[#8CC63F] stroke-[2]" />
             </div>
             <div className="flex flex-col text-left leading-tight">
-              <span className="text-[11px] font-normal text-slate-500">Telefone</span>
-              <span className="text-sm font-extrabold text-slate-900 group-hover:text-[#4d7c0f] transition-colors">
+              <span className="text-[10px] font-normal text-slate-500">Telefone</span>
+              <span className="text-xs font-semibold text-slate-700 group-hover:text-[#4d7c0f] transition-colors">
                 {COMPANY_INFO.phoneLandline}
               </span>
             </div>
@@ -134,12 +134,12 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
             rel="noopener noreferrer"
             className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity"
           >
-            <div className="w-9 h-9 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
-              <MessageCircle className="w-5 h-5 text-[#8CC63F] stroke-[2.2]" />
+            <div className="w-7 h-7 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
+              <MessageCircle className="w-3.5 h-3.5 text-[#8CC63F] stroke-[2]" />
             </div>
             <div className="flex flex-col text-left leading-tight">
-              <span className="text-[11px] font-normal text-slate-500">Fale no WhatsApp</span>
-              <span className="text-sm font-extrabold text-slate-900 group-hover:text-[#4d7c0f] transition-colors">
+              <span className="text-[10px] font-normal text-slate-500">Fale no WhatsApp</span>
+              <span className="text-xs font-semibold text-slate-700 group-hover:text-[#4d7c0f] transition-colors">
                 {COMPANY_INFO.phoneWhatsapp}
               </span>
             </div>

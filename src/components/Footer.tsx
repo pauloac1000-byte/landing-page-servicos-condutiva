@@ -126,7 +126,7 @@ export function Footer() {
                 <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[10px] font-bold">
                   WA
                 </span>
-                <span>{COMPANY_INFO.phoneWhatsapp}</span>
+                <span>WhatsApp: {COMPANY_INFO.phoneWhatsapp}</span>
               </a>
               <a
                 href={`mailto:${COMPANY_INFO.email}`}

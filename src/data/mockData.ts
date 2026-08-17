@@ -25,7 +25,7 @@ export const SECTORS = [
 export const SERVICES: ServiceItem[] = [
   {
     id: 'calibracao',
-    title: 'Calibração de Células de Carga',
+    title: 'Calibração de Sensores',
     shortDesc:
       'Aferição rastreável Inmetro com pesos padrão certificados para balanças e dosadores industriais.',
     fullDesc: 'Serviço completo de calibração com pesos padrão rastreáveis ao Inmetro.',
@@ -229,7 +229,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     challenge:
       'Desvios recorrentes de pesagem em linha de dosação causavam reprovação de lotes e perdas de matéria-prima, com paradas não planejadas de até 6h por semana.',
     solution:
-      'Calibração trimestral rastreável Inmetro, sensores preditivos nas células de carga e dashboard SIGA para monitoramento em tempo real.',
+      'Calibração trimestral rastreável Inmetro, sensores preditivos nos pontos críticos e dashboard SIGA para monitoramento em tempo real.',
     results: [
       { label: 'Redução de paradas', value: '-87%' },
       { label: 'Lotes aprovados', value: '99.8%' },
@@ -355,7 +355,7 @@ export const FAQS: FaqItem[] = [
   {
     question: 'O que está incluso no dashboard SIGA?',
     answer:
-      'Monitoramento em tempo real de células de carga, painéis elétricos e automação. Inclui alertas, relatórios de tendências, histórico de calibrações e documentação centralizada.',
+      'Monitoramento em tempo real de sensores, painéis elétricos e automação. Inclui alertas, relatórios de tendências, histórico de calibrações e documentação centralizada.',
     category: 'Tecnologia',
   },
   {

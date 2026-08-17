@@ -20,12 +20,12 @@ export function DiagnosticModal({ isOpen, onClose, preselectedTitle }: ModalProp
         <DialogHeader className="text-left mb-2">
           <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-[#8CC63F]"></span>
-            Diagnóstico Gratuito - Condutiva Serviços
+            Diagnóstico Técnico Gratuito
           </DialogTitle>
           <DialogDescription className="text-xs text-slate-400">
             {preselectedTitle
-              ? `Interesse selecionado: ${preselectedTitle}`
-              : 'Preencha abaixo para agendar a inspeção técnica gratuita na sua planta.'}
+              ? `Serviço de interesse: ${preselectedTitle}. Preencha seus dados para que nossa engenharia prepare a avaliação.`
+              : 'Agende uma avaliação técnica gratuita na sua planta. Nossa engenharia analisa o segmento e prepara um diagnóstico sob medida.'}
           </DialogDescription>
         </DialogHeader>
 

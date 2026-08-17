@@ -12,7 +12,7 @@ export function HowItWorksSection() {
       num: '02',
       icon: ClipboardCheck,
       title: 'Health-Check Técnico Gratuito',
-      desc: 'Nossa engenharia realiza a avaliação das células de carga, calibradores e painéis elétricos sem qualquer cobrança.',
+      desc: 'Nossa engenharia realiza a avaliação dos sensores, calibradores e painéis elétricos sem qualquer cobrança.',
     },
     {
       num: '03',
