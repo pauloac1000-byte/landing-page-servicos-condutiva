@@ -50,7 +50,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[#8CC63F] shrink-0" />
-                <span>Técnicos certificados NR-10 e NR-35</span>
+                <span>Técnicos certificados nas NR de segurança</span>
               </div>
             </div>
 

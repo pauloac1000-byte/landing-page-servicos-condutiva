@@ -26,7 +26,7 @@ export function SocialProofBar() {
     <section className="bg-white border-y border-slate-200 py-8 relative">
       <div className="container mx-auto px-4">
         <p className="text-center text-xs font-semibold text-slate-500 uppercase tracking-widest mb-6">
-          Sistemas e calibrações para os setores mais exigentes do Brasil
+          PRESTAÇÃO DE SERVIÇOS para os setores mais exigentes do Brasil
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
@@ -48,18 +48,18 @@ export function SocialProofBar() {
 
         <div className="mt-8 pt-6 border-t border-slate-200 flex flex-wrap justify-center gap-8 text-center text-slate-600 text-xs">
           <div>
-            <span className="text-[#4d7c0f] font-bold">Rastreabilidade Inmetro:</span> Aferição
-            rigorosa com pesos padrão certificados.
+            <span className="text-[#4d7c0f] font-bold">Rastreabilidade:</span>&nbsp;Calibração
+            rigorosa sob normas vigentes.
           </div>
           <div className="hidden md:block text-slate-300">•</div>
           <div>
             <span className="text-[#4d7c0f] font-bold">SLA Prioritário:</span> Atendimento
-            emergencial em até 4h para contratantes.
+            emergencial para contratantes.
           </div>
           <div className="hidden md:block text-slate-300">•</div>
           <div>
-            <span className="text-[#4d7c0f] font-bold">Engenheiros Próprios:</span> Cobertura em +20
-            estados brasileiros.
+            <span className="text-[#4d7c0f] font-bold">Engenheiros e Técnicos Próprios:</span>{' '}
+            Cobertura em +20 estados brasileiros.
           </div>
         </div>
       </div>

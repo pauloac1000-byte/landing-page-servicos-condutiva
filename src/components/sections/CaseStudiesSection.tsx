@@ -14,7 +14,7 @@ export function CaseStudiesSection() {
             PROVA SOCIAL & RESULTADOS PRÁTICOS
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold font-display text-slate-900">
-            Quem confia na Condutiva para proteger sua produção.
+            Quem confia na Condutiva protege sua produção.
           </h2>
           <p className="text-slate-500 text-sm sm:text-base">
             Casos reais de empresas industriais líderes em seus segmentos.
