@@ -119,8 +119,8 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
             <div className="w-7 h-7 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
               <Phone className="w-3.5 h-3.5 text-[#8CC63F] stroke-[2]" />
             </div>
-            <div className="flex flex-col text-left leading-tight">
-              <span className="text-[10px] font-normal text-slate-500">Telefone</span>
+            <div className="flex items-baseline gap-1 text-left leading-tight whitespace-nowrap">
+              <span className="text-[10px] font-normal text-slate-500">Telefone:</span>
               <span className="text-xs font-semibold text-slate-700 group-hover:text-[#4d7c0f] transition-colors">
                 {COMPANY_INFO.phoneLandline}
               </span>
@@ -137,8 +137,8 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
             <div className="w-7 h-7 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
               <MessageCircle className="w-3.5 h-3.5 text-[#8CC63F] stroke-[2]" />
             </div>
-            <div className="flex flex-col text-left leading-tight">
-              <span className="text-[10px] font-normal text-slate-500">Fale no WhatsApp</span>
+            <div className="flex items-baseline gap-1 text-left leading-tight whitespace-nowrap">
+              <span className="text-[10px] font-normal text-slate-500">WhatsApp:</span>
               <span className="text-xs font-semibold text-slate-700 group-hover:text-[#4d7c0f] transition-colors">
                 {COMPANY_INFO.phoneWhatsapp}
               </span>
