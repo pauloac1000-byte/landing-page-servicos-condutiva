@@ -216,7 +216,7 @@ export const TRANSFORMATION = [
   {
     topic: 'Atendimento',
     de: 'Sem SLA: aguardar dias por um técnico disponível, com custo de chamado avulso.',
-    para: 'Contrato com SLA: técnico alocado e resposta de até 2h para emergências.',
+    para: 'Contrato com SLA: técnico alocado e resposta acelerada para emergências.',
   },
 ]
 
