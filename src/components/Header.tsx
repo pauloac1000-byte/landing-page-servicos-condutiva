@@ -94,7 +94,7 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+      <div className="container mx-auto px-4 h-24 flex items-center justify-between">
         <Logo className="flex items-center group" />
 
         <nav className="hidden lg:flex items-center space-x-6 text-sm font-medium">
@@ -110,40 +110,43 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-6">
-          {/* Telefone Fixo */}
-          <a
-            href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
-            className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity"
-          >
-            <div className="w-7 h-7 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
-              <Phone className="w-3.5 h-3.5 text-[#8CC63F] stroke-[2]" />
-            </div>
-            <div className="flex items-baseline gap-1 text-left leading-tight whitespace-nowrap">
-              <span className="text-[10px] font-normal text-slate-500">Telefone:</span>
-              <span className="text-xs font-semibold text-slate-700 group-hover:text-[#4d7c0f] transition-colors">
-                {COMPANY_INFO.phoneLandline}
-              </span>
-            </div>
-          </a>
+        <div className="hidden md:flex items-center gap-4">
+          {/* Bloco de contatos empilhados verticalmente */}
+          <div className="flex flex-col gap-0.5">
+            {/* Telefone Fixo */}
+            <a
+              href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
+              className="flex items-center gap-2 group hover:opacity-90 transition-opacity"
+            >
+              <div className="w-6 h-6 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
+                <Phone className="w-3 h-3 text-[#8CC63F] stroke-[2]" />
+              </div>
+              <div className="flex items-baseline gap-1 text-left leading-tight whitespace-nowrap">
+                <span className="text-[11px] font-normal text-slate-500">Telefone:</span>
+                <span className="text-[11px] font-semibold text-slate-700 group-hover:text-[#4d7c0f] transition-colors">
+                  {COMPANY_INFO.phoneLandline}
+                </span>
+              </div>
+            </a>
 
-          {/* WhatsApp */}
-          <a
-            href={`https://wa.me/${COMPANY_INFO.whatsappRaw}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity"
-          >
-            <div className="w-7 h-7 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
-              <MessageCircle className="w-3.5 h-3.5 text-[#8CC63F] stroke-[2]" />
-            </div>
-            <div className="flex items-baseline gap-1 text-left leading-tight whitespace-nowrap">
-              <span className="text-[10px] font-normal text-slate-500">WhatsApp:</span>
-              <span className="text-xs font-semibold text-slate-700 group-hover:text-[#4d7c0f] transition-colors">
-                {COMPANY_INFO.phoneWhatsapp}
-              </span>
-            </div>
-          </a>
+            {/* WhatsApp */}
+            <a
+              href={`https://wa.me/${COMPANY_INFO.whatsappRaw}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 group hover:opacity-90 transition-opacity"
+            >
+              <div className="w-6 h-6 rounded-full bg-[#8CC63F]/15 flex items-center justify-center shrink-0">
+                <MessageCircle className="w-3 h-3 text-[#8CC63F] stroke-[2]" />
+              </div>
+              <div className="flex items-baseline gap-1 text-left leading-tight whitespace-nowrap">
+                <span className="text-[11px] font-normal text-slate-500">WhatsApp:</span>
+                <span className="text-[11px] font-semibold text-slate-700 group-hover:text-[#4d7c0f] transition-colors">
+                  {COMPANY_INFO.phoneWhatsapp}
+                </span>
+              </div>
+            </a>
+          </div>
 
           <Button
             onClick={onOpenDiagnosticModal}

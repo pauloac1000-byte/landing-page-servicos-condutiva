@@ -18,7 +18,7 @@ export function Logo({ className }: LogoProps) {
       aria-label="Condutiva Serviços - Página inicial"
     >
       <div className="flex flex-col items-start leading-none">
-        <img src={logoImg} alt="Condutiva" className="h-11 w-auto object-contain" />
+        <img src={logoImg} alt="Condutiva" className="h-16 w-auto object-contain" />
         <span className="text-[#4d7c0f] font-mono text-[10px] font-bold uppercase tracking-[0.25em] mt-0.5">
           Serviços
         </span>
