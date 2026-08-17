@@ -15,7 +15,7 @@ export function DifferentiatorsSection() {
     {
       icon: Settings2,
       title: 'Customização Total para o seu Processo',
-      desc: 'Seja dosagem de aditivos em gramas ou pesagem de carretas de 80 toneladas: moldamos o protocolo ao seu fluxo de engenharia.',
+      desc: 'Menos retrabalho, mais precisão: o sistema é projetado para o seu processo, com mais previsibilidade, do início ao fim.',
     },
   ]
 
