@@ -1,6 +1,5 @@
 import type { ServiceItem, PlanItem, CaseStudy, Testimonial, FaqItem } from '@/types'
-import aerialSilosImg from '@/assets/image-50860.png'
-import silosPlantationImg from '@/assets/image-bcf89.png'
+import combineHarvesterImg from '@/assets/image-d9327.png'
 
 export const COMPANY_INFO = {
   phoneLandline: '(19) 3032-1751',
@@ -241,8 +240,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       'Com esses dados, controlo melhor o secador e economizo energia direta. Além disso, a solução tem potencial para operar sozinha, liberando o operador para tarefas de maior valor.',
     author: 'Paulo Sérgio',
     role: 'Proprietário',
-    image: aerialSilosImg,
-    galleryImages: [aerialSilosImg, silosPlantationImg],
+    image: combineHarvesterImg,
   },
   {
     id: 'mineracao',

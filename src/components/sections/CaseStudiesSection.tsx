@@ -72,9 +72,6 @@ export function CaseStudiesSection() {
                         alt={`${currentCase.client} ${idx + 1}`}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
-                      <div className="absolute bottom-1 right-2 bg-slate-900/70 backdrop-blur-xs text-white text-[10px] px-2 py-0.5 rounded-md font-mono">
-                        {idx === 0 ? 'Vista Aérea' : 'Plantação & Silos'}
-                      </div>
                     </div>
                   ))}
                 </div>
