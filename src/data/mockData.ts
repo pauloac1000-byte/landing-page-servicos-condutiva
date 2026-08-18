@@ -223,7 +223,7 @@ export const TRANSFORMATION = [
 export const CASE_STUDIES: CaseStudy[] = [
   {
     id: 'alimentos',
-    client: 'Indústria de Alimentos Beta',
+    client: 'Grão Futura Armazéns',
     segment: 'Alimentos & Bebidas',
     location: 'Campinas, SP',
     challenge:
@@ -243,7 +243,7 @@ export const CASE_STUDIES: CaseStudy[] = [
   },
   {
     id: 'mineracao',
-    client: 'Mineração Delta Sul',
+    client: 'Fundição Batatais',
     segment: 'Mineração',
     location: 'Parauapebas, PA',
     challenge:
@@ -263,7 +263,7 @@ export const CASE_STUDIES: CaseStudy[] = [
   },
   {
     id: 'farmaceutica',
-    client: 'Pharma Alpha Indústria',
+    client: 'Fazenda Alta Vista',
     segment: 'Química & Farmacêutica',
     location: 'São Paulo, SP',
     challenge:
@@ -299,7 +299,7 @@ export const TESTIMONIALS: Testimonial[] = [
     id: '1',
     name: 'Roberto Mendes',
     role: 'Gerente de Manutenção',
-    company: 'Indústria de Alimentos Beta',
+    company: 'Grão Futura Armazéns',
     segment: 'Alimentos',
     text: 'A Condutiva transformou nossa manutenção de reativa para preditiva. Reduzimos paradas em 87% em apenas 6 meses. O suporte remoto é impecável.',
     rating: 5,
@@ -309,7 +309,7 @@ export const TESTIMONIALS: Testimonial[] = [
     id: '2',
     name: 'Ana Paula Costa',
     role: 'Engenheira de Automação',
-    company: 'Mineração Delta Sul',
+    company: 'Fundição Batatais',
     segment: 'Mineração',
     text: 'Equipe extremamente técnica. Resolveram um problema de painel elétrico que três empresas anteriores não conseguiram diagnosticar.',
     rating: 5,
@@ -319,7 +319,7 @@ export const TESTIMONIALS: Testimonial[] = [
     id: '3',
     name: 'Carlos Eduardo Lima',
     role: 'Diretor de Qualidade',
-    company: 'Pharma Alpha Indústria',
+    company: 'Fazenda Alta Vista',
     segment: 'Farmacêutica',
     text: 'A rastreabilidade e a documentação que a Condutiva fornece foram fundamentais para nossa certificação FDA. Profissionalismo do início ao fim.',
     rating: 5,
