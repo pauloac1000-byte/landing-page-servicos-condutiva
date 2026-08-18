@@ -33,6 +33,7 @@ export interface CaseStudy {
   author: string
   role: string
   image: string
+  galleryImages?: string[]
 }
 
 export interface Testimonial {

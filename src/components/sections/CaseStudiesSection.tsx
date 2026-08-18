@@ -41,11 +41,11 @@ export function CaseStudiesSection() {
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 max-w-5xl mx-auto shadow-elevation">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-5 space-y-4">
-              <div className="rounded-2xl overflow-hidden border border-slate-200 relative h-56 sm:h-64">
+              <div className="rounded-2xl overflow-hidden border border-slate-200 relative h-56 sm:h-64 group">
                 <img
                   src={currentCase.image}
                   alt={currentCase.client}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
                 <div className="absolute bottom-4 left-4 right-4">
@@ -59,6 +59,26 @@ export function CaseStudiesSection() {
                   </span>
                 </div>
               </div>
+
+              {currentCase.galleryImages && currentCase.galleryImages.length > 1 && (
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  {currentCase.galleryImages.map((imgSrc, idx) => (
+                    <div
+                      key={idx}
+                      className="rounded-xl overflow-hidden border border-slate-200 h-24 sm:h-28 relative group shadow-xs"
+                    >
+                      <img
+                        src={imgSrc}
+                        alt={`${currentCase.client} ${idx + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute bottom-1 right-2 bg-slate-900/70 backdrop-blur-xs text-white text-[10px] px-2 py-0.5 rounded-md font-mono">
+                        {idx === 0 ? 'Vista Aérea' : 'Plantação & Silos'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="grid grid-cols-3 gap-2">
                 {currentCase.results.map((res, i) => null)}
