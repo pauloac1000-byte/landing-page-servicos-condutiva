@@ -224,8 +224,8 @@ export const CASE_STUDIES: CaseStudy[] = [
   {
     id: 'alimentos',
     client: 'Grão Futura Armazéns',
-    segment: 'Alimentos & Bebidas',
-    location: 'Campinas, SP',
+    segment: 'Armazéns e Grãos',
+    location: 'Três Corações, MG',
     challenge:
       'Desvios recorrentes de pesagem em linha de dosação causavam reprovação de lotes e perdas de matéria-prima, com paradas não planejadas de até 6h por semana.',
     solution:
@@ -239,7 +239,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       'Depois da Condutiva, conseguimos prever falhas antes que aconteçam. O dashboard SIGA mudou nossa rotina de manutenção completamente.',
     author: 'Roberto Mendes',
     role: 'Gerente de Manutenção',
-    image: 'https://img.usecurling.com/p/800/500?q=food%20processing%20factory&color=blue',
+    image: 'https://img.usecurling.com/p/800/500?q=grain%20silo%20storage&color=amber',
   },
   {
     id: 'mineracao',
@@ -300,7 +300,7 @@ export const TESTIMONIALS: Testimonial[] = [
     name: 'Roberto Mendes',
     role: 'Gerente de Manutenção',
     company: 'Grão Futura Armazéns',
-    segment: 'Alimentos',
+    segment: 'Armazéns e Grãos',
     text: 'A Condutiva transformou nossa manutenção de reativa para preditiva. Reduzimos paradas em 87% em apenas 6 meses. O suporte remoto é impecável.',
     rating: 5,
     avatar: 'https://img.usecurling.com/ppl/medium?gender=male&seed=10',
