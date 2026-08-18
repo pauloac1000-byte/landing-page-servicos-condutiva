@@ -237,8 +237,8 @@ export const CASE_STUDIES: CaseStudy[] = [
     ],
     quote:
       'Depois da Condutiva, conseguimos prever falhas antes que aconteçam. O dashboard SIGA mudou nossa rotina de manutenção completamente.',
-    author: 'Roberto Mendes',
-    role: 'Gerente de Manutenção',
+    author: 'Paulo Sérgio',
+    role: 'Proprietário',
     image: 'https://img.usecurling.com/p/800/500?q=grain%20silo%20storage&color=amber',
   },
   {
@@ -297,8 +297,8 @@ export const PRACTICAL_BENEFITS: string[] = [
 export const TESTIMONIALS: Testimonial[] = [
   {
     id: '1',
-    name: 'Roberto Mendes',
-    role: 'Gerente de Manutenção',
+    name: 'Paulo Sérgio',
+    role: 'Proprietário',
     company: 'Grão Futura Armazéns',
     segment: 'Armazéns e Grãos',
     text: 'A Condutiva transformou nossa manutenção de reativa para preditiva. Reduzimos paradas em 87% em apenas 6 meses. O suporte remoto é impecável.',
