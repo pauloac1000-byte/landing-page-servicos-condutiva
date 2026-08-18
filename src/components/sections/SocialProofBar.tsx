@@ -48,8 +48,8 @@ export function SocialProofBar() {
 
         <div className="mt-8 pt-6 border-t border-slate-200 flex flex-wrap justify-center gap-8 text-center text-slate-600 text-xs">
           <div>
-            <span className="text-[#4d7c0f] font-bold">Confiabilidade:</span>Confiabilidade
-            Calibração rigorosa sob normas vigentes.
+            <span className="text-[#4d7c0f] font-bold">Confiabilidade:&nbsp;</span>Calibração
+            rigorosa sob normas vigentes.
           </div>
           <div className="hidden md:block text-slate-300">•</div>
           <div>
