@@ -61,19 +61,7 @@ export function CaseStudiesSection() {
               </div>
 
               <div className="grid grid-cols-3 gap-2">
-                {currentCase.results.map((res, i) => (
-                  <div
-                    key={i}
-                    className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-center"
-                  >
-                    <span className="text-[#4d7c0f] font-black font-mono text-sm sm:text-base block">
-                      {res.value}
-                    </span>
-                    <span className="text-[9px] text-slate-500 leading-tight block mt-0.5">
-                      {res.label}
-                    </span>
-                  </div>
-                ))}
+                {currentCase.results.map((res, i) => null)}
               </div>
             </div>
 
