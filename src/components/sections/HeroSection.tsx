@@ -31,8 +31,8 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
             <p className="text-slate-600 text-base sm:text-lg leading-relaxed w-full font-normal max-w-none">
               Serviços especializados de alta precisão em atendimento remoto prioritário, manutenção
               preventiva, calibração presencial, treinamentos operacionais, health check e solução
-              de problemas&nbsp; para plantas industriais que desejam converter tecnologia em
-              eficácia e competitividade.
+              de problemas com análise de causa raiz para plantas industriais que desejam converter
+              tecnologia em eficácia e competitividade.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-sm text-slate-700">
