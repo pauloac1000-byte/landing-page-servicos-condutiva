@@ -237,7 +237,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       { label: 'ROI', value: '4 meses' },
     ],
     quote:
-      'Com esses dados, controlo melhor o secador e economizo energia direta. Além disso, a solução tem potencial para operar sozinha, liberando o operador para tarefas de maior valor.',
+      'Com esses dados e com os relatórios do SIGA, controlo melhor o secador e economizo energia direta. Além disso, a solução tem potencial para operar sozinha, liberando o operador para tarefas de maior valor.',
     author: 'Paulo Sérgio',
     role: 'Proprietário',
     image: combineHarvesterImg,
