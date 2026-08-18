@@ -229,14 +229,14 @@ export const CASE_STUDIES: CaseStudy[] = [
     challenge:
       'Desvios recorrentes de pesagem em linha de dosação causavam reprovação de lotes e perdas de matéria-prima, com paradas não planejadas de até 6h por semana.',
     solution:
-      'Calibração trimestral rastreável Inmetro, sensores preditivos nos pontos críticos e dashboard SIGA para monitoramento em tempo real.',
+      'Atendimento remoto com o encarregado do armazém, treinamento operacional e calibrações presenciais programadas',
     results: [
       { label: 'Redução de paradas', value: '-87%' },
       { label: 'Lotes aprovados', value: '99.8%' },
       { label: 'ROI', value: '4 meses' },
     ],
     quote:
-      'Depois da Condutiva, conseguimos prever falhas antes que aconteçam. O dashboard SIGA mudou nossa rotina de manutenção completamente.',
+      'Com esses dados, controlo melhor o secador e economizo energia direta. Além disso, a solução tem potencial para operar sozinha, liberando o operador para tarefas de maior valor.',
     author: 'Paulo Sérgio',
     role: 'Proprietário',
     image: 'https://img.usecurling.com/p/800/500?q=grain%20silo%20storage&color=amber',
