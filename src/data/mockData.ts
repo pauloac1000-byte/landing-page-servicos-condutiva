@@ -180,7 +180,7 @@ export const PAIN_POINTS = [
   {
     title: 'Desvios de Calibração Silenciosos',
     description:
-      'Pequenos desvios na calibração comprometem a qualidade do produto final, gerando retrabalho, desperdício e não conformidades em auditorias.',
+      'Pequenos desvios na calibração comprometem a tomada de decisão durante o processo, gerando retrabalho, desperdício e não conformidades em auditorias.',
     impact: 'Perdas por erro de leitura e dosagem.',
   },
   {
