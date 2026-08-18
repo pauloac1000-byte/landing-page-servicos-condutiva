@@ -227,7 +227,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     segment: 'Armazéns e Grãos',
     location: 'Três Corações, MG',
     challenge:
-      'Desvios recorrentes de pesagem em linha de dosação causavam reprovação de lotes e perdas de matéria-prima, com paradas não planejadas de até 6h por semana.',
+      'A falta de visibilidade da umidade e a baixa familiaridade com o sistema de relatórios impedem decisões precisas na secagem, mantendo a fornalha ativa por mais tempo e desperdiçando energia.',
     solution:
       'Atendimento remoto com o encarregado do armazém, treinamento operacional e calibrações presenciais programadas',
     results: [
