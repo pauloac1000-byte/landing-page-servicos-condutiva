@@ -44,7 +44,7 @@ export const SERVICES: ServiceItem[] = [
     title: 'Programação CLP / IHM / SIGA / SICO',
     shortDesc:
       'Desenvolvimento e manutenção de programas de automação para CLPs, IHMs e sistemas de gestão com relatórios em nuvem.',
-    fullDesc: 'Atuação completa em automação: CLPs, IHMs, SCADA e redes industriais.',
+    fullDesc: 'Atuação completa em automação: CLPs, IHMs, Gestão e redes industriais.',
     iconName: 'Cpu',
     category: 'Automação',
     deliverables: [
@@ -53,7 +53,7 @@ export const SERVICES: ServiceItem[] = [
       'Treinamento operacional on-site',
       'Suporte remoto pós-intervenção',
     ],
-    tags: ['CLP', 'SCADA', 'IHM'],
+    tags: ['CLP', 'Gestão', 'IHM'],
   },
   {
     id: 'painel',
@@ -61,14 +61,14 @@ export const SERVICES: ServiceItem[] = [
     shortDesc: 'Diagnóstico e plano de reparo de painéis elétricos e equipamentos Condutiva',
     fullDesc: 'Manutenção preventiva e corretiva de painéis elétricos industriais.',
     iconName: 'Workflow',
-    category: 'Elétrica',
+    category: 'Manutenção',
     deliverables: [
       'Análise de causa raiz e diagnóstico.',
       'Plano de substituição de componentes e upgrade de versões de software.',
       'Relatório de conformidade.',
       'Teste de isolamento e continuidade',
     ],
-    tags: ['NR-10', 'Termografia', 'Painel'],
+    tags: ['Preventiva', 'Painéis', 'Corretiva'],
   },
   {
     id: 'preditivo',
