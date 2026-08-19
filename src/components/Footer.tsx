@@ -50,7 +50,7 @@ export function Footer() {
               </li>
               <li>
                 <a href="#servicos" className="hover:text-[#4d7c0f] transition">
-                  Manutenção de Painéis Elétricos
+                  Manutenção Preventiva
                 </a>
               </li>
               <li>

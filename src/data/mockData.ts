@@ -33,24 +33,24 @@ export const SERVICES: ServiceItem[] = [
     iconName: 'Scale',
     category: 'Calibração',
     deliverables: [
-      'Certificado RBC rastreável',
+      'Laudos rastreáveis',
       'Relatório de desvios e tendências',
-      'Ajuste fino de sensibilidade',
+      'Ajuste de parâmetros e configurações',
       'Recomendação de recalibração',
     ],
     tags: ['Inmetro', 'RBC', 'Rastreável'],
   },
   {
     id: 'automacao',
-    title: 'Programação CLP / IHM / SCADA',
+    title: 'Programação CLP / IHM / SIGA / SICO',
     shortDesc:
-      'Desenvolvimento e manutenção de programas de automação para CLPs, IHMs e sistemas SCADA.',
+      'Desenvolvimento e manutenção de programas de automação para CLPs, IHMs e sistemas de gestão com relatórios em nuvem.',
     fullDesc: 'Atuação completa em automação: CLPs, IHMs, SCADA e redes industriais.',
     iconName: 'Cpu',
     category: 'Automação',
     deliverables: [
-      'Código fonte documentado',
-      'Backup de programa aplicado',
+      'Configuração e testes remotos.',
+      'Sistema Integrado de Gestão',
       'Treinamento operacional on-site',
       'Suporte remoto pós-intervenção',
     ],
@@ -58,31 +58,30 @@ export const SERVICES: ServiceItem[] = [
   },
   {
     id: 'painel',
-    title: 'Manutenção de Painéis Elétricos',
-    shortDesc:
-      'Diagnóstico e reparo de painéis de comando e força com técnicos certificados NR-10.',
+    title: 'Manutenção Preventiva',
+    shortDesc: 'Diagnóstico e plano de reparo de painéis elétricos e equipamentos Condutiva',
     fullDesc: 'Manutenção preventiva e corretiva de painéis elétricos industriais.',
     iconName: 'Workflow',
     category: 'Elétrica',
     deliverables: [
-      'Diagnóstico termográfico',
-      'Substituição de componentes',
-      'Relatório de conformidade NR-10',
+      'Análise de causa raiz e diagnóstico.',
+      'Plano de substituição de componentes e upgrade de versões de software.',
+      'Relatório de conformidade.',
       'Teste de isolamento e continuidade',
     ],
     tags: ['NR-10', 'Termografia', 'Painel'],
   },
   {
     id: 'preditivo',
-    title: 'Sensoriamento Preditivo',
-    shortDesc: 'Sensores IoT para monitoramento contínuo e detecção antecipada de falhas.',
+    title: 'Suporte Técnico Remoto Prioritário',
+    shortDesc: 'Canal dedicado de atendimento (linha direta / WhatsApp técnico)',
     fullDesc: 'Sistema de sensoriamento preditivo com IoT industrial em tempo real.',
     iconName: 'Activity',
     category: 'IoT',
     deliverables: [
-      'Instalação de sensores industriais',
-      'Dashboard de monitoramento',
-      'Alertas configuráveis por limite',
+      'Base de conhecimento e documentação técnica',
+      'Acesso a especialistas do time de Desenvolvimento',
+      'Suporte remoto com resposta em prioritária definido em SLA',
       'Relatório de tendências e anomalias',
     ],
     tags: ['IoT', 'Preditivo', 'Dashboard'],
@@ -90,7 +89,7 @@ export const SERVICES: ServiceItem[] = [
   {
     id: 'retrofit',
     title: 'Retrofit & Modernização',
-    shortDesc: 'Modernização de equipamentos obsoletos preservando a mecânica existente.',
+    shortDesc: 'Modernização de equipamentos descontinuados preservando a mecânica existente.',
     fullDesc: 'Retrofit industrial que moderniza controle e instrumentação.',
     iconName: 'RefreshCw',
     category: 'Modernização',
@@ -250,7 +249,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     challenge:
       'Painéis elétricos de britagem sofriam falhas termográficas frequentes, causando paradas com custo elevadíssimo por hora de interrupção.',
     solution:
-      'Manutenção preventiva trimestral com termografia, retrofit de componentes obsoletos e treinamento da equipe para diagnóstico precoce.',
+      'Manutenção preventiva trimestral com termografia, retrofit de componentes descontinuados e treinamento da equipe para diagnóstico precoce.',
     results: [
       { label: 'Falhas elétricas', value: '-92%' },
       { label: 'Disponibilidade', value: '99.5%' },
@@ -285,11 +284,11 @@ export const CASE_STUDIES: CaseStudy[] = [
 ]
 
 export const PRACTICAL_BENEFITS: string[] = [
-  'Redução imediata de paradas não planejadas com diagnóstico técnico gratuito',
-  'Certificados de calibração rastreáveis Inmetro aceitos em auditorias ANVISA e FDA',
-  'Atendimento emergencial com SLA contratual garantido em até 2h',
-  'Dashboard SIGA com monitoramento em tempo real de equipamentos críticos',
-  'Engenheiros próprios com DNA de fabricante, sem intermediários',
+  'Redução imediata de paradas não planejadas com diagnóstico técnico e resolução de problemas.',
+  'laudos de calibração rastreáveis e relatórios de conformidade',
+  'Atendimento emergencial com SLA contratua.',
+  'Dashboard SIGA e SICO com dados em nuvem e acesso remoto via internet',
+  'Engenheiros e Técnicos especializados com DNA de fabricante',
   'Documentação técnica centralizada e sempre disponível para auditorias',
   'Treinamento operacional incluso para sua equipe de chão de fábrica',
   'Cobertura técnica em mais de 20 estados brasileiros',
