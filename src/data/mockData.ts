@@ -27,9 +27,8 @@ export const SERVICES: ServiceItem[] = [
   {
     id: 'calibracao',
     title: 'Calibração de Sensores',
-    shortDesc:
-      'Aferição rastreável Inmetro com pesos padrão certificados para balanças e dosadores industriais.',
-    fullDesc: 'Serviço completo de calibração com pesos padrão rastreáveis ao Inmetro.',
+    shortDesc: 'Aferição rastreável com laudos e relatórios para balanças e dosadores industriais.',
+    fullDesc: 'Serviço completo de calibração com laudos rastreáveis e relatórios de conformidade.',
     iconName: 'Scale',
     category: 'Calibração',
     deliverables: [
@@ -38,7 +37,7 @@ export const SERVICES: ServiceItem[] = [
       'Ajuste de parâmetros e configurações',
       'Recomendação de recalibração',
     ],
-    tags: ['Inmetro', 'RBC', 'Rastreável'],
+    tags: ['Calibração', 'Laudos', 'Rastreável'],
   },
   {
     id: 'automacao',
@@ -75,16 +74,16 @@ export const SERVICES: ServiceItem[] = [
     id: 'preditivo',
     title: 'Suporte Técnico Remoto Prioritário',
     shortDesc: 'Canal dedicado de atendimento (linha direta / WhatsApp técnico)',
-    fullDesc: 'Sistema de sensoriamento preditivo com IoT industrial em tempo real.',
+    fullDesc: 'Canal dedicado de suporte remoto com acesso a especialistas e base de conhecimento.',
     iconName: 'Activity',
-    category: 'IoT',
+    category: 'Suporte',
     deliverables: [
       'Base de conhecimento e documentação técnica',
       'Acesso a especialistas do time de Desenvolvimento',
       'Suporte remoto com resposta em prioritária definido em SLA',
-      'Relatório de tendências e anomalias',
+      'Relatório de chamados e resolutividade',
     ],
-    tags: ['IoT', 'Preditivo', 'Dashboard'],
+    tags: ['Suporte', 'Remoto', 'SLA'],
   },
   {
     id: 'retrofit',
@@ -128,7 +127,7 @@ export const PLANS: PlanItem[] = [
       '2 visitas preventivas semestrais',
       'Calibração de até 10 pontos',
       'Relatório de saúde da planta',
-      'Suporte remoto por telefone',
+      'Suporte remoto prioritário',
       '15% de desconto em avulsos',
     ],
     idealFor: 'Plantas com até 10 equipamentos críticos.',
@@ -144,8 +143,8 @@ export const PLANS: PlanItem[] = [
     features: [
       '4 visitas preventivas trimestrais',
       'Calibração ilimitada',
-      'Monitoramento preditivo IoT',
-      'Dashboard SIGA em tempo real',
+      'Monitoramento remoto com dashboards',
+      'Dashboards SIGA e SICO com acesso remoto',
       'Suporte 24/7',
       '30% de desconto em avulsos',
     ],
@@ -285,8 +284,8 @@ export const CASE_STUDIES: CaseStudy[] = [
 
 export const PRACTICAL_BENEFITS: string[] = [
   'Redução imediata de paradas não planejadas com diagnóstico técnico e resolução de problemas.',
-  'laudos de calibração rastreáveis e relatórios de conformidade',
-  'Atendimento emergencial com SLA contratua.',
+  'Laudos de calibração rastreáveis e relatórios de conformidade',
+  'Atendimento emergencial com SLA contratual.',
   'Dashboard SIGA e SICO com dados em nuvem e acesso remoto via internet',
   'Engenheiros e Técnicos especializados com DNA de fabricante',
   'Documentação técnica centralizada e sempre disponível para auditorias',
@@ -301,7 +300,7 @@ export const TESTIMONIALS: Testimonial[] = [
     role: 'Proprietário',
     company: 'Grão Futura Armazéns',
     segment: 'Armazéns e Grãos',
-    text: 'A Condutiva transformou nossa manutenção de reativa para preditiva. Reduzimos paradas em 87% em apenas 6 meses. O suporte remoto é impecável.',
+    text: 'A Condutiva nos ajudou a entender melhor os relatórios do SIGA e a economizar energia na secagem. O suporte remoto é impecável.',
     rating: 5,
     avatar: 'https://img.usecurling.com/ppl/medium?gender=male&seed=10',
   },
@@ -318,10 +317,10 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     id: '3',
     name: 'Carlos Eduardo Lima',
-    role: 'Diretor de Qualidade',
+    role: 'Gerente de Produção',
     company: 'Fazenda Alta Vista',
-    segment: 'Farmacêutica',
-    text: 'A rastreabilidade e a documentação que a Condutiva fornece foram fundamentais para nossa certificação FDA. Profissionalismo do início ao fim.',
+    segment: 'Agronegócio',
+    text: 'A rastreabilidade e a documentação que a Condutiva fornece foram fundamentais para a nossa operação no campo. Profissionalismo do início ao fim.',
     rating: 5,
     avatar: 'https://img.usecurling.com/ppl/medium?gender=male&seed=30',
   },
@@ -341,27 +340,27 @@ export const FAQS: FaqItem[] = [
     category: 'SLA',
   },
   {
-    question: 'Os certificados de calibração são aceitos em auditorias?',
+    question: 'Os laudos de calibração são aceitos em auditorias?',
     answer:
-      'Sim. Todos os certificados são rastreáveis ao Inmetro e seguem padrões RBC. São aceitos em auditorias da ANVISA, FDA, ISO 9001 e demais normas.',
+      'Sim. Emitimos laudos rastreáveis e relatórios de conformidade aceitos em auditorias da ISO 9001 e demais normas de qualidade.',
     category: 'Calibração',
   },
   {
     question: 'Vocês atendem fora do estado de São Paulo?',
     answer:
-      'Sim. A Condutiva possui cobertura em mais de 20 estados, com equipes equipadas com pesos padrão certificados. Deslocamento gratuito para clientes com contrato ativo.',
+      'Sim. A Condutiva possui cobertura em mais de 20 estados, com equipes técnicas equipadas para atendimento presencial. Deslocamento gratuito para clientes com contrato ativo.',
     category: 'Cobertura',
   },
   {
     question: 'O que está incluso no dashboard SIGA?',
     answer:
-      'Monitoramento em tempo real de sensores, painéis elétricos e automação. Inclui alertas, relatórios de tendências, histórico de calibrações e documentação centralizada.',
+      'Monitoramento em tempo real de equipamentos e sistemas de automação. Inclui alertas, relatórios de tendências, histórico de calibrações e documentação centralizada.',
     category: 'Tecnologia',
   },
   {
     question: 'Como funciona o retrofit de equipamentos antigos?',
     answer:
-      'O retrofit moderniza a eletrônica e o controle preservando a estrutura mecânica. Reduz custo comparado à substituição total e integra tecnologia atual como IoT.',
+      'O retrofit moderniza a eletrônica e o controle preservando a estrutura mecânica. Reduz custo comparado à substituição total e integra tecnologia atual de automação.',
     category: 'Modernização',
   },
   {
