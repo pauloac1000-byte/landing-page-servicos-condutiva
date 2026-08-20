@@ -243,7 +243,7 @@ export const CASE_STUDIES: CaseStudy[] = [
   },
   {
     id: 'mineracao',
-    client: 'Amaggi Algodoeira',
+    client: 'Amaggi',
     segment: 'Algodoeira',
     location: 'Sapezal - MT',
     challenge:
@@ -309,7 +309,7 @@ export const TESTIMONIALS: Testimonial[] = [
     id: '2',
     name: 'Sr Isaías',
     role: 'Encarregado Operação',
-    company: 'Amaggi Algodoeira',
+    company: 'Amaggi',
     segment: 'Algodoeira',
     text: 'O sensor da Condutiva melhorou nosso processo com precisão e automação. O atendimento e o suporte presencial fizeram toda a diferença.',
     rating: 5,
