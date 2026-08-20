@@ -1,5 +1,6 @@
 import type { ServiceItem, PlanItem, CaseStudy, Testimonial, FaqItem } from '@/types'
 import combineHarvesterImg from '@/assets/image-d9327.png'
+import amaggiCottonImg from '@/assets/image-730db.png'
 
 export const COMPANY_INFO = {
   phoneLandline: '(19) 3032-1751',
@@ -258,7 +259,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       'O sensor da Condutiva melhorou nosso processo com precisão e automação. O atendimento e o suporte presencial fizeram toda a diferença.',
     author: 'Sr Isaías',
     role: 'Encarregado Operação',
-    image: 'https://img.usecurling.com/p/800/500?q=cotton%20harvest%20agriculture&color=amber',
+    image: amaggiCottonImg,
   },
   {
     id: 'farmaceutica',
