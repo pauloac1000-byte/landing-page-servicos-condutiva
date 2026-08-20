@@ -242,23 +242,23 @@ export const CASE_STUDIES: CaseStudy[] = [
   },
   {
     id: 'mineracao',
-    client: 'Fundição Batatais',
-    segment: 'Mineração',
-    location: 'Parauapebas, PA',
+    client: 'Amaggi Algodoeira',
+    segment: 'Algodoeira',
+    location: 'Sapezal - MT',
     challenge:
-      'Painéis elétricos de britagem sofriam falhas termográficas frequentes, causando paradas com custo elevadíssimo por hora de interrupção.',
+      'A operação manual era imprecisa, demandava acompanhamento constante e comprometia a estabilidade do processo',
     solution:
-      'Manutenção preventiva trimestral com termografia, retrofit de componentes descontinuados e treinamento da equipe para diagnóstico precoce.',
+      'Suporte presencial no ajuste do controle de umidade através do sensor com válvula proporcional',
     results: [
       { label: 'Falhas elétricas', value: '-92%' },
       { label: 'Disponibilidade', value: '99.5%' },
       { label: 'Economia anual', value: 'R$ 1.2M' },
     ],
     quote:
-      'A equipe da Condutiva conhece cada componente do nosso painel como ninguém. O suporte remoto resolve 80% dos chamados sem deslocamento.',
-    author: 'Ana Paula Costa',
-    role: 'Engenheira de Automação',
-    image: 'https://img.usecurling.com/p/800/500?q=mining%20industrial%20plant&color=orange',
+      'O sensor da Condutiva melhorou nosso processo com precisão e automação. O atendimento e o suporte presencial fizeram toda a diferença.',
+    author: 'Sr Isaías',
+    role: 'Encarregado Operação',
+    image: 'https://img.usecurling.com/p/800/500?q=cotton%20harvest%20agriculture&color=amber',
   },
   {
     id: 'farmaceutica',
@@ -306,13 +306,13 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: '2',
-    name: 'Ana Paula Costa',
-    role: 'Engenheira de Automação',
-    company: 'Fundição Batatais',
-    segment: 'Mineração',
-    text: 'Equipe extremamente técnica. Resolveram um problema de painel elétrico que três empresas anteriores não conseguiram diagnosticar.',
+    name: 'Sr Isaías',
+    role: 'Encarregado Operação',
+    company: 'Amaggi Algodoeira',
+    segment: 'Algodoeira',
+    text: 'O sensor da Condutiva melhorou nosso processo com precisão e automação. O atendimento e o suporte presencial fizeram toda a diferença.',
     rating: 5,
-    avatar: 'https://img.usecurling.com/ppl/medium?gender=female&seed=20',
+    avatar: 'https://img.usecurling.com/ppl/medium?gender=male&seed=20',
   },
   {
     id: '3',
