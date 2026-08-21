@@ -86,7 +86,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                         : 'bg-slate-800 hover:bg-slate-700 text-white'
                     }`}
                   >
-                    Solicitar Proposta para {plan.name}
+                    Solicitar Proposta
                   </Button>
                 </div>
               </div>
