@@ -157,7 +157,7 @@ export const PLANS: PlanItem[] = [
     id: 'maestro',
     name: 'Plano Maestro Engenharia',
     tagline: 'Engenharia dedicada com gestão completa de ativos.',
-    responseSLA: 'Atendimento em até 2h úteis',
+    responseSLA: 'Onde o domínio do processo encontra a eficiência máxima.',
     features: [
       'Visitas mensais programadas',
       'Engenheiro dedicado',
