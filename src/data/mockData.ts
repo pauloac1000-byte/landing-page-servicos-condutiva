@@ -144,10 +144,8 @@ export const PLANS: PlanItem[] = [
     responseSLA: 'O equilíbrio entre investimento e controle total.',
     features: [
       '4 visitas preventivas trimestrais',
-      'Calibração ilimitada',
-      'Monitoramento remoto com dashboards',
-      'Dashboards SIGA e SICO com acesso remoto',
-      'Suporte 24/7',
+      'Suporte SIGA/SICO – para plantas com a solução implementada',
+      'Academia Condutiva de Treinamento sob demanda',
       'Valores sob consulta para pedidos avulsos',
     ],
     idealFor: 'Plantas com operação contínua e múltiplas linhas.',
