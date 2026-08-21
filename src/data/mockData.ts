@@ -270,7 +270,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     challenge:
       'A oscilação na dosagem de água nas massadas comprometia a estabilidade do processo, gerava variação na qualidade do concreto, retrabalho e perdas de produção que exigiam acompanhamento constante da equipe.',
     solution:
-      'Serviço de análise de causa raiz com diagnóstico do processo de dosagem e elaboração da solução em conjunto com a equipe de automação, incluindo suporte presencial na implementação e no ajuste fino do controle.',
+      'Serviço de análise de causa raiz com diagnóstico do processo de pesagem de agregados e cimento e elaboração da solução em conjunto com a equipe de automação, incluindo suporte presencial na implementação e no ajuste fino do controle.',
     results: [
       { label: 'Estabilidade', value: '+95%' },
       { label: 'Retrabalho', value: '-80%' },
