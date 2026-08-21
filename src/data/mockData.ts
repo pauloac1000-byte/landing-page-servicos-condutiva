@@ -143,7 +143,8 @@ export const PLANS: PlanItem[] = [
     badge: 'Mais Escolhido',
     responseSLA: 'O equilíbrio entre investimento e controle total.',
     features: [
-      '4 visitas preventivas trimestrais',
+      'Tudo do Sentinela +',
+      'Adicional de 2 visitas presenciais de corretiva / ano',
       'Suporte SIGA/SICO – para plantas com a solução implementada',
       'Academia Condutiva de Treinamento sob demanda',
       'Valores sob consulta para pedidos avulsos',
@@ -157,9 +158,9 @@ export const PLANS: PlanItem[] = [
     tagline: 'Engenharia dedicada com gestão completa de ativos.',
     responseSLA: 'Onde o domínio do processo encontra a eficiência máxima.',
     features: [
+      'Tudo do Controle+',
       'Visitas mensais programadas',
       'Engenheiro dedicado',
-      'Calibração e manutenção ilimitadas',
       'Gestão completa de ativos',
       'Treinamentos inclusos',
       'Prioridade absoluta',
