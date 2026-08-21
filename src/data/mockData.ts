@@ -123,7 +123,7 @@ export const PLANS: PlanItem[] = [
     id: 'sentinela',
     name: 'Plano Sentinela Preventivo',
     tagline: 'Manutenção preventiva programada com cobertura essencial.',
-    responseSLA: 'Atendimento em até 8h úteis',
+    responseSLA: 'Opere com previsibilidade sobre seus ativos.',
     features: [
       'Calibração remota programada (semestral)',
       'Suporte remoto com canal prioritário',
