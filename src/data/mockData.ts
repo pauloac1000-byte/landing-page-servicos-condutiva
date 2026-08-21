@@ -262,24 +262,24 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: amaggiCottonImg,
   },
   {
-    id: 'farmaceutica',
-    client: 'Fazenda Alta Vista',
-    segment: 'Química & Farmacêutica',
-    location: 'São Paulo, SP',
+    id: 'presto-blocos',
+    client: 'Presto Blocos e Piso de Concreto',
+    segment: 'CONSTRUÇÃO CIVIL',
+    location: 'Itaquaquecetuba',
     challenge:
-      'Necessidade de rastreabilidade total de calibração para ANVISA e FDA, com documentação manual dispersa e propensa a erros.',
+      'A oscilação na dosagem de água nas massadas comprometia a estabilidade do processo, gerava variação na qualidade do concreto, retrabalho e perdas de produção que exigiam acompanhamento constante da equipe.',
     solution:
-      'Plano Controle Total SIGA com calibração rastreável RBC, documentação centralizada e relatórios automáticos para auditoria.',
+      'Serviço de análise de causa raiz com diagnóstico do processo de dosagem e elaboração da solução em conjunto com a equipe de automação, incluindo suporte presencial na implementação e no ajuste fino do controle.',
     results: [
-      { label: 'Auditorias', value: '100%' },
-      { label: 'Tempo auditoria', value: '-60%' },
-      { label: 'Não conformid.', value: '0' },
+      { label: 'Estabilidade', value: '+95%' },
+      { label: 'Retrabalho', value: '-80%' },
+      { label: 'Perdas produção', value: '0' },
     ],
     quote:
-      'A rastreabilidade que a Condutiva trouxe foi decisiva para nossa certificação FDA. Tudo documentado, tudo auditável.',
-    author: 'Carlos Eduardo Lima',
-    role: 'Diretor de Qualidade',
-    image: 'https://img.usecurling.com/p/800/500?q=pharmaceutical%20manufacturing&color=green',
+      'A oscilação na dosagem de água era um problema recorrente que impactava diretamente nossa produção. A Condutiva fez o diagnóstico de causa raiz e, junto com nossa equipe, implementou a solução. Hoje o processo está estável, com menos retrabalho e mais previsibilidade. O suporte presencial fez toda a diferença.',
+    author: 'Edvaldo Felix Sobrinho',
+    role: 'Gerente de Produção',
+    image: 'https://img.usecurling.com/p/800/500?q=concrete%20blocks%20construction&color=slate',
   },
 ]
 
@@ -317,11 +317,11 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: '3',
-    name: 'Carlos Eduardo Lima',
+    name: 'Edvaldo Felix Sobrinho',
     role: 'Gerente de Produção',
-    company: 'Fazenda Alta Vista',
-    segment: 'Agronegócio',
-    text: 'A rastreabilidade e a documentação que a Condutiva fornece foram fundamentais para a nossa operação no campo. Profissionalismo do início ao fim.',
+    company: 'Presto Blocos e Piso de Concreto',
+    segment: 'CONSTRUÇÃO CIVIL',
+    text: 'A oscilação na dosagem de água era um problema recorrente que impactava diretamente nossa produção. A Condutiva fez o diagnóstico de causa raiz e, junto com nossa equipe, implementou a solução. Hoje o processo está estável, com menos retrabalho e mais previsibilidade. O suporte presencial fez toda a diferença.',
     rating: 5,
     avatar: 'https://img.usecurling.com/ppl/medium?gender=male&seed=30',
   },
