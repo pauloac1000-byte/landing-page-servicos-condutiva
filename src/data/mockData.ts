@@ -1,6 +1,7 @@
 import type { ServiceItem, PlanItem, CaseStudy, Testimonial, FaqItem } from '@/types'
 import combineHarvesterImg from '@/assets/image-d9327.png'
 import amaggiCottonImg from '@/assets/image-730db.png'
+import prestoBlocosImg from '@/assets/generatedimage1787338313508-d7b92.png'
 
 export const COMPANY_INFO = {
   phoneLandline: '(19) 3032-1751',
@@ -263,9 +264,9 @@ export const CASE_STUDIES: CaseStudy[] = [
   },
   {
     id: 'presto-blocos',
-    client: 'Presto Blocos e Piso de Concreto',
+    client: 'Presto Blocos e Pisos de Concreto',
     segment: 'CONSTRUÇÃO CIVIL',
-    location: 'Itaquaquecetuba',
+    location: 'Itaquaquecetuba, SP',
     challenge:
       'A oscilação na dosagem de água nas massadas comprometia a estabilidade do processo, gerava variação na qualidade do concreto, retrabalho e perdas de produção que exigiam acompanhamento constante da equipe.',
     solution:
@@ -279,7 +280,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       'A oscilação na dosagem de água era um problema recorrente que impactava diretamente nossa produção. A Condutiva fez o diagnóstico de causa raiz e, junto com nossa equipe, implementou a solução. Hoje o processo está estável, com menos retrabalho e mais previsibilidade. O suporte presencial fez toda a diferença.',
     author: 'Edvaldo Felix Sobrinho',
     role: 'Gerente de Produção',
-    image: 'https://img.usecurling.com/p/800/500?q=concrete%20blocks%20construction&color=slate',
+    image: prestoBlocosImg,
   },
 ]
 
@@ -319,7 +320,7 @@ export const TESTIMONIALS: Testimonial[] = [
     id: '3',
     name: 'Edvaldo Felix Sobrinho',
     role: 'Gerente de Produção',
-    company: 'Presto Blocos e Piso de Concreto',
+    company: 'Presto Blocos e Pisos de Concreto',
     segment: 'CONSTRUÇÃO CIVIL',
     text: 'A oscilação na dosagem de água era um problema recorrente que impactava diretamente nossa produção. A Condutiva fez o diagnóstico de causa raiz e, junto com nossa equipe, implementou a solução. Hoje o processo está estável, com menos retrabalho e mais previsibilidade. O suporte presencial fez toda a diferença.',
     rating: 5,
