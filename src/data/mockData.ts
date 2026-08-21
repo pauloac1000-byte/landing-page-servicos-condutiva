@@ -141,7 +141,7 @@ export const PLANS: PlanItem[] = [
     tagline: 'Gestão integrada com monitoramento preditivo e SLA prioritário.',
     recommended: true,
     badge: 'Mais Escolhido',
-    responseSLA: 'Atendimento em até 4h úteis',
+    responseSLA: 'O equilíbrio entre investimento e controle total.',
     features: [
       '4 visitas preventivas trimestrais',
       'Calibração ilimitada',
