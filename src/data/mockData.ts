@@ -257,8 +257,8 @@ export const CASE_STUDIES: CaseStudy[] = [
     ],
     quote:
       'O sensor da Condutiva melhorou nosso processo com precisão e automação. O atendimento e o suporte presencial fizeram toda a diferença.',
-    author: 'Sr Isaías',
-    role: 'Encarregado Operação',
+    author: 'Isaías da Costa Pinheiro',
+    role: 'Coordenador de Operação',
     image: amaggiCottonImg,
   },
   {
@@ -307,8 +307,8 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: '2',
-    name: 'Sr Isaías',
-    role: 'Encarregado Operação',
+    name: 'Isaías da Costa Pinheiro',
+    role: 'Coordenador de Operação',
     company: 'Amaggi',
     segment: 'Algodoeira',
     text: 'O sensor da Condutiva melhorou nosso processo com precisão e automação. O atendimento e o suporte presencial fizeram toda a diferença.',
