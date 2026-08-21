@@ -126,7 +126,7 @@ export const PLANS: PlanItem[] = [
     responseSLA: 'Atendimento em até 8h úteis',
     features: [
       '2 visitas preventivas semestrais',
-      'Calibração de até 10 pontos',
+      'Calibração remota programada semestral',
       'Relatório de saúde da planta',
       'Suporte remoto prioritário',
       '15% de desconto em avulsos',
