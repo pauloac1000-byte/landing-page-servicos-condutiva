@@ -59,7 +59,9 @@ export interface LeadFormData {
   email: string
   phone: string
   segment: string
+  cityState: string
   equipmentCount: string
   mainChallenge: string
+  lgpdConsent: boolean
   preferredDate?: string
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectTrigger,
@@ -11,8 +12,10 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { LeadFormData } from '@/types'
 import { SECTORS, COMPANY_INFO } from '@/data/mockData'
-import { Send, CheckCircle2, Sparkles, Phone, ShieldCheck } from 'lucide-react'
+import { Send, CheckCircle2, Sparkles, Phone, ShieldCheck, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { createLead } from '@/services/leads'
+import { extractFieldErrors, getErrorMessage } from '@/lib/pocketbase/errors'
 
 interface FormProps {
   initialService?: string
@@ -21,17 +24,20 @@ interface FormProps {
 export function DiagnosticFormSection({ initialService }: FormProps) {
   const { toast } = useToast()
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState<LeadFormData>({
     fullName: '',
     company: '',
     email: '',
     phone: '',
     segment: '',
+    cityState: '',
     equipmentCount: '1-5',
     mainChallenge: initialService ? `Interesse no serviço: ${initialService}` : '',
+    lgpdConsent: false,
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.fullName || !formData.phone || !formData.email) {
       toast({
@@ -41,12 +47,38 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
       })
       return
     }
+    if (!formData.lgpdConsent) {
+      toast({
+        title: 'Consentimento necessário',
+        description:
+          'É necessário aceitar o termo de consentimento LGPD para enviar a solicitação.',
+        variant: 'destructive',
+      })
+      return
+    }
 
-    setIsSubmitted(true)
-    toast({
-      title: 'Diagnóstico Solicitado com Sucesso! 🚀',
-      description: `Obrigado, ${formData.fullName}! Nosso engenheiro entrará em contato em breve no número ${formData.phone}.`,
-    })
+    setIsSubmitting(true)
+    try {
+      await createLead(formData)
+      setIsSubmitted(true)
+      toast({
+        title: 'Diagnóstico Solicitado com Sucesso! 🚀',
+        description: `Obrigado, ${formData.fullName}! Nosso engenheiro entrará em contato em breve no número ${formData.phone}.`,
+      })
+    } catch (error) {
+      const fieldErrors = extractFieldErrors(error)
+      const message =
+        Object.values(fieldErrors).join(' ') ||
+        getErrorMessage(error) ||
+        'Não foi possível enviar a solicitação agora. Tente novamente em instantes.'
+      toast({
+        title: 'Erro ao enviar solicitação',
+        description: message,
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -237,6 +269,18 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
 
                   <div>
                     <label className="text-xs text-slate-700 font-semibold mb-1.5 block">
+                      Cidade / Estado
+                    </label>
+                    <Input
+                      placeholder="Cidade/UF (ex.: Campinas/SP)"
+                      value={formData.cityState}
+                      onChange={(e) => setFormData({ ...formData, cityState: e.target.value })}
+                      className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#8CC63F]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-slate-700 font-semibold mb-1.5 block">
                       Descreva sua necessidade técnica
                     </label>
                     <Textarea
@@ -248,12 +292,40 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                     />
                   </div>
 
+                  <div className="flex items-start gap-3 pt-1">
+                    <Checkbox
+                      id="lgpd-consent"
+                      checked={formData.lgpdConsent}
+                      onCheckedChange={(value) =>
+                        setFormData({ ...formData, lgpdConsent: value === true })
+                      }
+                      className="mt-0.5 border-slate-300 data-[state=checked]:bg-[#8CC63F] data-[state=checked]:border-[#8CC63F]"
+                    />
+                    <label
+                      htmlFor="lgpd-consent"
+                      className="text-[11px] leading-relaxed text-slate-600 cursor-pointer"
+                    >
+                      Consentimento LGPD: autorizo o tratamento dos meus dados para fins de contato,
+                      envio de propostas e diagnóstico técnico pela Condutiva.
+                    </label>
+                  </div>
+
                   <Button
                     type="submit"
-                    className="w-full bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-base py-6 rounded-xl shadow-xl shadow-[#8CC63F]/20 flex items-center justify-center gap-2 mt-4"
+                    disabled={isSubmitting}
+                    className="w-full bg-[#8CC63F] hover:bg-[#7cb633] disabled:opacity-60 disabled:cursor-not-allowed text-slate-950 font-black text-base py-6 rounded-xl shadow-xl shadow-[#8CC63F]/20 flex items-center justify-center gap-2 mt-2"
                   >
-                    <Send className="w-5 h-5" />
-                    SOLICITAR DIAGNÓSTICO GRATUITO
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        ENVIANDO...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        SOLICITAR DIAGNÓSTICO GRATUITO
+                      </>
+                    )}
                   </Button>
 
                   <p className="text-[10px] text-slate-400 text-center flex items-center justify-center gap-1">

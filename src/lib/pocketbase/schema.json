@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21T19:04:19.550Z",
+  "generatedAt": "2026-08-22T18:47:06.133Z",
   "collections": [
     {
       "name": "users",
@@ -42,6 +42,91 @@
       "indexes": [
         "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
         "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
+      ]
+    },
+    {
+      "name": "leads",
+      "type": "base",
+      "apiRules": {
+        "list": null,
+        "view": null,
+        "create": "",
+        "update": null,
+        "delete": null
+      },
+      "fields": [
+        {
+          "name": "full_name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "company",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "phone",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "segment",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "city_state",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "equipment_count",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "main_challenge",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "lgpd_consent",
+          "type": "bool",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_leads_created ON leads (created)",
+        "CREATE INDEX idx_leads_email ON leads (email)"
       ]
     }
   ]
