@@ -1,39 +1,8 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { COMPANY_INFO } from '@/data/mockData'
-import { Phone, Mail, MapPin, Lock, Users, FileDown, Loader2 } from 'lucide-react'
-import { downloadTrainingDocx } from '@/lib/trainingDocx'
-import { useToast } from '@/hooks/use-toast'
+import { Phone, Mail, MapPin, Lock, Users } from 'lucide-react'
 
 export function Footer() {
-  const [isDownloading, setIsDownloading] = useState(false)
-  const { toast } = useToast()
-
-  const handleDownloadDocx = async (e: React.MouseEvent) => {
-    e.preventDefault()
-    if (isDownloading) return
-    try {
-      setIsDownloading(true)
-      toast({
-        title: 'Gerando Documento Word (.docx)',
-        description: 'O treinamento completo da Condutiva Tecnologia está sendo formatado...',
-      })
-      await downloadTrainingDocx()
-      toast({
-        title: 'Download Concluído!',
-        description: 'Treinamento_LandingPage_Condutiva.docx baixado com sucesso.',
-      })
-    } catch (err) {
-      console.error('Erro ao gerar docx:', err)
-      toast({
-        variant: 'destructive',
-        title: 'Erro no download',
-        description: 'Não foi possível gerar o arquivo Word. Tente novamente.',
-      })
-    } finally {
-      setIsDownloading(false)
-    }
-  }
   return (
     <footer className="bg-slate-50 text-slate-600 border-t border-slate-200 pt-16 pb-32 md:pb-24">
       <div className="container mx-auto px-4">
@@ -174,19 +143,6 @@ export function Footer() {
             <a href="#terms" className="hover:text-slate-600 transition">
               Termos de Uso
             </a>
-            <button
-              onClick={handleDownloadDocx}
-              disabled={isDownloading}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#8CC63F]/15 hover:bg-[#8CC63F]/25 text-[#4d7c0f] hover:text-[#36580a] font-semibold transition border border-[#8CC63F]/30 cursor-pointer disabled:opacity-60"
-              title="Baixar apostila de treinamento completa em formato Word (.docx)"
-            >
-              {isDownloading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#4d7c0f]" />
-              ) : (
-                <FileDown className="w-3.5 h-3.5 text-[#4d7c0f]" />
-              )}
-              <span>{isDownloading ? 'Gerando .docx...' : 'Baixar Treinamento (.docx)'}</span>
-            </button>
             <Link
               to="/leads"
               className="hover:text-[#4d7c0f] text-slate-400 transition flex items-center gap-1 font-medium"
