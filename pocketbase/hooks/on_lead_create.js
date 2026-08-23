@@ -4,28 +4,28 @@
 onRecordAfterCreateSuccess((e) => {
   const record = e.record
 
-  // Optional SMTP override from environment variables. Only applied when
-  // SMTP_ENABLED="true", so the native/dashboard mail config is used by
-  // default and never clobbered with placeholder values.
+  // Configure SMTP settings from environment variables if SMTP_HOST is present
+  // or SMTP_ENABLED is explicitly true.
   try {
-    if ($os.getenv('SMTP_ENABLED') === 'true') {
-      const host = $os.getenv('SMTP_HOST') || ''
+    const host = $os.getenv('SMTP_HOST') || ''
+    const smtpEnabled = $os.getenv('SMTP_ENABLED')
+    if (host || smtpEnabled === 'true') {
+      const settings = $app.settings()
+      settings.smtp.enabled = true
       if (host) {
-        const settings = $app.settings()
-        settings.smtp.enabled = true
         settings.smtp.host = host
-        const portEnv = $os.getenv('SMTP_PORT') || '587'
-        settings.smtp.port = parseInt(portEnv, 10) || 587
-        settings.smtp.username = $os.getenv('SMTP_USERNAME') || ''
-        settings.smtp.password = $os.getenv('SMTP_PASSWORD') || ''
-        const senderAddress = $os.getenv('SMTP_SENDER_ADDRESS')
-        const senderName = $os.getenv('SMTP_SENDER_NAME')
-        if (senderAddress) settings.meta.senderAddress = senderAddress
-        if (senderName) settings.meta.senderName = senderName
       }
+      const portEnv = $os.getenv('SMTP_PORT') || '587'
+      settings.smtp.port = parseInt(portEnv, 10) || 587
+      settings.smtp.username = $os.getenv('SMTP_USERNAME') || ''
+      settings.smtp.password = $os.getenv('SMTP_PASSWORD') || ''
+      const senderAddress = $os.getenv('SMTP_SENDER_ADDRESS')
+      const senderName = $os.getenv('SMTP_SENDER_NAME') || 'Condutiva'
+      if (senderAddress) settings.meta.senderAddress = senderAddress
+      if (senderName) settings.meta.senderName = senderName
     }
   } catch (err) {
-    console.log('lead email: SMTP env config skipped:', err ? err.message : err)
+    console.log('lead email: SMTP env config error:', err ? err.message : err)
   }
 
   const recipients = [
@@ -84,10 +84,17 @@ onRecordAfterCreateSuccess((e) => {
     '</div>'
 
   try {
+    const senderAddr =
+      $os.getenv('SMTP_SENDER_ADDRESS') ||
+      $app.settings().meta.senderAddress ||
+      'paulo@condutiva.com.br'
+    const senderNm =
+      $os.getenv('SMTP_SENDER_NAME') || $app.settings().meta.senderName || 'Condutiva'
+
     const message = new MailerMessage({
       from: {
-        address: $app.settings().meta.senderAddress || 'noreply@condutiva.com.br',
-        name: $app.settings().meta.senderName || 'Condutiva',
+        address: senderAddr,
+        name: senderNm,
       },
       to: recipients.map(function (addr) {
         return { address: addr }
