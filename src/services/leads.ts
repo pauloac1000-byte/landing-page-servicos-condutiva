@@ -1,5 +1,5 @@
 import pb from '@/lib/pocketbase/client'
-import type { LeadFormData } from '@/types'
+import type { LeadFormData, LeadRecord } from '@/types'
 
 /**
  * Persists a new diagnostic request (lead) in the `leads` collection.
@@ -9,8 +9,8 @@ import type { LeadFormData } from '@/types'
  * the collection itself; the SDK throws a `ClientResponseError` carrying
  * field-level messages on failure.
  */
-export async function createLead(data: LeadFormData): Promise<void> {
-  await pb.collection('leads').create({
+export async function createLead(data: LeadFormData): Promise<LeadRecord> {
+  return await pb.collection<LeadRecord>('leads').create({
     full_name: data.fullName,
     company: data.company,
     email: data.email,
@@ -21,4 +21,20 @@ export async function createLead(data: LeadFormData): Promise<void> {
     main_challenge: data.mainChallenge,
     lgpd_consent: data.lgpdConsent,
   })
+}
+
+/**
+ * Fetches all registered leads sorted from newest to oldest.
+ */
+export async function getLeads(): Promise<LeadRecord[]> {
+  return await pb.collection<LeadRecord>('leads').getFullList({
+    sort: '-created',
+  })
+}
+
+/**
+ * Deletes a lead record by id.
+ */
+export async function deleteLead(id: string): Promise<boolean> {
+  return await pb.collection('leads').delete(id)
 }

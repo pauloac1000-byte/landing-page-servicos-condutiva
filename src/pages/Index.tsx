@@ -56,8 +56,6 @@ export default function Index() {
         <DiagnosticFormSection initialService={selectedTopic} />
       </main>
 
-      <FloatingActions />
-
       <Footer />
 
       <DiagnosticModal

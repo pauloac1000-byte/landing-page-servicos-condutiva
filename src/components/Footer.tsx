@@ -1,5 +1,6 @@
+import { Link } from 'react-router-dom'
 import { COMPANY_INFO } from '@/data/mockData'
-import { Phone, Mail, MapPin, ShieldCheck, Award, Lock } from 'lucide-react'
+import { Phone, Mail, MapPin, ShieldCheck, Award, Lock, Users } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -152,6 +153,14 @@ export function Footer() {
             <a href="#terms" className="hover:text-slate-600 transition">
               Termos de Uso
             </a>
+            <Link
+              to="/leads"
+              className="hover:text-[#4d7c0f] text-slate-400 transition flex items-center gap-1 font-medium"
+              title="Acesso interno à gestão de leads comerciais"
+            >
+              <Users className="w-3 h-3 text-[#4d7c0f]" />
+              Área da Equipe
+            </Link>
             <span className="flex items-center gap-1 text-slate-500">
               <Lock className="w-3 h-3 text-[#4d7c0f]" />
               Conexão Segura SSL

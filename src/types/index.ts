@@ -65,3 +65,20 @@ export interface LeadFormData {
   lgpdConsent: boolean
   preferredDate?: string
 }
+
+export interface LeadRecord {
+  id: string
+  collectionId: string
+  collectionName: string
+  created: string
+  updated: string
+  full_name: string
+  company: string
+  email: string
+  phone: string
+  segment?: string
+  city_state?: string
+  equipment_count?: string
+  main_challenge?: string
+  lgpd_consent?: boolean
+}

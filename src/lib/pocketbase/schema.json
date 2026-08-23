@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-22T18:47:06.133Z",
+  "generatedAt": "2026-08-23T13:22:17.220Z",
   "collections": [
     {
       "name": "users",
@@ -48,8 +48,8 @@
       "name": "leads",
       "type": "base",
       "apiRules": {
-        "list": null,
-        "view": null,
+        "list": "",
+        "view": "",
         "create": "",
         "update": null,
         "delete": null
