@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { COMPANY_INFO } from '@/data/mockData'
-import { Phone, Mail, MapPin, ShieldCheck, Award, Lock, Users } from 'lucide-react'
+import { Phone, Mail, MapPin, Lock, Users } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -26,16 +26,6 @@ export function Footer() {
               presencial e remota, automação industrial e manutenção preventiva para plantas
               operacionais exigentes.
             </p>
-            <div className="flex items-center space-x-3 text-xs text-slate-700 pt-2">
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-full">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#4d7c0f]" />
-                ISO 9001
-              </span>
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-full">
-                <Award className="w-3.5 h-3.5 text-amber-500" />
-                Rastreabilidade Inmetro
-              </span>
-            </div>
           </div>
 
           <div className="space-y-3">
