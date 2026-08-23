@@ -4,7 +4,7 @@ import { Phone, Mail, MapPin, Lock, Users } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="bg-slate-50 text-slate-600 border-t border-slate-200 pt-16 pb-12">
+    <footer className="bg-slate-50 text-slate-600 border-t border-slate-200 pt-16 pb-24 md:pb-16">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           <div className="lg:col-span-2 space-y-4">
@@ -35,9 +35,8 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="#servicos" className="hover:text-[#4d7c0f] transition">
-                  Calibração de&nbsp;
+                  Calibração de Sensores de Umidade
                 </a>
-                Sensores de Umidade
               </li>
               <li>
                 <a href="#servicos" className="hover:text-[#4d7c0f] transition">
@@ -46,9 +45,8 @@ export function Footer() {
               </li>
               <li>
                 <a href="#servicos" className="hover:text-[#4d7c0f] transition">
-                  Programação e Integração CLP / IHM / S
+                  Programação e Integração CLP / IHM / Supervisório
                 </a>
-                upervisório
               </li>
               <li>
                 <a href="#servicos" className="hover:text-[#4d7c0f] transition">
@@ -135,8 +133,10 @@ export function Footer() {
         </div>
 
         <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center text-xs text-slate-400 gap-4">
-          <p>© 2026 Condutiva Tecnologia. Todos os direitos reservados.</p>
-          <div className="flex items-center space-x-6">
+          <p className="text-center md:text-left">
+            © 2026 Condutiva Tecnologia. Todos os direitos reservados.
+          </p>
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-6 gap-y-2">
             <a href="#privacy" className="hover:text-slate-600 transition">
               Política de Privacidade
             </a>

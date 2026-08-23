@@ -9,7 +9,12 @@ export function FloatingActions() {
   )}`
 
   return (
-    <div className="fixed bottom-20 md:bottom-24 right-6 z-50 flex flex-col items-end space-y-2.5 pointer-events-auto">
+    <div
+      className="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col items-end space-y-2.5 pointer-events-auto"
+      style={{
+        bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))',
+      }}
+    >
       {/* Optional landline quick call for desktop / tablet */}
       <a
         href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
