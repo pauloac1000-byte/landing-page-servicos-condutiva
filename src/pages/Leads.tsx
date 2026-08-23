@@ -370,10 +370,10 @@ export default function LeadsPage() {
               </div>
               <div className="border-l border-slate-800 pl-3">
                 <span className="text-base md:text-lg font-black tracking-wider block text-white font-display uppercase leading-tight">
-                  CONDUTIVA
+                  Painel Comercial
                 </span>
                 <span className="text-[10px] md:text-[11px] text-[#8CC63F] font-mono uppercase tracking-widest block font-semibold">
-                  Painel Comercial
+                  SERVIÇOS
                 </span>
               </div>
             </Link>
