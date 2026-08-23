@@ -8,7 +8,8 @@ export const COMPANY_INFO = {
   phoneWhatsapp: '(19) 99341-3270',
   whatsappRaw: '5519993413270',
   email: 'servicos@condutiva.com.br',
-  address: 'Rua Condutiva, 500 - Distrito Industrial - Campinas/SP',
+  address:
+    'Rua José Moreira de Souza, 84 (Parque das Indústrias) - Betel, Paulínia - SP, CEP: 13148-378',
   experienceYears: 20,
   clientCount: 500,
   statesCovered: 20,
