@@ -41,7 +41,7 @@ import { useToast } from '@/hooks/use-toast'
 
 const SESSION_AUTH_KEY = 'condutiva_leads_authenticated'
 const EXPECTED_PASSWORD =
-  (import.meta.env.VITE_LEADS_PASSWORD as string | undefined) || 'condutiva2025'
+  (import.meta.env.VITE_LEADS_PASSWORD as string | undefined) || 'condutiva01'
 
 export default function LeadsPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
