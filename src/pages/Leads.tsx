@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import logoImg from '@/assets/logo-removebg-previewedited-24401.jpg'
 import {
   Users,
   Search,
@@ -227,11 +228,21 @@ export default function LeadsPage() {
 
         {/* Minimal header */}
         <header className="border-b border-slate-800/80 bg-slate-950/60 backdrop-blur px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-[#8CC63F] flex items-center justify-center text-slate-950 font-black text-sm">
-              C
+          <Link
+            to="/"
+            className="flex items-center gap-3 group transition-opacity hover:opacity-90"
+            title="Voltar à página inicial"
+          >
+            <div className="bg-white/95 rounded-lg p-1.5 shadow-md flex items-center justify-center border border-slate-700/50 group-hover:border-[#8CC63F]/50 transition-colors">
+              <img
+                src={logoImg}
+                alt="Condutiva Tecnologia"
+                className="h-8 md:h-9 w-auto object-contain"
+              />
             </div>
-            <span className="font-bold tracking-wider text-sm text-white">CONDUTIVA</span>
+            <span className="font-bold tracking-wider text-sm text-white hidden sm:inline-block">
+              CONDUTIVA
+            </span>
           </Link>
           <Link to="/">
             <Button
@@ -347,17 +358,21 @@ export default function LeadsPage() {
           <div className="flex items-center gap-3">
             <Link
               to="/"
-              className="flex items-center gap-2 group transition"
+              className="flex items-center gap-3 group transition hover:opacity-95"
               title="Voltar à página inicial"
             >
-              <div className="w-9 h-9 rounded-xl bg-[#8CC63F] flex items-center justify-center text-slate-950 font-black text-lg shadow-md group-hover:scale-105 transition-transform">
-                C
+              <div className="bg-white/95 rounded-xl p-1.5 shadow-md flex items-center justify-center border border-slate-700/60 group-hover:border-[#8CC63F]/50 group-hover:scale-[1.02] transition-all">
+                <img
+                  src={logoImg}
+                  alt="Condutiva Tecnologia"
+                  className="h-9 md:h-10 w-auto object-contain"
+                />
               </div>
-              <div>
-                <span className="text-lg font-black tracking-wider block text-white font-display uppercase">
+              <div className="border-l border-slate-800 pl-3">
+                <span className="text-base md:text-lg font-black tracking-wider block text-white font-display uppercase leading-tight">
                   CONDUTIVA
                 </span>
-                <span className="text-[10px] text-[#8CC63F] font-mono uppercase tracking-widest block">
+                <span className="text-[10px] md:text-[11px] text-[#8CC63F] font-mono uppercase tracking-widest block font-semibold">
                   Painel Comercial
                 </span>
               </div>
