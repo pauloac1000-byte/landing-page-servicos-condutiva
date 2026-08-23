@@ -4,7 +4,7 @@ import { Phone, Mail, MapPin, Lock, Users } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="bg-slate-50 text-slate-600 border-t border-slate-200 pt-16 pb-24 md:pb-16">
+    <footer className="bg-slate-50 text-slate-600 border-t border-slate-200 pt-16 pb-32 md:pb-24">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           <div className="lg:col-span-2 space-y-4">
