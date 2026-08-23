@@ -7,10 +7,11 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet'
-import { Menu, Phone, MessageCircle, Sparkles, ChevronRight } from 'lucide-react'
+import { Menu, Phone, MessageCircle, Sparkles, ChevronRight, FileDown, Loader2 } from 'lucide-react'
 import { COMPANY_INFO } from '@/data/mockData'
 import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/Logo'
+import { downloadTrainingDocx } from '@/lib/trainingDocx'
 
 interface HeaderProps {
   onOpenDiagnosticModal: () => void
@@ -19,7 +20,33 @@ interface HeaderProps {
 export function Header({ onOpenDiagnosticModal }: HeaderProps) {
   const [activeLang, setActiveLang] = useState<'PT' | 'EN' | 'ES'>('PT')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   const { toast } = useToast()
+
+  const handleDownloadDocx = async () => {
+    if (isDownloading) return
+    try {
+      setIsDownloading(true)
+      toast({
+        title: 'Gerando Documento Word (.docx)',
+        description: 'Formatando o treinamento da Condutiva Tecnologia...',
+      })
+      await downloadTrainingDocx()
+      toast({
+        title: 'Download Concluído!',
+        description: 'Treinamento_LandingPage_Condutiva.docx baixado com sucesso.',
+      })
+    } catch (err) {
+      console.error('Erro ao gerar docx:', err)
+      toast({
+        variant: 'destructive',
+        title: 'Erro no download',
+        description: 'Não foi possível gerar o arquivo Word. Tente novamente.',
+      })
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
   const handleLangChange = (lang: 'PT' | 'EN' | 'ES') => {
     setActiveLang(lang)
@@ -205,6 +232,21 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
                     className="w-full bg-[#8CC63F] text-slate-950 font-bold py-3"
                   >
                     Solicitar Diagnóstico
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      handleDownloadDocx()
+                    }}
+                    disabled={isDownloading}
+                    className="w-full border-slate-300 text-slate-700 hover:bg-slate-100 flex items-center justify-center gap-2 text-xs py-2.5 font-medium"
+                  >
+                    {isDownloading ? (
+                      <Loader2 className="w-4 h-4 text-[#4d7c0f] animate-spin" />
+                    ) : (
+                      <FileDown className="w-4 h-4 text-[#4d7c0f]" />
+                    )}
+                    <span>{isDownloading ? 'Gerando .docx...' : 'Baixar Treinamento (.docx)'}</span>
                   </Button>
                   <div className="grid grid-cols-1 gap-2 pt-2">
                     <a

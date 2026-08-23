@@ -1,6 +1,37 @@
+import { useState } from 'react'
 import { COMPANY_INFO } from '@/data/mockData'
+import { FileDown, Loader2 } from 'lucide-react'
+import { downloadTrainingDocx } from '@/lib/trainingDocx'
+import { useToast } from '@/hooks/use-toast'
 
 export function FloatingActions() {
+  const [isDownloading, setIsDownloading] = useState(false)
+  const { toast } = useToast()
+
+  const handleDownloadTraining = async () => {
+    if (isDownloading) return
+    try {
+      setIsDownloading(true)
+      toast({
+        title: 'Gerando Documento Word (.docx)',
+        description: 'Formatando o treinamento oficial da Condutiva Tecnologia...',
+      })
+      await downloadTrainingDocx()
+      toast({
+        title: 'Download Concluído!',
+        description: 'Treinamento_LandingPage_Condutiva.docx salvo no seu dispositivo.',
+      })
+    } catch (err) {
+      console.error('Erro ao gerar docx:', err)
+      toast({
+        variant: 'destructive',
+        title: 'Erro no download',
+        description: 'Não foi possível gerar o arquivo. Tente novamente.',
+      })
+    } finally {
+      setIsDownloading(false)
+    }
+  }
   // Uses WhatsApp click-to-chat URL with default phone number: 5519993413270
   const whatsappNumber = COMPANY_INFO.whatsappRaw || '5519993413270'
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
@@ -9,11 +40,29 @@ export function FloatingActions() {
 
   return (
     <div
-      className="fixed bottom-20 md:bottom-24 right-4 sm:right-6 z-50 pointer-events-auto"
+      className="fixed bottom-20 md:bottom-24 right-4 sm:right-6 z-50 pointer-events-auto flex flex-col items-end gap-3"
       style={{
         bottom: 'max(5rem, calc(5rem + env(safe-area-inset-bottom, 0px)))',
       }}
     >
+      {/* Botão Secundário: Baixar Treinamento (.docx) */}
+      <button
+        onClick={handleDownloadTraining}
+        disabled={isDownloading}
+        aria-label="Baixar Apostila de Treinamento (.docx)"
+        className="relative group flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 sm:px-3.5 sm:py-2 rounded-full shadow-lg border border-slate-700/60 transition-all duration-300 hover:scale-105 active:scale-95 text-xs font-semibold cursor-pointer disabled:opacity-60"
+        title="Baixar Treinamento Completo (.docx)"
+      >
+        {isDownloading ? (
+          <Loader2 className="w-4 h-4 text-[#8CC63F] animate-spin" />
+        ) : (
+          <FileDown className="w-4 h-4 text-[#8CC63F]" />
+        )}
+        <span className="hidden sm:inline">
+          {isDownloading ? 'Gerando docx...' : 'Treinamento .docx'}
+        </span>
+      </button>
+
       {/* WhatsApp Floating Button standard click-to-chat */}
       <a
         href={whatsappUrl}
