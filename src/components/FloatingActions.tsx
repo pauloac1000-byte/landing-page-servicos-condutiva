@@ -1,4 +1,3 @@
-import { Phone, MessageCircle } from 'lucide-react'
 import { COMPANY_INFO } from '@/data/mockData'
 
 export function FloatingActions() {
@@ -10,26 +9,11 @@ export function FloatingActions() {
 
   return (
     <div
-      className="fixed bottom-20 md:bottom-24 right-4 sm:right-6 z-50 flex flex-row items-center gap-3 pointer-events-auto"
+      className="fixed bottom-20 md:bottom-24 right-4 sm:right-6 z-50 pointer-events-auto"
       style={{
         bottom: 'max(5rem, calc(5rem + env(safe-area-inset-bottom, 0px)))',
       }}
     >
-      {/* Quick Phone Call Button */}
-      <a
-        href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
-        className="group flex items-center gap-2 bg-slate-900/95 hover:bg-slate-800 text-white p-2.5 sm:pl-3.5 sm:pr-2 sm:py-3 rounded-full border border-slate-700/80 shadow-2xl backdrop-blur transition-all duration-300 hover:scale-105 active:scale-95"
-        title={`Ligar para a Condutiva: ${COMPANY_INFO.phoneLandline}`}
-        aria-label={`Ligar para a Condutiva: ${COMPANY_INFO.phoneLandline}`}
-      >
-        <span className="text-xs font-bold text-slate-200 whitespace-nowrap select-none hidden md:inline">
-          {COMPANY_INFO.phoneLandline}
-        </span>
-        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-800 text-[#8CC63F] group-hover:bg-[#8CC63F] group-hover:text-slate-950 flex items-center justify-center shadow transition-colors">
-          <Phone className="w-3.5 h-3.5" />
-        </div>
-      </a>
-
       {/* WhatsApp Floating Button standard click-to-chat */}
       <a
         href={whatsappUrl}
