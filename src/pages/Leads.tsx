@@ -9,18 +9,19 @@ import {
   Mail,
   Phone,
   MapPin,
-  Cpu,
   FileSpreadsheet,
-  ArrowUpDown,
-  ExternalLink,
   ChevronRight,
   Filter,
   CheckCircle2,
   AlertCircle,
-  SlidersHorizontal,
   Home,
   MessageSquare,
   Sparkles,
+  Lock,
+  Eye,
+  EyeOff,
+  LogOut,
+  KeyRound,
 } from 'lucide-react'
 import { getLeads } from '@/services/leads'
 import { useRealtime } from '@/hooks/use-realtime'
@@ -38,7 +39,18 @@ import {
 } from '@/components/ui/dialog'
 import { useToast } from '@/hooks/use-toast'
 
+const SESSION_AUTH_KEY = 'condutiva_leads_authenticated'
+const EXPECTED_PASSWORD =
+  (import.meta.env.VITE_LEADS_PASSWORD as string | undefined) || 'condutiva2025'
+
 export default function LeadsPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem(SESSION_AUTH_KEY) === 'true'
+  })
+  const [inputPassword, setInputPassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+
   const [leads, setLeads] = useState<LeadRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -46,6 +58,32 @@ export default function LeadsPage() {
   const [selectedLead, setSelectedLead] = useState<LeadRecord | null>(null)
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table')
   const { toast } = useToast()
+
+  const handleLogin = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    if (inputPassword === EXPECTED_PASSWORD) {
+      sessionStorage.setItem(SESSION_AUTH_KEY, 'true')
+      setIsAuthenticated(true)
+      setPasswordError('')
+      toast({
+        title: 'Acesso liberado',
+        description: 'Bem-vindo ao Painel Comercial da Condutiva.',
+      })
+    } else {
+      setPasswordError('Senha incorreta. Verifique os caracteres e tente novamente.')
+    }
+  }
+
+  const handleLogout = () => {
+    sessionStorage.removeItem(SESSION_AUTH_KEY)
+    setIsAuthenticated(false)
+    setInputPassword('')
+    setPasswordError('')
+    toast({
+      title: 'Sessão encerrada',
+      description: 'Você saiu da área restrita de leads.',
+    })
+  }
 
   const loadData = async (silent = false) => {
     if (!silent) setLoading(true)
@@ -65,12 +103,16 @@ export default function LeadsPage() {
   }
 
   useEffect(() => {
-    loadData()
-  }, [])
+    if (isAuthenticated) {
+      loadData()
+    }
+  }, [isAuthenticated])
 
   // Realtime updates for new leads
   useRealtime<LeadRecord>('leads', () => {
-    loadData(true)
+    if (isAuthenticated) {
+      loadData(true)
+    }
   })
 
   // Extract unique segments for filtering
@@ -175,6 +217,128 @@ export default function LeadsPage() {
 
   const cleanPhone = (phone: string) => phone.replace(/\D/g, '')
 
+  // Password Lock Screen
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-[#8CC63F] selection:text-slate-950 relative overflow-hidden">
+        {/* Background ambient accents */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#8CC63F]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-10 right-10 w-80 h-80 bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Minimal header */}
+        <header className="border-b border-slate-800/80 bg-slate-950/60 backdrop-blur px-6 py-4 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 rounded-lg bg-[#8CC63F] flex items-center justify-center text-slate-950 font-black text-sm">
+              C
+            </div>
+            <span className="font-bold tracking-wider text-sm text-white">CONDUTIVA</span>
+          </Link>
+          <Link to="/">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-slate-400 hover:text-white hover:bg-slate-900 text-xs gap-1.5"
+            >
+              <Home className="w-3.5 h-3.5" />
+              Voltar ao Site
+            </Button>
+          </Link>
+        </header>
+
+        {/* Center Lock Box */}
+        <main className="container mx-auto px-4 py-12 flex items-center justify-center relative z-10">
+          <div className="w-full max-w-md">
+            <Card className="bg-slate-900/90 border-slate-800 shadow-2xl backdrop-blur-xl">
+              <CardHeader className="text-center pb-2">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-b from-[#8CC63F]/20 to-[#8CC63F]/5 border border-[#8CC63F]/30 mx-auto flex items-center justify-center text-[#8CC63F] shadow-lg mb-3">
+                  <Lock className="w-7 h-7" />
+                </div>
+                <CardTitle className="text-xl font-bold text-white tracking-tight">
+                  Acesso Restrito
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-400 mt-1">
+                  Painel de Gestão de Leads e Diagnósticos Técnicos da Condutiva. Digite a senha
+                  para continuar.
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="pt-4">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor="password-input"
+                      className="text-xs font-medium text-slate-300 flex items-center justify-between"
+                    >
+                      <span>Senha de Acesso</span>
+                      <span className="text-[10px] text-slate-500 font-mono">Área Comercial</span>
+                    </label>
+
+                    <div className="relative">
+                      <KeyRound className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <Input
+                        id="password-input"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Digite a senha..."
+                        value={inputPassword}
+                        onChange={(e) => {
+                          setInputPassword(e.target.value)
+                          if (passwordError) setPasswordError('')
+                        }}
+                        autoFocus
+                        className={`pl-9 pr-10 bg-slate-950 border ${
+                          passwordError
+                            ? 'border-red-500 focus-visible:ring-red-500'
+                            : 'border-slate-800 focus-visible:ring-[#8CC63F]'
+                        } text-white placeholder:text-slate-600 text-sm h-11 rounded-xl`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1"
+                        title={showPassword ? 'Ocultar senha' : 'Exibir senha'}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+
+                    {passwordError && (
+                      <div className="flex items-center gap-1.5 text-xs text-red-400 pt-1 font-medium">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{passwordError}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold h-11 rounded-xl shadow-lg shadow-[#8CC63F]/10 transition-all text-sm cursor-pointer"
+                  >
+                    Acessar Painel
+                  </Button>
+                </form>
+
+                <div className="mt-6 pt-4 border-t border-slate-800/80 text-center">
+                  <p className="text-[11px] text-slate-500">
+                    Acesso restrito a colaboradores e equipe técnica autorizada da Condutiva.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+
+        {/* Minimal footer */}
+        <footer className="border-t border-slate-800/80 py-4 px-6 text-center text-xs text-slate-500">
+          © {new Date().getFullYear()} Condutiva Tecnologia — Todos os direitos reservados.
+        </footer>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col selection:bg-[#8CC63F] selection:text-slate-950">
       {/* Top Navigation Bar */}
@@ -200,7 +364,7 @@ export default function LeadsPage() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <Link to="/">
               <Button
                 variant="outline"
@@ -228,6 +392,16 @@ export default function LeadsPage() {
             >
               <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" />
               Exportar CSV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="bg-slate-900 border-slate-700 text-red-400 hover:text-red-300 hover:bg-red-950/30 hover:border-red-900 text-xs ml-1"
+              title="Sair do painel restrito"
+            >
+              <LogOut className="w-3.5 h-3.5 mr-1.5" />
+              Sair
             </Button>
           </div>
         </div>

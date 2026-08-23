@@ -2,8 +2,8 @@ import { Phone, MessageCircle } from 'lucide-react'
 import { COMPANY_INFO } from '@/data/mockData'
 
 export function FloatingActions() {
-  // Uses WhatsApp click-to-chat URL with default phone number
-  const whatsappNumber = COMPANY_INFO.whatsappRaw || '5521999999999'
+  // Uses WhatsApp click-to-chat URL with default phone number: 5519993413270
+  const whatsappNumber = COMPANY_INFO.whatsappRaw || '5519993413270'
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
     'Olá! Vim pelo site da Condutiva e gostaria de mais informações.',
   )}`
