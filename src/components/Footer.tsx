@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { COMPANY_INFO } from '@/data/mockData'
 import { Phone, Mail, MapPin, Lock, Users } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 
 export function Footer() {
   return (
@@ -8,19 +9,7 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#8CC63F] flex items-center justify-center text-slate-950 font-black text-xl">
-                C
-              </div>
-              <div>
-                <span className="text-xl font-black text-slate-900 uppercase tracking-wider block font-display">
-                  CONDUTIVA
-                </span>
-                <span className="text-xs text-[#4d7c0f] font-mono uppercase tracking-widest block">
-                  Tecnologia & Serviços
-                </span>
-              </div>
-            </div>
+            <Logo className="flex flex-col items-start" />
             <p className="text-sm text-slate-500 leading-relaxed max-w-md">
               Especialistas com mais de 20 anos de tradição em manutenção preventiva, calibração
               presencial e remota, automação industrial e manutenção preventiva para plantas
