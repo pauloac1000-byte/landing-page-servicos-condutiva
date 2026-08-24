@@ -17,7 +17,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
           <div className="flex flex-col justify-between gap-6 text-left w-full min-w-0">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#8CC63F]/10 border border-[#8CC63F]/30 text-[#4d7c0f] text-xs font-semibold tracking-wide">
               <Sparkles className="w-3.5 h-3.5 text-[#8CC63F]" />
-              <span>Unidade de Serviços & Engenharia Preditiva</span>
+              <span>Unidade de Serviços & Engenharia</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black text-slate-900 leading-tight font-display tracking-tight">

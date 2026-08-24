@@ -5,7 +5,7 @@ export function DifferentiatorsSection() {
     {
       icon: Factory,
       title: 'DNA de Fabricante',
-      desc: 'Não somos intermediários. Desenvolvemos soluções completas de hardware e software, permitindo intervenções diretas sem dependência de terceiros.',
+      desc: 'Não somos intermediários. Desenvolvemos soluções completas de hardware e software, permitindo intervenções diretas.',
     },
     {
       icon: Truck,

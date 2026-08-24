@@ -33,18 +33,11 @@ export function TestimonialsSection() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3 pt-4 border-t border-slate-200">
-                <img
-                  src={t.avatar}
-                  alt={t.name}
-                  className="w-10 h-10 rounded-full object-cover border border-slate-200"
-                />
-                <div>
-                  <h4 className="font-bold text-xs text-slate-900">{t.name}</h4>
-                  <p className="text-[11px] text-slate-500">
-                    {t.role} | <span className="text-[#4d7c0f]">{t.company}</span>
-                  </p>
-                </div>
+              <div className="pt-4 border-t border-slate-200">
+                <h4 className="font-bold text-xs text-slate-900">{t.name}</h4>
+                <p className="text-[11px] text-slate-500">
+                  {t.role} | <span className="text-[#4d7c0f]">{t.company}</span>
+                </p>
               </div>
             </div>
           ))}

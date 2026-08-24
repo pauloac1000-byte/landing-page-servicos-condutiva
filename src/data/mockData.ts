@@ -30,7 +30,8 @@ export const SERVICES: ServiceItem[] = [
   {
     id: 'calibracao',
     title: 'Calibração de Sensores',
-    shortDesc: 'Aferição rastreável com laudos e relatórios para balanças e dosadores industriais.',
+    shortDesc:
+      'Aferição rastreável com laudos e relatórios para sensores de umidade e medidores de fluxo.',
     fullDesc: 'Serviço completo de calibração com laudos rastreáveis e relatórios de conformidade.',
     iconName: 'Scale',
     category: 'Calibração',
@@ -203,7 +204,7 @@ export const TRANSFORMATION = [
   {
     topic: 'Manutenção',
     de: 'Reativa: equipe apagando incêndios após a falha ocorrer, com paradas longas e imprevisíveis.',
-    para: 'Preditiva: monitoramento contínuo identifica tendências de falha antes que aconteçam.',
+    para: 'Preventiva: manutenção realizada em ciclos programados mantém o equipamento operando e evita paradas não planejadas.',
   },
   {
     topic: 'Calibração',
