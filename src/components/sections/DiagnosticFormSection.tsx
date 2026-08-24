@@ -91,7 +91,7 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
             </span>
 
             <h2 className="text-3xl sm:text-4xl font-black font-display leading-tight text-slate-900">
-              Solicite seu Diagnóstico Técnico Gratuito
+              Solicite seu Diagnóstico Técnico
             </h2>
 
             <p className="text-slate-600 text-sm leading-relaxed">
@@ -161,9 +161,7 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                       <Sparkles className="w-4 h-4 text-[#8CC63F]" />
                       Dados para o Diagnóstico Técnico
                     </h3>
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      Gratuito · Sem compromisso
-                    </span>
+                    <span className="text-[10px] text-slate-400 font-mono">Sem compromisso</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

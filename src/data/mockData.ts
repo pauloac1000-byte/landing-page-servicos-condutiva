@@ -334,7 +334,7 @@ export const FAQS: FaqItem[] = [
   {
     question: 'O diagnóstico realmente não tem custo nenhum?',
     answer:
-      'Sim. O diagnóstico técnico é 100% gratuito e sem compromisso. Nossos engenheiros avaliam sua planta, identificam pontos críticos e entregam um laudo. Se optar por não contratar, o relatório continua sendo seu.',
+      'Sim. O diagnóstico técnico é 100% e sem compromisso. Nossos engenheiros avaliam sua planta, identificam pontos críticos e entregam um laudo. Se optar por não contratar, o relatório continua sendo seu.',
     category: 'Diagnóstico',
   },
   {
@@ -352,7 +352,7 @@ export const FAQS: FaqItem[] = [
   {
     question: 'Vocês atendem fora do estado de São Paulo?',
     answer:
-      'Sim. A Condutiva possui cobertura em mais de 20 estados, com equipes técnicas equipadas para atendimento presencial. Deslocamento gratuito para clientes com contrato ativo.',
+      'Sim. A Condutiva possui cobertura em mais de 20 estados, com equipes técnicas equipadas para atendimento presencial. Deslocamento incluso para clientes com contrato ativo.',
     category: 'Cobertura',
   },
   {
