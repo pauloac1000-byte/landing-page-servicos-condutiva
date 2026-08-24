@@ -12,7 +12,7 @@ export function PainPointsSection() {
             DESAFIOS OPERACIONAIS REAIS
           </span>
           <h2 className="text-3xl sm:text-4xl font-black font-display text-slate-900">
-            Quanto está custando a falta de manutenção preditiva na sua fábrica hoje?
+            Quanto está custando a falta de manutenção preventiva na sua fábrica hoje?
           </h2>
           <p className="text-slate-500 text-sm sm:text-base">
             Pequenos desvios de calibração e atrasos no diagnóstico silenciosamente absorvem a
