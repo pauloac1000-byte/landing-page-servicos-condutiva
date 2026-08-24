@@ -16,7 +16,7 @@ export function RiskReversalBanner({ onOpenDiagnosticModal }: RiskReversalProps)
             </div>
             <div className="space-y-1">
               <h3 className="text-xl font-bold text-slate-900 font-display">
-                Diagnóstico 100% e Sem Compromisso Comercial
+                Diagnóstico Sem Compromisso Comercial
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 max-w-2xl">
                 Nossos engenheiros inspecionam sua planta e fornecem o laudo de saúde dos
