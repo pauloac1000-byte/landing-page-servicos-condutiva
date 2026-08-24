@@ -283,7 +283,7 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                     </label>
                     <Textarea
                       rows={3}
-                      placeholder="Ex.: calibração de sensores, manutenção emergencial de painel elétrico, implantação de monitoramento preditivo…"
+                      placeholder="Ex.: calibração de sensores, diagnóstico e solução de problemas, manutenção preventiva e ajuste de parâmetros, etc…"
                       value={formData.mainChallenge}
                       onChange={(e) => setFormData({ ...formData, mainChallenge: e.target.value })}
                       className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#8CC63F]"
