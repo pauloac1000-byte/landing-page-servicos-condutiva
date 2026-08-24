@@ -25,14 +25,15 @@ export function RiskReversalBanner({ onOpenDiagnosticModal }: RiskReversalProps)
               </p>
               <div className="flex flex-wrap gap-4 pt-2 text-xs text-[#4d7c0f] font-mono">
                 <span className="flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5" /> Sem taxa de deslocamento
+                  <Check className="w-3.5 h-3.5" /> Sem taxa de deslocamento para plantas da região
                 </span>
                 <span className="flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5" /> Laudo entregue em 24h
+                  <Check className="w-3.5 h-3.5" /> Laudo entregue em até 24h úteis
                 </span>
                 <span className="flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5" /> Visita presencial sob consulta dependendo da
-                  localização da fábrica e da disponibilidade de técnico de campo
+                  <Check className="w-3.5 h-3.5" /> Visita presencial disponível mediante
+                  agendamento — nosso técnico se desloca até sua fábrica, em data combinada conforme
+                  localização e agenda.
                 </span>
               </div>
             </div>
