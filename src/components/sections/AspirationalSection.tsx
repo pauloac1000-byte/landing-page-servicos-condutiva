@@ -36,7 +36,7 @@ export function AspirationalSection({ onOpenDiagnosticModal }: AspirationalProps
             onClick={onOpenDiagnosticModal}
             className="bg-white hover:bg-slate-100 text-[#4d7c0f] font-black text-base px-10 py-6 rounded-xl shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-3"
           >
-            <span>AGENDAR DIAGNÓSTICO GRATUITO AGORA</span>
+            <span>AGENDAR DIAGNÓSTICO AGORA</span>
             <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
