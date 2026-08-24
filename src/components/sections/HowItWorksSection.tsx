@@ -30,7 +30,7 @@ export function HowItWorksSection() {
             JORNADA SIMPLES
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold font-display text-slate-900">
-            Como funciona a solicitação do Diagnóstico Gratuito
+            Como funciona a solicitação do Diagnóstico
           </h2>
           <p className="text-slate-500 text-sm sm:text-base">
             Sem burocracia. Do envio da mensagem ao plano de manutenção em 3 passos.

@@ -83,7 +83,7 @@ export function Footer() {
               </li>
               <li>
                 <a href="#diagnostico" className="hover:text-[#4d7c0f] transition">
-                  Diagnóstico Gratuito
+                  Diagnóstico
                 </a>
               </li>
               <li>

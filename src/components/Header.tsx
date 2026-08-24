@@ -153,7 +153,7 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
             className="hidden lg:flex bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold px-5 py-2.5 rounded-lg shadow-lg shadow-[#8CC63F]/25 hover:shadow-[#8CC63F]/40 transition-all items-center gap-2 group transform hover:-translate-y-0.5 ml-2"
           >
             <Sparkles className="w-4 h-4 text-slate-950 fill-slate-950 animate-pulse" />
-            <span>Diagnóstico Gratuito</span>
+            <span>Diagnóstico</span>
             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>

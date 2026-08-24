@@ -323,7 +323,7 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                     ) : (
                       <>
                         <Send className="w-5 h-5" />
-                        SOLICITAR DIAGNÓSTICO GRATUITO
+                        SOLICITAR DIAGNÓSTICO
                       </>
                     )}
                   </Button>

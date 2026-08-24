@@ -59,7 +59,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
                 onClick={onOpenDiagnosticModal}
                 className="bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-base px-8 py-6 rounded-xl shadow-xl shadow-[#8CC63F]/25 hover:shadow-[#8CC63F]/40 transition-all flex items-center justify-center gap-3 group"
               >
-                <span>ESOLICITAR DIAGNÓSTICO GRATUITO</span>
+                <span>SOLICITAR DIAGNÓSTICO</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
 

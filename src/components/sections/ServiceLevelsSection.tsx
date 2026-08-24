@@ -96,7 +96,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
 
         <div className="mt-12 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
           <ShieldCheck className="w-4 h-4 text-[#8CC63F]" />
-          <span>Todos os contratos possuem carência zero para o Diagnóstico Gratuito Inicial.</span>
+          <span>Todos os contratos possuem carência zero para o Diagnóstico Inicial.</span>
         </div>
       </div>
     </section>
