@@ -376,7 +376,7 @@ export const FAQS: FaqItem[] = [
   {
     question: 'Qual é a duração típica de uma visita de calibração?',
     answer:
-      'Varia conforme o número de pontos. Para 5 a 10 balanças, a calibração leva de 4 a 8 horas. Visitas trimestrais do plano SIGA costumam ser concluídas em um dia.',
+      'Varia conforme o número de equipamentos, a sua conservação e as condições de calibração (variação de umidade, etc). Visitas periódicas costumam ser concluídas em até dois dias por equipamento.',
     category: 'Calibração',
   },
 ]
