@@ -35,7 +35,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="#servicos" className="hover:text-[#4d7c0f] transition">
-                  Calibração de Sensores de Umidade
+                  Calibração de Sensores de Umidade e medidores
                 </a>
               </li>
               <li>
