@@ -104,7 +104,9 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                 <div className="w-8 h-8 rounded-lg bg-[#8CC63F]/15 text-[#8CC63F] flex items-center justify-center font-bold">
                   ✓
                 </div>
-                <span>Sem taxa de visita para indústrias da região</span>
+                <span>
+                  Sem taxa de visita para indústrias da região para elaboração do diagnóstico.
+                </span>
               </div>
               <div className="flex items-center gap-3 text-xs text-slate-700">
                 <div className="w-8 h-8 rounded-lg bg-[#8CC63F]/15 text-[#8CC63F] flex items-center justify-center font-bold">
