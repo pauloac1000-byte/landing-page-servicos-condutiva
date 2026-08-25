@@ -367,4 +367,16 @@ export const FAQS: FaqItem[] = [
       'Varia conforme o número de equipamentos, a sua conservação e as condições de calibração (variação de umidade, etc). Visitas periódicas costumam ser concluídas em até dois dias por equipamento.',
     category: 'Calibração',
   },
+  {
+    question: 'Quanto custa o serviço? Como funciona a cobrança?',
+    answer:
+      'O custo depende do serviço e da frequência: atendimento pontual, plano de manutenção ou contrato de suporte. Envie o modelo do equipamento e o tipo de serviço que precisa para receber o seu orçamento.',
+    category: 'Orçamento',
+  },
+  {
+    question: 'Meu equipamento está funcionando. Preciso mesmo de manutenção preventiva?',
+    answer:
+      'O custo da visita preventiva é previsível. O custo de uma parada não é. A manutenção preventiva evita a falha antes que ela pare a produção.',
+    category: 'Manutenção',
+  },
 ]
