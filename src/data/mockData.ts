@@ -332,34 +332,22 @@ export const TESTIMONIALS: Testimonial[] = [
 
 export const FAQS: FaqItem[] = [
   {
-    question: 'O diagnóstico realmente não tem custo nenhum?',
+    question: 'Posso solicitar o diagnóstico sem assumir um compromisso de assinar um contrato?',
     answer:
-      'Sim. O diagnóstico técnico é 100% e sem compromisso. Nossos engenheiros avaliam sua planta, identificam pontos críticos e entregam um laudo. Se optar por não contratar, o relatório continua sendo seu.',
+      'Quer entender a real situação da sua planta antes de decidir qualquer coisa? Fazemos um diagnóstico técnico completo e sem compromisso. Nossos técnicos avaliam seus pontos críticos e entregam um laudo claro — e o melhor: o relatório é seu, mesmo que você não contrate nada.',
     category: 'Diagnóstico',
   },
   {
     question: 'Qual é o prazo de atendimento para emergências?',
     answer:
-      'Para clientes com contrato de SLA, o atendimento varia de 2h a 8h úteis conforme o plano. O plano Maestro oferece prioridade absoluta com resposta em até 2h.',
+      'o prazo do nosso SLA acompanha a localização da sua planta. Para plantas na região, a resposta chega entre 2h e 8h.',
     category: 'SLA',
-  },
-  {
-    question: 'Os laudos de calibração são aceitos em auditorias?',
-    answer:
-      'Sim. Emitimos laudos rastreáveis e relatórios de conformidade aceitos em auditorias da ISO 9001 e demais normas de qualidade.',
-    category: 'Calibração',
   },
   {
     question: 'Vocês atendem fora do estado de São Paulo?',
     answer:
       'Sim. A Condutiva possui cobertura em mais de 20 estados, com equipes técnicas equipadas para atendimento presencial. Deslocamento incluso para clientes com contrato ativo.',
     category: 'Cobertura',
-  },
-  {
-    question: 'O que está incluso no dashboard SIGA?',
-    answer:
-      'Monitoramento em tempo real de equipamentos e sistemas de automação. Inclui alertas, relatórios de tendências, histórico de calibrações e documentação centralizada.',
-    category: 'Tecnologia',
   },
   {
     question: 'Como funciona o retrofit de equipamentos antigos?',
