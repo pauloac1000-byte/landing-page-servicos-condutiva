@@ -62,7 +62,7 @@ export function Footer() {
               </li>
               <li>
                 <a href="#planos" className="hover:text-[#4d7c0f] transition">
-                  Plano Controle Total SIGA
+                  Plano Controle Operacional SIGA
                 </a>
               </li>
               <li>

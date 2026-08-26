@@ -140,11 +140,11 @@ export const PLANS: PlanItem[] = [
   },
   {
     id: 'controle-total',
-    name: 'Plano Controle Total SIGA',
+    name: 'Plano Controle Operacional SIGA',
     tagline: 'Gestão integrada com monitoramento e SLA prioritário.',
     recommended: true,
     badge: 'Mais Escolhido',
-    responseSLA: 'O equilíbrio entre investimento e controle total.',
+    responseSLA: 'O equilíbrio entre investimento e controle operacional.',
     features: [
       'Tudo do Sentinela +',
       'Adicional de 2 visitas presenciais de corretiva / ano',
