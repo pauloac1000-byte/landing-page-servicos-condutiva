@@ -10,7 +10,7 @@ export function TransformationSection() {
             A TRANSFORMAÇÃO CONDUTIVA
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold font-display text-slate-900">
-            A diferença entre apagar incêndios e ter total controle do seu chão de fábrica.
+            A diferença entre apagar incêndios e ter controle operacional do seu chão de fábrica.
           </h2>
           <p className="text-slate-500 text-sm sm:text-base">
             Veja a evolução direta na rotina da sua equipe de engenharia e manutenção ao contratar
