@@ -96,7 +96,9 @@ export function Footer() {
                 <span>{COMPANY_INFO.phoneLandline}</span>
               </a>
               <a
-                href={`https://wa.me/${COMPANY_INFO.whatsappRaw}`}
+                href={`https://wa.me/${COMPANY_INFO.whatsappRaw}?text=${encodeURIComponent(
+                  'Olá! Vim pelo site da Condutiva e gostaria de mais informações sobre a unidade de serviços de vocês.',
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-slate-600 hover:text-emerald-600 transition"

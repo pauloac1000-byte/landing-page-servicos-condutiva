@@ -149,7 +149,9 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
 
           {/* WhatsApp */}
           <a
-            href={`https://wa.me/${COMPANY_INFO.whatsappRaw}`}
+            href={`https://wa.me/${COMPANY_INFO.whatsappRaw}?text=${encodeURIComponent(
+              'Olá! Vim pelo site da Condutiva e gostaria de mais informações sobre a unidade de serviços de vocês.',
+            )}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-emerald-200/70 bg-emerald-50/50 hover:bg-emerald-100/70 hover:border-emerald-300 transition-all group"
@@ -227,7 +229,9 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
                   </div>
                 </a>
                 <a
-                  href={`https://wa.me/${COMPANY_INFO.whatsappRaw}`}
+                  href={`https://wa.me/${COMPANY_INFO.whatsappRaw}?text=${encodeURIComponent(
+                    'Olá! Vim pelo site da Condutiva e gostaria de mais informações sobre a unidade de serviços de vocês.',
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 text-emerald-950 bg-emerald-50/70 border border-emerald-200 rounded-lg text-xs font-semibold hover:bg-emerald-100/70 transition-colors"
