@@ -86,7 +86,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
                 <div className="flex items-center gap-1.5">
                   <Building className="w-4 h-4 text-sky-500" />
                   <span className="font-extrabold text-slate-900 text-lg font-mono">
-                    {COMPANY_INFO.clientCount}+
+                    {COMPANY_INFO.clientCount}+ Clientes
                   </span>
                 </div>
                 <span className="text-xs text-slate-500">Base Instalada Ativa</span>
