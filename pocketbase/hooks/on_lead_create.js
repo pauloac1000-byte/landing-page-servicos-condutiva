@@ -32,6 +32,8 @@ onRecordAfterCreateSuccess((e) => {
     'comercial1@condutiva.com.br',
     'liandra@condutiva.com.br',
     'paulo@condutiva.com.br',
+    'tadeu@condutiva.com.br',
+    'joaovitor@condutiva.com.br',
   ]
 
   const fullName = record.get('full_name') || ''
