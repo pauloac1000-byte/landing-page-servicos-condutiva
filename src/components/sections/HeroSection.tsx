@@ -23,7 +23,7 @@ export function HeroSection({ onOpenDiagnosticModal }: HeroSectionProps) {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black text-slate-900 leading-tight font-display tracking-tight">
               Transforme paradas não planejadas em{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4d7c0f] via-[#8CC63F] to-emerald-500">
-                previsibilidade total
+                previsibilidade operacional
               </span>
               .
             </h1>
