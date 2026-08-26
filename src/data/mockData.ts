@@ -141,7 +141,7 @@ export const PLANS: PlanItem[] = [
   {
     id: 'controle-total',
     name: 'Plano Controle Total SIGA',
-    tagline: 'Gestão integrada com monitoramento preditivo e SLA prioritário.',
+    tagline: 'Gestão integrada com monitoramento e SLA prioritário.',
     recommended: true,
     badge: 'Mais Escolhido',
     responseSLA: 'O equilíbrio entre investimento e controle total.',
