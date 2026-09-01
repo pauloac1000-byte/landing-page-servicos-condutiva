@@ -23,8 +23,11 @@ import {
   EyeOff,
   LogOut,
   KeyRound,
+  Trash2,
+  AlertTriangle,
+  Loader2,
 } from 'lucide-react'
-import { getLeads } from '@/services/leads'
+import { getLeads, deleteLead } from '@/services/leads'
 import { useRealtime } from '@/hooks/use-realtime'
 import type { LeadRecord } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -37,6 +40,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog'
 import { useToast } from '@/hooks/use-toast'
 
@@ -57,6 +61,8 @@ export default function LeadsPage() {
   const [search, setSearch] = useState('')
   const [segmentFilter, setSegmentFilter] = useState<string>('all')
   const [selectedLead, setSelectedLead] = useState<LeadRecord | null>(null)
+  const [leadToDelete, setLeadToDelete] = useState<LeadRecord | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table')
   const { toast } = useToast()
 
@@ -217,6 +223,45 @@ export default function LeadsPage() {
   }
 
   const cleanPhone = (phone: string) => phone.replace(/\D/g, '')
+
+  const handleDeleteClick = (lead: LeadRecord, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation()
+    setLeadToDelete(lead)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!leadToDelete) return
+    setIsDeleting(true)
+    const targetLead = leadToDelete
+
+    try {
+      await deleteLead(targetLead.id)
+
+      // Update local state immediately
+      setLeads((prev) => prev.filter((l) => l.id !== targetLead.id))
+
+      // If the deleted lead was also open in the detail modal, close it
+      if (selectedLead?.id === targetLead.id) {
+        setSelectedLead(null)
+      }
+
+      setLeadToDelete(null)
+
+      toast({
+        title: 'Lead excluído com sucesso',
+        description: `O registro de "${targetLead.full_name}" foi removido do sistema.`,
+      })
+    } catch (err: unknown) {
+      console.error('Error deleting lead:', err)
+      toast({
+        title: 'Erro ao excluir lead',
+        description: 'Não foi possível excluir o registro. Verifique a conexão e tente novamente.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   // Password Lock Screen
   if (!isAuthenticated) {
@@ -683,18 +728,30 @@ export default function LeadsPage() {
 
                       {/* Actions */}
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setSelectedLead(lead)
-                          }}
-                          className="text-[#8CC63F] hover:text-[#8CC63F] hover:bg-[#8CC63F]/10 text-xs h-7 px-2"
-                        >
-                          Detalhes
-                          <ChevronRight className="w-3.5 h-3.5 ml-1" />
-                        </Button>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => handleDeleteClick(lead, e)}
+                            className="text-slate-400 hover:text-red-400 hover:bg-red-500/10 text-xs h-7 w-7 p-0 transition-colors"
+                            title={`Excluir lead ${lead.full_name}`}
+                            aria-label={`Excluir lead ${lead.full_name}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setSelectedLead(lead)
+                            }}
+                            className="text-[#8CC63F] hover:text-[#8CC63F] hover:bg-[#8CC63F]/10 text-xs h-7 px-2"
+                          >
+                            Detalhes
+                            <ChevronRight className="w-3.5 h-3.5 ml-1" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -776,10 +833,23 @@ export default function LeadsPage() {
                       Equipamentos:{' '}
                       <strong className="text-slate-200">{lead.equipment_count || 'N/I'}</strong>
                     </span>
-                    <span className="text-[#8CC63F] font-semibold flex items-center gap-0.5">
-                      Ver detalhes
-                      <ChevronRight className="w-3 h-3" />
-                    </span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => handleDeleteClick(lead, e)}
+                        className="text-slate-400 hover:text-red-400 hover:bg-red-500/10 text-xs h-7 px-2 transition-colors"
+                        title={`Excluir lead ${lead.full_name}`}
+                        aria-label={`Excluir lead ${lead.full_name}`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5 mr-1" />
+                        Excluir
+                      </Button>
+                      <span className="text-[#8CC63F] font-semibold flex items-center gap-0.5 ml-1">
+                        Ver detalhes
+                        <ChevronRight className="w-3 h-3" />
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -891,17 +961,86 @@ export default function LeadsPage() {
                   </p>
                 </div>
 
-                {/* Metadata */}
-                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-800">
-                  <span className="font-mono">ID: {selectedLead.id}</span>
-                  <span className="flex items-center gap-1 text-emerald-400">
-                    <CheckCircle2 className="w-3 h-3" />
-                    Consentimento LGPD confirmado
-                  </span>
+                {/* Metadata & Actions */}
+                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-3 border-t border-slate-800">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono">ID: {selectedLead.id}</span>
+                    <span className="flex items-center gap-1 text-emerald-400">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Consentimento LGPD
+                    </span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDeleteClick(selectedLead)}
+                    className="border-red-900/50 bg-red-950/20 text-red-400 hover:bg-red-950/50 hover:text-red-300 hover:border-red-800 text-xs h-8 px-3"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                    Excluir Lead
+                  </Button>
                 </div>
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={!!leadToDelete}
+        onOpenChange={(open) => {
+          if (!open && !isDeleting) setLeadToDelete(null)
+        }}
+      >
+        <DialogContent className="bg-slate-950 border-slate-800 text-slate-100 max-w-md">
+          <DialogHeader>
+            <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-2">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <DialogTitle className="text-lg font-bold text-white">Excluir este lead?</DialogTitle>
+            <DialogDescription className="text-slate-400 text-xs space-y-2 pt-1">
+              <span>
+                Tem certeza de que deseja apagar permanentemente o lead de{' '}
+                <strong className="text-white font-semibold">{leadToDelete?.full_name}</strong>
+                {leadToDelete?.company ? ` (${leadToDelete.company})` : ''}?
+              </span>
+              <span className="block text-slate-500 text-[11px] mt-1">
+                Esta ação removerá o registro do banco de dados e não poderá ser desfeita.
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLeadToDelete(null)}
+              disabled={isDeleting}
+              className="bg-slate-900 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 text-xs h-9"
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold text-xs h-9"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  Excluindo...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                  Confirmar Exclusão
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
