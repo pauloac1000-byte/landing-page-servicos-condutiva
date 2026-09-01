@@ -146,7 +146,7 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                   </h3>
                   <p className="text-slate-600 text-sm max-w-md mx-auto">
                     Nossa equipe comercial técnica já recebeu seus dados e entrará em contato para
-                    confirmar enviar uma proposta de atendimento.
+                    enviar uma proposta de atendimento.
                   </p>
                   <Button
                     onClick={() => setIsSubmitted(false)}
