@@ -145,8 +145,8 @@ export function DiagnosticFormSection({ initialService }: FormProps) {
                     Solicitação Recebida com Sucesso!
                   </h3>
                   <p className="text-slate-600 text-sm max-w-md mx-auto">
-                    Nossa equipe técnica já recebeu seus dados e entrará em contato nas próximas 2
-                    horas úteis para confirmar a data do diagnóstico na sua planta.
+                    Nossa equipe comercial técnica já recebeu seus dados e entrará em contato para
+                    confirmar enviar uma proposta de atendimento.
                   </p>
                   <Button
                     onClick={() => setIsSubmitted(false)}
