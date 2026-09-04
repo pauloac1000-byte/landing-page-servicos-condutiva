@@ -5,16 +5,8 @@ import { Button } from '@/components/ui/button'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import {
-  ArrowLeft,
-  Building2,
-  FileSpreadsheet,
-  Loader2,
-  Send,
-  ShieldAlert,
-  User,
-  Zap,
-} from 'lucide-react'
+import { ArrowLeft, Building2, FileSpreadsheet, Send, ShieldAlert, User, Zap } from 'lucide-react'
+import { CSATReviewStep } from './CSATReviewStep'
 import type { ContractRecord, CSATSubmissionData, ProblemResolvedOption } from '@/types'
 
 interface CSATShortFormProps {
@@ -51,6 +43,9 @@ export function CSATShortForm({ contract, isSubmitting, onSubmit, onBack }: CSAT
   // - Checkbox: "Autorizo a Condutiva a entrar em contato para aprofundar este feedback."
   const [contactAuthorized, setContactAuthorized] = React.useState(false)
 
+  // Estado para controlar a exibição do resumo de revisão antes do envio definitivo
+  const [isReviewing, setIsReviewing] = React.useState(false)
+
   // Validação: 5 perguntas são obrigatórias
   const [errors, setErrors] = React.useState<Record<string, string>>({})
 
@@ -86,12 +81,8 @@ export function CSATShortForm({ contract, isSubmitting, onSubmit, onBack }: CSAT
     return true
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validate() || isSubmitting) return
-
-    // Preenche com os dados do contrato validado e as 5 perguntas obrigatórias
-    const submissionPayload: CSATSubmissionData = {
+  const getSubmissionPayload = (): CSATSubmissionData => {
+    return {
       contractId: contract.id,
       contractNumber: contract.contract_number,
       serviceOrderNumber: contract.service_order_number,
@@ -119,12 +110,37 @@ export function CSATShortForm({ contract, isSubmitting, onSubmit, onBack }: CSAT
       // Autorização de contato
       contactAuthorized,
     }
+  }
 
-    await onSubmit(submissionPayload)
+  const handleOpenReview = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!validate() || isSubmitting) return
+    setIsReviewing(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleConfirmSubmit = async () => {
+    if (isSubmitting) return
+    const payload = getSubmissionPayload()
+    await onSubmit(payload)
+  }
+
+  if (isReviewing) {
+    return (
+      <CSATReviewStep
+        data={getSubmissionPayload()}
+        isSubmitting={isSubmitting}
+        onConfirm={handleConfirmSubmit}
+        onBack={() => {
+          setIsReviewing(false)
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }}
+      />
+    )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 animate-in fade-in duration-300">
+    <form onSubmit={handleOpenReview} className="space-y-6 animate-in fade-in duration-300">
       {/* Navigation header */}
       <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <Button
@@ -588,17 +604,8 @@ export function CSATShortForm({ contract, isSubmitting, onSubmit, onBack }: CSAT
             disabled={isSubmitting}
             className="bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-sm uppercase tracking-wide px-8 py-5 shadow-sm flex items-center justify-center gap-2 flex-1 sm:flex-initial cursor-pointer"
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Enviando...</span>
-              </>
-            ) : (
-              <>
-                <Send className="w-4 h-4" />
-                <span>Enviar</span>
-              </>
-            )}
+            <Send className="w-4 h-4" />
+            <span>Enviar</span>
           </Button>
         </div>
       </div>

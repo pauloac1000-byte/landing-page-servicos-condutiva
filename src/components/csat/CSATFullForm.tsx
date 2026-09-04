@@ -14,12 +14,12 @@ import {
   FileCheck,
   FileSpreadsheet,
   HelpCircle,
-  Loader2,
   Send,
   Star,
   User,
   ShieldAlert,
 } from 'lucide-react'
+import { CSATReviewStep } from './CSATReviewStep'
 import type { ContractRecord, CSATSubmissionData, ProblemResolvedOption } from '@/types'
 
 interface CSATFullFormProps {
@@ -65,6 +65,9 @@ export function CSATFullForm({ contract, isSubmitting, onSubmit, onBack }: CSATF
   // Checkbox de autorização
   const [contactAuthorized, setContactAuthorized] = React.useState(false)
 
+  // Estado para controlar a exibição do resumo de revisão antes do envio definitivo
+  const [isReviewing, setIsReviewing] = React.useState(false)
+
   // Form errors
   const [errors, setErrors] = React.useState<Record<string, string>>({})
 
@@ -87,11 +90,8 @@ export function CSATFullForm({ contract, isSubmitting, onSubmit, onBack }: CSATF
     return true
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validate() || isSubmitting) return
-
-    await onSubmit({
+  const getSubmissionPayload = (): CSATSubmissionData => {
+    return {
       contractId: contract.id,
       contractNumber: contract.contract_number,
       serviceOrderNumber: contract.service_order_number,
@@ -122,11 +122,38 @@ export function CSATFullForm({ contract, isSubmitting, onSubmit, onBack }: CSATF
       finalComments,
 
       contactAuthorized,
-    })
+    }
+  }
+
+  const handleOpenReview = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!validate() || isSubmitting) return
+    setIsReviewing(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleConfirmSubmit = async () => {
+    if (isSubmitting) return
+    const payload = getSubmissionPayload()
+    await onSubmit(payload)
+  }
+
+  if (isReviewing) {
+    return (
+      <CSATReviewStep
+        data={getSubmissionPayload()}
+        isSubmitting={isSubmitting}
+        onConfirm={handleConfirmSubmit}
+        onBack={() => {
+          setIsReviewing(false)
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }}
+      />
+    )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in duration-300">
+    <form onSubmit={handleOpenReview} className="space-y-8 animate-in fade-in duration-300">
       {/* Navigation header */}
       <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <Button
@@ -706,19 +733,10 @@ export function CSATFullForm({ contract, isSubmitting, onSubmit, onBack }: CSATF
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-sm uppercase tracking-wide px-8 py-5 shadow-sm flex items-center justify-center gap-2 flex-1 sm:flex-initial"
+            className="bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-sm uppercase tracking-wide px-8 py-5 shadow-sm flex items-center justify-center gap-2 flex-1 sm:flex-initial cursor-pointer"
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Enviando...</span>
-              </>
-            ) : (
-              <>
-                <Send className="w-4 h-4" />
-                <span>Enviar Avaliação</span>
-              </>
-            )}
+            <Send className="w-4 h-4" />
+            <span>Enviar</span>
           </Button>
         </div>
       </div>
