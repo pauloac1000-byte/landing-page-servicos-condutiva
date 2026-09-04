@@ -107,3 +107,85 @@ export interface ContractRecord {
   technician_name: string
   questionnaire_status: QuestionnaireStatus
 }
+
+export type CSATFormVersion = 'completo' | 'curto'
+
+export type ProblemResolvedOption = 'sim' | 'nao' | 'nao_se_aplica'
+
+export interface CSATSubmissionData {
+  contractId?: string
+  contractNumber: string
+  serviceOrderNumber: string
+  formVersion: CSATFormVersion
+
+  // Identificação
+  clientName: string
+  evaluationDate: string
+  respondentName: string
+  respondentRole: string
+  serviceEvaluated: string
+  technicianName: string
+
+  // Perguntas centrais
+  problemResolved: ProblemResolvedOption
+
+  // Notas 1 a 5
+  scoreGeneralSatisfaction: number
+  scoreTechnicalExecution?: number
+  scoreCustomerService?: number
+  scorePerceivedValue?: number
+
+  // NPS 0 a 10
+  npsScore: number
+  npsReason?: string
+  npsImprovement?: string
+  renewalIntent?: string
+
+  // Abertas
+  positiveHighlights?: string
+  pointsToImprove?: string
+  additionalServicesNeeded?: string
+  finalComments?: string
+
+  // Autorização
+  contactAuthorized: boolean
+}
+
+export interface CSATResponseRecord {
+  id: string
+  collectionId: string
+  collectionName: string
+  created: string
+  updated: string
+
+  contract_id?: string
+  contract_number: string
+  service_order_number: string
+  form_version: CSATFormVersion
+
+  client_name: string
+  evaluation_date: string
+  respondent_name: string
+  respondent_role: string
+  service_evaluated: string
+  technician_name: string
+
+  problem_resolved: ProblemResolvedOption
+
+  score_general_satisfaction: number
+  score_technical_execution?: number
+  score_customer_service?: number
+  score_perceived_value?: number
+
+  nps_score: number
+  nps_reason?: string
+  nps_improvement?: string
+  renewal_intent?: string
+
+  positive_highlights?: string
+  points_to_improve?: string
+  additional_services_needed?: string
+  final_comments?: string
+
+  contact_authorized?: boolean
+}

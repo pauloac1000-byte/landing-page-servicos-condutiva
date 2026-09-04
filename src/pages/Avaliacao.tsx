@@ -2,13 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ShieldCheck,
-  CheckCircle2,
   ArrowLeft,
-  Building2,
-  FileSpreadsheet,
   FileCheck,
-  User,
-  Mail,
   AlertCircle,
   HelpCircle,
   Clock,
@@ -18,18 +13,32 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
 import { Logo } from '@/components/Logo'
 import { findContractByNumbers } from '@/services/contracts'
-import type { ContractRecord } from '@/types'
+import { submitCSATResponse } from '@/services/csat'
+import type {
+  ContractRecord,
+  CSATFormVersion,
+  CSATResponseRecord,
+  CSATSubmissionData,
+} from '@/types'
 import { COMPANY_INFO } from '@/data/mockData'
+import { CSATOptionSelector } from '@/components/csat/CSATOptionSelector'
+import { CSATFullForm } from '@/components/csat/CSATFullForm'
+import { CSATShortForm } from '@/components/csat/CSATShortForm'
+import { CSATSuccessScreen } from '@/components/csat/CSATSuccessScreen'
+
+type PageStep = 'validate' | 'select_option' | 'form_full' | 'form_short' | 'success'
 
 export default function CSATAccessPage() {
   const [contractNumber, setContractNumber] = useState('')
   const [serviceOrderNumber, setServiceOrderNumber] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [validatedContract, setValidatedContract] = useState<ContractRecord | null>(null)
+  const [currentStep, setCurrentStep] = useState<PageStep>('validate')
+  const [submittedResponse, setSubmittedResponse] = useState<CSATResponseRecord | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -52,6 +61,7 @@ export default function CSATAccessPage() {
 
       if (match) {
         setValidatedContract(match)
+        setCurrentStep('select_option')
       } else {
         setErrorMessage(
           'Não encontramos esse número de contrato ou de OS. Verifique os dados e tente novamente, ou entre em contato com o time comercial da Condutiva para obter ajuda.',
@@ -72,7 +82,46 @@ export default function CSATAccessPage() {
     setContractNumber('')
     setServiceOrderNumber('')
     setErrorMessage(null)
+    setCurrentStep('validate')
+    setSubmittedResponse(null)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  const handleSelectOption = (option: CSATFormVersion) => {
+    if (option === 'completo') {
+      setCurrentStep('form_full')
+    } else {
+      setCurrentStep('form_short')
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleCSATSubmit = async (data: CSATSubmissionData) => {
+    setIsSubmitting(true)
+    try {
+      const response = await submitCSATResponse(data)
+      setSubmittedResponse(response)
+      if (validatedContract) {
+        setValidatedContract({
+          ...validatedContract,
+          questionnaire_status: 'respondido',
+        })
+      }
+      setCurrentStep('success')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (err) {
+      console.error('Erro ao enviar avaliação CSAT:', err)
+      setErrorMessage('Ocorreu um erro ao registrar a avaliação. Por favor, tente novamente.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Max width depends on current screen
+  const containerMaxWidth =
+    currentStep === 'form_full' || currentStep === 'select_option' || currentStep === 'form_short'
+      ? 'max-w-3xl'
+      : 'max-w-2xl'
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-[#8CC63F] selection:text-slate-950">
@@ -95,132 +144,35 @@ export default function CSATAccessPage() {
 
       {/* Main Content Area */}
       <main className="flex-1 py-12 md:py-16">
-        <div className="container mx-auto px-4 max-w-2xl">
-          {validatedContract ? (
-            /* Confirmation state: Access Granted */
-            <Card className="border border-emerald-200/90 bg-white shadow-elevation overflow-hidden">
-              <div className="bg-emerald-600 text-white px-6 py-4 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold leading-tight">Acesso Liberado com Sucesso</h2>
-                  <p className="text-xs text-emerald-100">
-                    Contrato e Ordem de Serviço validados no sistema Condutiva
-                  </p>
-                </div>
-              </div>
-
-              <CardContent className="p-6 md:p-8 space-y-6">
-                {/* Welcome block */}
-                <div className="space-y-2 border-b border-slate-200 pb-5">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#4d7c0f] bg-[#8CC63F]/15 px-2.5 py-1 rounded">
-                    Boas-vindas
-                  </span>
-                  <h3 className="text-2xl font-black text-slate-900 font-display">
-                    {validatedContract.client_name}
-                  </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    Identificamos o registro de atendimento técnico da sua empresa. O questionário
-                    de satisfação está liberado para o seu contrato.
-                  </p>
-                </div>
-
-                {/* Contract & OS details card */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 space-y-3">
-                  <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                    <FileSpreadsheet className="w-4 h-4 text-[#4d7c0f]" />
-                    Dados do Atendimento Localizado
-                  </h4>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
-                    <div className="bg-white p-3 rounded-lg border border-slate-200">
-                      <span className="text-slate-400 block text-[10px] uppercase font-semibold">
-                        Número do Contrato
-                      </span>
-                      <span className="font-mono font-bold text-slate-900 text-sm">
-                        {validatedContract.contract_number}
-                      </span>
-                    </div>
-
-                    <div className="bg-white p-3 rounded-lg border border-slate-200">
-                      <span className="text-slate-400 block text-[10px] uppercase font-semibold">
-                        Número da Ordem de Serviço (OS)
-                      </span>
-                      <span className="font-mono font-bold text-slate-900 text-sm">
-                        {validatedContract.service_order_number}
-                      </span>
-                    </div>
-
-                    <div className="bg-white p-3 rounded-lg border border-slate-200">
-                      <span className="text-slate-400 block text-[10px] uppercase font-semibold flex items-center gap-1">
-                        <User className="w-3 h-3 text-[#4d7c0f]" />
-                        Técnico Responsável
-                      </span>
-                      <span className="font-semibold text-slate-800">
-                        {validatedContract.technician_name}
-                      </span>
-                    </div>
-
-                    <div className="bg-white p-3 rounded-lg border border-slate-200">
-                      <span className="text-slate-400 block text-[10px] uppercase font-semibold flex items-center gap-1">
-                        <Mail className="w-3 h-3 text-[#4d7c0f]" />
-                        E-mail de Contato
-                      </span>
-                      <span className="font-medium text-slate-700 truncate block">
-                        {validatedContract.client_email}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-200 text-xs">
-                    <span className="text-slate-500">Situação do Questionário:</span>
-                    <Badge
-                      variant="outline"
-                      className={
-                        validatedContract.questionnaire_status === 'respondido'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                          : 'bg-amber-50 text-amber-700 border-amber-300'
-                      }
-                    >
-                      {validatedContract.questionnaire_status === 'respondido'
-                        ? 'Respondido anteriormente'
-                        : 'Pendente de resposta'}
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Status notice */}
-                <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 text-xs text-emerald-950 space-y-1.5">
-                  <div className="font-bold flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Acesso confirmado e validado</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed pl-6">
-                    O formulário com as perguntas detalhadas do questionário CSAT será exibido nesta
-                    área assim que disponibilizado pela coordenação técnica da Condutiva. Os dados
-                    de atendimento da sua empresa já foram vinculados.
-                  </p>
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <Button
-                    onClick={handleReset}
-                    variant="outline"
-                    className="border-slate-300 text-slate-700 hover:bg-slate-100 flex-1 py-5"
-                  >
-                    Consultar outro contrato
-                  </Button>
-                  <Button
-                    asChild
-                    className="bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold flex-1 py-5 shadow-sm"
-                  >
-                    <Link to="/">Concluir e voltar ao início</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+        <div className={`container mx-auto px-4 ${containerMaxWidth}`}>
+          {currentStep === 'success' && submittedResponse ? (
+            <CSATSuccessScreen responseRecord={submittedResponse} onReset={handleReset} />
+          ) : currentStep === 'form_full' && validatedContract ? (
+            <CSATFullForm
+              contract={validatedContract}
+              isSubmitting={isSubmitting}
+              onSubmit={handleCSATSubmit}
+              onBack={() => {
+                setCurrentStep('select_option')
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+            />
+          ) : currentStep === 'form_short' && validatedContract ? (
+            <CSATShortForm
+              contract={validatedContract}
+              isSubmitting={isSubmitting}
+              onSubmit={handleCSATSubmit}
+              onBack={() => {
+                setCurrentStep('select_option')
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+            />
+          ) : currentStep === 'select_option' && validatedContract ? (
+            <CSATOptionSelector
+              contract={validatedContract}
+              onSelectOption={handleSelectOption}
+              onResetContract={handleReset}
+            />
           ) : (
             /* Entry Form state */
             <div className="space-y-6">

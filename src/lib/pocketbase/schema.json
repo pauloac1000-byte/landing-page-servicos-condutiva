@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T18:24:04.834Z",
+  "generatedAt": "2026-09-04T18:42:44.591Z",
   "collections": [
     {
       "name": "users",
@@ -197,6 +197,186 @@
         "CREATE INDEX idx_contracts_contract_number ON contracts (contract_number)",
         "CREATE INDEX idx_contracts_so_number ON contracts (service_order_number)",
         "CREATE INDEX idx_contracts_client ON contracts (client_name)"
+      ]
+    },
+    {
+      "name": "csat_responses",
+      "type": "base",
+      "apiRules": {
+        "list": "",
+        "view": "",
+        "create": "",
+        "update": "",
+        "delete": ""
+      },
+      "fields": [
+        {
+          "name": "contract_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "contracts"
+        },
+        {
+          "name": "contract_number",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "service_order_number",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "form_version",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["completo", "curto"]
+        },
+        {
+          "name": "client_name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "evaluation_date",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "respondent_name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "respondent_role",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "service_evaluated",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "technician_name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "problem_resolved",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["sim", "nao", "nao_se_aplica"]
+        },
+        {
+          "name": "score_general_satisfaction",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "score_technical_execution",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "score_customer_service",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "score_perceived_value",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "nps_score",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "nps_reason",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "nps_improvement",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "renewal_intent",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "positive_highlights",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "points_to_improve",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "additional_services_needed",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "final_comments",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "contact_authorized",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_csat_created ON csat_responses (created)",
+        "CREATE INDEX idx_csat_contract ON csat_responses (contract_number)",
+        "CREATE INDEX idx_csat_so ON csat_responses (service_order_number)",
+        "CREATE INDEX idx_csat_version ON csat_responses (form_version)"
       ]
     }
   ]
