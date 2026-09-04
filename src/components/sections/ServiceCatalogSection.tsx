@@ -32,7 +32,7 @@ export function ServiceCatalogSection({ onSelectService }: ServiceCatalogProps) 
             CATÁLOGO DE SERVIÇOS TÉCNICOS
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold font-display text-slate-900">
-            Soluções completas para manter sua linha operacional em capacidade máxima.
+            Portifólio de soluções para manter sua linha operacional em capacidade máxima.
           </h2>
           <p className="text-slate-500 text-sm sm:text-base">
             Do sensor de umidade à automação global do painel de comando.
