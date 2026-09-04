@@ -26,6 +26,7 @@ import {
   Trash2,
   AlertTriangle,
   Loader2,
+  FileText,
 } from 'lucide-react'
 import { getLeads, deleteLead } from '@/services/leads'
 import { useRealtime } from '@/hooks/use-realtime'
@@ -422,6 +423,28 @@ export default function LeadsPage() {
                 </span>
               </div>
             </Link>
+
+            {/* Navigation Tabs between Leads and Contracts */}
+            <div className="hidden md:flex items-center gap-1 ml-4 pl-4 border-l border-slate-800">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="bg-[#8CC63F]/15 text-[#8CC63F] font-semibold text-xs gap-1.5 border border-[#8CC63F]/30"
+              >
+                <Users className="w-3.5 h-3.5" />
+                Leads & Diagnósticos
+              </Button>
+              <Link to="/contratos">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs gap-1.5"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  Contratos & OS
+                </Button>
+              </Link>
+            </div>
           </div>
 
           <div className="flex items-center gap-2.5">
@@ -464,6 +487,26 @@ export default function LeadsPage() {
               Sair
             </Button>
           </div>
+        </div>
+        {/* Mobile secondary tab strip */}
+        <div className="md:hidden flex border-t border-slate-800/80 px-4 py-2 gap-2 bg-slate-950/40">
+          <Button
+            size="sm"
+            className="flex-1 bg-[#8CC63F]/20 text-[#8CC63F] border border-[#8CC63F]/40 text-xs gap-1.5 justify-center font-bold"
+          >
+            <Users className="w-3.5 h-3.5" />
+            Leads
+          </Button>
+          <Link to="/contratos" className="flex-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-slate-400 hover:text-white text-xs gap-1.5 justify-center"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              Contratos & OS
+            </Button>
+          </Link>
         </div>
       </header>
 

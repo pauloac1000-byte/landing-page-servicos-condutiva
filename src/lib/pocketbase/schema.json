@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-01T17:20:33.841Z",
+  "generatedAt": "2026-09-04T18:17:02.720Z",
   "collections": [
     {
       "name": "users",
@@ -127,6 +127,76 @@
       "indexes": [
         "CREATE INDEX idx_leads_created ON leads (created)",
         "CREATE INDEX idx_leads_email ON leads (email)"
+      ]
+    },
+    {
+      "name": "contracts",
+      "type": "base",
+      "apiRules": {
+        "list": "",
+        "view": "",
+        "create": "",
+        "update": "",
+        "delete": ""
+      },
+      "fields": [
+        {
+          "name": "contract_number",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "service_order_number",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "client_name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "client_email",
+          "type": "email",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "technician_name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "questionnaire_status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["pendente", "respondido"]
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_contracts_created ON contracts (created)",
+        "CREATE INDEX idx_contracts_contract_number ON contracts (contract_number)",
+        "CREATE INDEX idx_contracts_so_number ON contracts (service_order_number)",
+        "CREATE INDEX idx_contracts_client ON contracts (client_name)"
       ]
     }
   ]

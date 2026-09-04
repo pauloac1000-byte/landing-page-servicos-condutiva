@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { COMPANY_INFO } from '@/data/mockData'
-import { Phone, Mail, MapPin, Lock, Users } from 'lucide-react'
+import { Phone, Mail, MapPin, Lock, Users, FileSpreadsheet } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 
 export function Footer() {
@@ -141,6 +141,14 @@ export function Footer() {
             >
               <Users className="w-3 h-3 text-[#4d7c0f]" />
               Área da Equipe
+            </Link>
+            <Link
+              to="/contratos"
+              className="hover:text-[#4d7c0f] text-slate-400 transition flex items-center gap-1 font-medium"
+              title="Acesso à gestão de contratos e ordens de serviço"
+            >
+              <FileSpreadsheet className="w-3 h-3 text-[#4d7c0f]" />
+              Contratos & OS
             </Link>
             <span className="flex items-center gap-1 text-slate-500">
               <Lock className="w-3 h-3 text-[#4d7c0f]" />

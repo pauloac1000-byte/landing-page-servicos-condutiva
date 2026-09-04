@@ -82,3 +82,28 @@ export interface LeadRecord {
   main_challenge?: string
   lgpd_consent?: boolean
 }
+
+export type QuestionnaireStatus = 'pendente' | 'respondido'
+
+export interface ContractFormData {
+  contractNumber: string
+  serviceOrderNumber: string
+  clientName: string
+  clientEmail: string
+  technicianName: string
+  questionnaireStatus: QuestionnaireStatus
+}
+
+export interface ContractRecord {
+  id: string
+  collectionId: string
+  collectionName: string
+  created: string
+  updated: string
+  contract_number: string
+  service_order_number: string
+  client_name: string
+  client_email: string
+  technician_name: string
+  questionnaire_status: QuestionnaireStatus
+}
