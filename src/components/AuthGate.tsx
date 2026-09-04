@@ -200,21 +200,33 @@ export function AuthGate({
               {/* Quick test credentials helpers for convenience */}
               <div className="mt-5 pt-4 border-t border-slate-800 text-left">
                 <p className="text-[11px] text-slate-400 font-medium mb-1.5 flex items-center justify-between">
-                  <span>Credenciais de teste disponíveis:</span>
-                  <span className="text-[10px] text-[#8CC63F] font-mono">Senha: Skip@Pass</span>
+                  <span>Usuários cadastrados no sistema:</span>
+                  <span className="text-[10px] text-[#8CC63F] font-mono">
+                    Senha padrão: Skip@Pass
+                  </span>
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   <button
                     type="button"
                     onClick={() => fillQuickTest('equipe@condutiva.com.br')}
                     className="text-[10px] font-mono px-2 py-1 rounded bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 transition"
+                    title="Preencher equipe@condutiva.com.br"
                   >
                     equipe@condutiva.com.br
                   </button>
                   <button
                     type="button"
+                    onClick={() => fillQuickTest('liandra@condutiva.com.br')}
+                    className="text-[10px] font-mono px-2 py-1 rounded bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 transition"
+                    title="Preencher liandra@condutiva.com.br"
+                  >
+                    liandra@condutiva.com.br
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => fillQuickTest('pauloac1000@gmail.com')}
                     className="text-[10px] font-mono px-2 py-1 rounded bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 transition"
+                    title="Preencher pauloac1000@gmail.com"
                   >
                     pauloac1000@gmail.com
                   </button>
