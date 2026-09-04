@@ -60,7 +60,7 @@ export async function submitCSATResponse(data: CSATSubmissionData): Promise<CSAT
 }
 
 /**
- * Retrieves CSAT responses, optionally filtered by contract number.
+ * Retrieves all CSAT responses with optional contract number filter.
  */
 export async function getCSATResponses(contractNumber?: string): Promise<CSATResponseRecord[]> {
   const options: Record<string, unknown> = {
@@ -71,4 +71,11 @@ export async function getCSATResponses(contractNumber?: string): Promise<CSATRes
     options.filter = `contract_number = '${safe}'`
   }
   return await pb.collection<CSATResponseRecord>('csat_responses').getFullList(options)
+}
+
+/**
+ * Deletes a CSAT response record by id.
+ */
+export async function deleteCSATResponse(id: string): Promise<boolean> {
+  return await pb.collection('csat_responses').delete(id)
 }
