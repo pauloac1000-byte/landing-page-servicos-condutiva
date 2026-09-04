@@ -11,6 +11,45 @@ export async function getContracts(): Promise<ContractRecord[]> {
 }
 
 /**
+ * Searches for a contract record matching both contract_number and service_order_number.
+ * Returns null if no match is found. Case-insensitive comparison with fallback.
+ */
+export async function findContractByNumbers(
+  contractNumber: string,
+  serviceOrderNumber: string,
+): Promise<ContractRecord | null> {
+  const cleanContract = contractNumber.trim()
+  const cleanOS = serviceOrderNumber.trim()
+
+  if (!cleanContract || !cleanOS) {
+    return null
+  }
+
+  try {
+    // Escape single quotes for PocketBase filter syntax
+    const safeContract = cleanContract.replace(/'/g, "\\'")
+    const safeOS = cleanOS.replace(/'/g, "\\'")
+
+    // PocketBase '=' operator is case-insensitive for text fields in SQLite collation NOCASE,
+    // but we can query with exact match or retrieve records to verify precisely.
+    const records = await pb.collection<ContractRecord>('contracts').getList(1, 10, {
+      filter: `contract_number ~ '${safeContract}' && service_order_number ~ '${safeOS}'`,
+    })
+
+    const found = records.items.find(
+      (item) =>
+        item.contract_number.trim().toLowerCase() === cleanContract.toLowerCase() &&
+        item.service_order_number.trim().toLowerCase() === cleanOS.toLowerCase(),
+    )
+
+    return found || null
+  } catch (err: unknown) {
+    console.error('Error finding contract by numbers:', err)
+    return null
+  }
+}
+
+/**
  * Creates a new contract & service order record.
  */
 export async function createContract(data: ContractFormData): Promise<ContractRecord> {

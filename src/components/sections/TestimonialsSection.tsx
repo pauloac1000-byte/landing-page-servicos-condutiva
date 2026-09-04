@@ -42,6 +42,29 @@ export function TestimonialsSection() {
             </div>
           ))}
         </div>
+
+        {/* CSAT Invitation card */}
+        <div className="mt-12 p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-4xl mx-auto shadow-subtle">
+          <div className="space-y-1 text-center sm:text-left">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#4d7c0f] bg-[#8CC63F]/15 px-2.5 py-1 rounded">
+              Pesquisa de Satisfação
+            </span>
+            <h3 className="text-lg font-bold text-slate-900 pt-1">
+              Já recebeu atendimento da equipe técnica da Condutiva?
+            </h3>
+            <p className="text-xs text-slate-600 max-w-xl">
+              Sua avaliação orienta a evolução contínua dos nossos serviços industriais. Acesse com
+              seu número de contrato e OS.
+            </p>
+          </div>
+
+          <a
+            href="/avaliacao"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold text-sm transition shadow-sm shrink-0 whitespace-nowrap"
+          >
+            Avaliar atendimento
+          </a>
+        </div>
       </div>
     </section>
   )

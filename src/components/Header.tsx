@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -7,7 +8,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet'
-import { Menu, Phone, MessageCircle, ChevronRight } from 'lucide-react'
+import { Menu, Phone, MessageCircle, ChevronRight, Star } from 'lucide-react'
 import { COMPANY_INFO } from '@/data/mockData'
 import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/Logo'
@@ -126,8 +127,17 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
           ))}
         </nav>
 
-        {/* Contatos à Direita (Telefone e WhatsApp) */}
+        {/* Botão de Avaliar Atendimento & Contatos à Direita */}
         <div className="hidden md:flex items-center gap-3 shrink-0">
+          <Link
+            to="/avaliacao"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#8CC63F]/50 bg-[#8CC63F]/10 hover:bg-[#8CC63F]/20 text-slate-800 transition-all group"
+            title="Avaliação de Satisfação do Cliente (CSAT)"
+          >
+            <Star className="w-4 h-4 text-[#4d7c0f] group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-bold text-slate-800">Avaliar atendimento</span>
+          </Link>
+
           {/* Telefone Fixo */}
           <a
             href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
@@ -209,7 +219,19 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
                       <ChevronRight className="w-4 h-4 text-slate-400" />
                     </button>
                   ))}
-                </div>
+
+                  <Link
+                    to="/avaliacao"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-left py-2.5 px-3 bg-[#8CC63F]/15 border border-[#8CC63F]/30 text-slate-900 rounded-lg font-bold text-sm flex items-center justify-between transition-colors mt-2"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-[#4d7c0f]" />
+                      Avaliar atendimento
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-[#4d7c0f]" />
+                  </Link>
+                </div>{' '}
               </div>
 
               <div className="pt-4 border-t border-slate-200 space-y-2.5 mb-2">
