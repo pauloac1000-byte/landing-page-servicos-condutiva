@@ -200,27 +200,27 @@ export function CSATOptionSelector({
               </div>
 
               <div className="space-y-2.5 pt-2 border-t border-slate-100 text-xs text-slate-600">
-                <p className="font-semibold text-slate-800">Perguntas inclusas:</p>
+                <p className="font-semibold text-slate-800">5 perguntas essenciais:</p>
                 <ul className="space-y-1.5 pl-1">
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                    <span>Identificação do responsável pelo preenchimento</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8CC63F]" />
+                    <span>1. Chance de recomendar a Condutiva (0 a 10)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                    <span>Resolução do problema ou solicitação técnica</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8CC63F]" />
+                    <span>2. Resolução do problema ou solicitação</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                    <span>Satisfação geral com o serviço realizado (nota 1 a 5)</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8CC63F]" />
+                    <span>3. Satisfação com o atendimento recebido (1 a 5)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                    <span>Recomendação da Condutiva / NPS (escala de 0 a 10)</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8CC63F]" />
+                    <span>4. Satisfação com a execução técnica (1 a 5)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                    <span>Comentário objetivo sobre a experiência</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8CC63F]" />
+                    <span>5. Intenção de renovar ou contratar novamente</span>
                   </li>
                 </ul>
               </div>
