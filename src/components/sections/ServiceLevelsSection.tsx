@@ -401,24 +401,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               </span>
 
               <ul className="space-y-3 text-xs text-slate-700">
-                <li className="flex items-start gap-2.5">
-                  <span
-                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#F57F17' }}
-                  >
-                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                <li className="pt-0.5 pb-1">
+                  <span className="font-bold text-slate-900 text-[13px] tracking-tight block">
+                    Tudo do Sentinela Preventivo
                   </span>
-                  <span className="font-semibold text-slate-900">Tudo do Sentinela</span>
-                </li>
-
-                <li className="flex items-start gap-2.5">
-                  <span
-                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#F57F17' }}
-                  >
-                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </span>
-                  <span>+ 1 visita de sacrifício/ano incluída</span>
                 </li>
 
                 <li className="flex items-start gap-2.5">
@@ -429,39 +415,9 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
                   <span>
-                    + 1 manutenção corretiva/ano com troca de conectores e borracha de vedação com
-                    garantia estendida
+                    <strong className="text-amber-700 font-bold">+</strong> 1 bucha de
+                    sacrifício/ano incluída
                   </span>
-                </li>
-
-                <li className="flex items-start gap-2.5">
-                  <span
-                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#F57F17' }}
-                  >
-                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </span>
-                  <span>+ Prioridade na agenda na atualização das evoluções de software</span>
-                </li>
-
-                <li className="flex items-start gap-2.5">
-                  <span
-                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#F57F17' }}
-                  >
-                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </span>
-                  <span>+ SICO Completo: causa raiz + análise de desempenho</span>
-                </li>
-
-                <li className="flex items-start gap-2.5">
-                  <span
-                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#F57F17' }}
-                  >
-                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </span>
-                  <span>+ Academia Condutiva de Treinamento</span>
                 </li>
 
                 <li className="flex items-start gap-2.5">
@@ -472,8 +428,61 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
                   <span>
-                    + Acesso irrestrito à documentação técnica na sua área do cliente, com login e
-                    senha exclusivos.
+                    <strong className="text-amber-700 font-bold">+</strong> 1 manutenção
+                    corretiva/ano com troca de conectores e borracha de vedação com garantia
+                    estendida
+                  </span>
+                </li>
+
+                <li className="flex items-start gap-2.5">
+                  <span
+                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
+                    style={{ backgroundColor: '#F57F17' }}
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </span>
+                  <span>
+                    <strong className="text-amber-700 font-bold">+</strong> Prioridade na agenda na
+                    atualização das evoluções de software
+                  </span>
+                </li>
+
+                <li className="flex items-start gap-2.5">
+                  <span
+                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
+                    style={{ backgroundColor: '#F57F17' }}
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </span>
+                  <span>
+                    <strong className="text-amber-700 font-bold">+</strong> SICO Completo: causa
+                    raiz + análise de desempenho
+                  </span>
+                </li>
+
+                <li className="flex items-start gap-2.5">
+                  <span
+                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
+                    style={{ backgroundColor: '#F57F17' }}
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </span>
+                  <span>
+                    <strong className="text-amber-700 font-bold">+</strong> Academia Condutiva de
+                    Treinamento
+                  </span>
+                </li>
+
+                <li className="flex items-start gap-2.5">
+                  <span
+                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
+                    style={{ backgroundColor: '#F57F17' }}
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </span>
+                  <span>
+                    <strong className="text-amber-700 font-bold">+</strong> Acesso irrestrito à
+                    documentação técnica na sua área do cliente, com login e senha exclusivos.
                   </span>
                 </li>
               </ul>
