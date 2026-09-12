@@ -131,7 +131,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 }}
               >
                 <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
-                <span className="text-[11px] font-medium text-emerald-100 uppercase tracking-wider block">
+                <span className="text-[11px] font-medium text-emerald-200/90 line-through block tracking-wide">
+                  De R$ 1890,00
+                </span>
+                <span className="text-[11px] font-medium text-emerald-100 uppercase tracking-wider block mt-0.5">
                   por R$
                 </span>
                 <div className="text-3xl sm:text-[2.1rem] font-black tracking-tight leading-none mt-1">
@@ -371,7 +374,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 }}
               >
                 <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                <span className="text-[11px] font-medium text-amber-100 uppercase tracking-wider block">
+                <span className="text-[11px] font-medium text-amber-200/90 line-through block tracking-wide">
+                  De R$ 2390,00
+                </span>
+                <span className="text-[11px] font-medium text-amber-100 uppercase tracking-wider block mt-0.5">
                   por R$
                 </span>
                 <div className="text-3xl sm:text-[2.25rem] font-black tracking-tight leading-none mt-1">
@@ -634,11 +640,14 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 }}
               >
                 <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
-                <span className="text-[11px] font-medium text-purple-100 uppercase tracking-wider block">
+                <span className="text-[11px] font-medium text-purple-200/90 line-through block tracking-wide">
+                  De R$ 6090,00
+                </span>
+                <span className="text-[11px] font-medium text-purple-100 uppercase tracking-wider block mt-0.5">
                   por R$
                 </span>
                 <div className="text-3xl sm:text-[2.1rem] font-black tracking-tight leading-none mt-1">
-                  5.490,00
+                  5.690,00
                   <span className="text-base sm:text-lg font-bold text-purple-100">/mês</span>
                 </div>
                 <span className="text-[11px] text-purple-100/90 block mt-1 font-mono">
