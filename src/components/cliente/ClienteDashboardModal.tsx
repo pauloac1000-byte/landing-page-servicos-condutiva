@@ -23,8 +23,17 @@ import {
   Building2,
   Loader2,
   ExternalLink,
+  MessageCircle,
+  Mail,
+  Phone,
+  FileText,
+  FileCode,
+  FileCheck2,
+  FileSpreadsheet,
+  Filter,
 } from 'lucide-react'
 import { useClienteAuth } from '@/contexts/ClienteAuthContext'
+import { COMPANY_INFO } from '@/data/mockData'
 import {
   temAcessoDocumentacaoTecnica,
   listarDocumentosTecnicos,
@@ -64,6 +73,8 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
   // Documentos
   const [docs, setDocs] = useState<DocumentoTecnicoRecord[]>([])
   const [isLoadingDocs, setIsLoadingDocs] = useState(false)
+  const [docsLoadError, setDocsLoadError] = useState<string | null>(null)
+  const [selectedTipo, setSelectedTipo] = useState<string>('todos')
   const [searchDoc, setSearchDoc] = useState('')
 
   // Avaliação CSAT dentro da Área do Cliente
@@ -93,6 +104,9 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
     if (isOpen) {
       setCurrentView('home')
       setShowUpgradeAlert(false)
+      setSearchDoc('')
+      setSelectedTipo('todos')
+      setDocsLoadError(null)
       setOsSearchError(null)
       setContaError(null)
       setContaSuccess(null)
@@ -109,10 +123,17 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
       const acesso = temAcessoDocumentacaoTecnica(cliente.nivel_contrato)
       if (acesso.permitido) {
         setIsLoadingDocs(true)
-        listarDocumentosTecnicos(cliente.nivel_contrato)
+        setDocsLoadError(null)
+        listarDocumentosTecnicos(cliente.nivel_contrato, true)
           .then((list) => setDocs(list))
-          .catch((err) => console.error('Erro ao listar documentos:', err))
+          .catch((err) => {
+            console.error('Erro ao listar documentos:', err)
+            setDocsLoadError('Não foi possível carregar os documentos no momento. Tente novamente.')
+          })
           .finally(() => setIsLoadingDocs(false))
+      } else {
+        // Se Sentinela, lista não deve ser preenchida
+        setDocs([])
       }
     }
   }, [isOpen, cliente])
@@ -132,10 +153,12 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
   // Handler de clique no Card 2: Documentação Técnica
   const handleAcessarDocumentacao = () => {
     if (!acessoDoc.permitido) {
-      // Bloqueado para Sentinela Preventivo -> exibe mensagem de upgrade
+      // Bloqueado para Sentinela Preventivo -> exibe alerta e navega para tela de bloqueio dedicada
       setShowUpgradeAlert(true)
+      setCurrentView('documentos')
       return
     }
+    setShowUpgradeAlert(false)
     setCurrentView('documentos')
   }
 
@@ -267,13 +290,24 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
     onClose()
   }
 
-  // Filtrar documentos
-  const filteredDocs = docs.filter(
-    (d) =>
-      d.nome.toLowerCase().includes(searchDoc.toLowerCase()) ||
-      d.tipo.toLowerCase().includes(searchDoc.toLowerCase()) ||
-      (d.descricao && d.descricao.toLowerCase().includes(searchDoc.toLowerCase())),
-  )
+  // Filtrar documentos por busca (nome/descrição) e tipo selecionado
+  const filteredDocs = docs.filter((d) => {
+    // Filtro por tipo
+    if (selectedTipo !== 'todos' && d.tipo !== selectedTipo) {
+      return false
+    }
+    // Filtro por termo de busca
+    if (!searchDoc.trim()) return true
+    const term = searchDoc.toLowerCase()
+    return (
+      d.nome.toLowerCase().includes(term) ||
+      d.tipo.toLowerCase().includes(term) ||
+      (d.descricao && d.descricao.toLowerCase().includes(term))
+    )
+  })
+
+  // Tipos disponíveis na lista para os botões de filtro
+  const tiposDisponiveis = ['todos', 'Manual', 'Esquema', 'Datasheet', 'Certificado'] as const
 
   // Badge cor do plano
   const getNivelBadgeClass = () => {
@@ -354,24 +388,35 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
         {currentView === 'home' && (
           <div className="space-y-5 animate-in fade-in duration-200">
             {/* Alerta de Upgrade caso o usuário Sentinela tenha clicado em Documentação Técnica */}
-            {showUpgradeAlert && (
-              <Alert className="border-amber-500/50 bg-amber-950/30 text-amber-200 animate-in fade-in duration-200">
+            {showUpgradeAlert && isSentinela && (
+              <Alert className="border-amber-500/50 bg-amber-950/40 text-amber-200 animate-in fade-in duration-200">
                 <ShieldAlert className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
                 <div className="ml-2 space-y-2">
-                  <p className="text-xs sm:text-sm font-medium text-amber-100 leading-relaxed">
+                  <AlertTitle className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                    Acesso Restrito ao Plano Sentinela Preventivo
+                  </AlertTitle>
+                  <AlertDescription className="text-xs sm:text-sm font-medium text-amber-100 leading-relaxed">
                     {MENSAGEM_NEGACAO_SENTINELA}
-                  </p>
-                  <div className="pt-1 flex flex-wrap gap-2">
+                  </AlertDescription>
+                  <div className="pt-1.5 flex flex-wrap items-center gap-2">
+                    <a
+                      href={`https://wa.me/${COMPANY_INFO.whatsappRaw}?text=${encodeURIComponent(
+                        `Olá! Sou cliente do plano Sentinela Preventivo (Contrato ${cliente.numero_contrato}) e gostaria de informações sobre upgrade para acessar a Documentação Técnica.`,
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 text-xs font-bold transition shadow-sm"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span>Falar no WhatsApp Comercial</span>
+                    </a>
                     <Button
                       size="sm"
-                      onClick={() => {
-                        onClose()
-                        const el = document.querySelector('#planos')
-                        if (el) el.scrollIntoView({ behavior: 'smooth' })
-                      }}
-                      className="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold h-8"
+                      onClick={() => setCurrentView('documentos')}
+                      variant="outline"
+                      className="border-amber-500/50 bg-amber-950/30 text-amber-200 hover:bg-amber-900/40 text-xs h-8"
                     >
-                      Conhecer Planos de Upgrade
+                      Ver detalhes do bloqueio
                     </Button>
                     <Button
                       size="sm"
@@ -489,9 +534,19 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
                       Acesse manuais e esquemas técnicos dos seus equipamentos.
                     </p>
 
-                    {isSentinela && (
-                      <p className="text-[11px] text-amber-300/90 mt-2 italic bg-amber-950/30 border border-amber-500/20 rounded-md p-2 leading-relaxed">
-                        Exclusivo para os planos Controle Operacional e Maestro Engenharia.
+                    {isSentinela ? (
+                      <div className="mt-2.5 p-2.5 rounded-lg bg-amber-950/30 border border-amber-500/30 space-y-1">
+                        <div className="flex items-center gap-1.5 text-amber-300 font-semibold text-[11px]">
+                          <Lock className="w-3 h-3 text-amber-400" />
+                          <span>Bloqueado para Sentinela Preventivo</span>
+                        </div>
+                        <p className="text-[11px] text-amber-200/90 leading-relaxed">
+                          {MENSAGEM_NEGACAO_SENTINELA}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-[11px] text-slate-400 mt-2">
+                        Downloads disponíveis conforme o nível do seu contrato.
                       </p>
                     )}
                   </div>
@@ -507,7 +562,7 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
                     }`}
                   >
                     {isSentinela && <Lock className="w-3.5 h-3.5 mr-0.5 text-amber-400" />}
-                    <span>Acessar</span>
+                    <span>{isSentinela ? 'Ver condições de acesso' : 'Acessar'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
@@ -687,10 +742,10 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
           </div>
         )}
 
-        {/* ================= TELA: DOCUMENTAÇÃO TÉCNICA (BIBLIOTECA FILTRÁVEL) ================= */}
+        {/* ================= TELA: DOCUMENTAÇÃO TÉCNICA (BIBLIOTECA OU BLOQUEIO AMIGÁVEL) ================= */}
         {currentView === 'documentos' && (
           <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="flex items-center justify-between pb-2">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
               <Button
                 variant="ghost"
                 size="sm"
@@ -702,93 +757,316 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
               </Button>
               <Badge
                 variant="outline"
-                className="text-[11px] font-bold py-0.5 px-2 bg-sky-500/10 text-sky-300 border-sky-500/30"
+                className={`text-[11px] font-bold py-0.5 px-2.5 ${
+                  !acessoDoc.permitido
+                    ? 'bg-amber-500/15 text-amber-300 border-amber-500/40'
+                    : 'bg-sky-500/10 text-sky-300 border-sky-500/30'
+                }`}
               >
-                Biblioteca Técnica
+                {!acessoDoc.permitido ? 'Recurso Restrito' : 'Biblioteca Técnica'}
               </Badge>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-[#8CC63F]" />
-                  <span>Documentação Técnica</span>
-                </h3>
-                <p className="text-xs text-slate-300 mt-1">
-                  Acesse manuais e esquemas técnicos dos seus equipamentos.
-                </p>
-              </div>
+            {/* CASO 1: BLOQUEIO AMIGÁVEL PARA SENTINELA PREVENTIVO (NÃO EXIBE DOCUMENTOS) */}
+            {!acessoDoc.permitido ? (
+              <div className="bg-slate-900/80 border border-amber-500/30 rounded-2xl p-6 sm:p-8 space-y-6 text-center shadow-xl relative overflow-hidden">
+                {/* Efeito sutil no fundo */}
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-amber-500/5 blur-3xl pointer-events-none"></div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                <div className="relative flex-1">
-                  <Input
-                    type="text"
-                    value={searchDoc}
-                    onChange={(e) => setSearchDoc(e.target.value)}
-                    placeholder="Pesquisar manual, esquema, datasheet ou certificado..."
-                    className="bg-slate-950 border-slate-700 text-white placeholder:text-slate-500 text-xs py-4 pl-9"
-                  />
-                  <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto shadow-inner">
+                  <Lock className="w-8 h-8" />
                 </div>
-                <div className="text-xs text-slate-400 shrink-0">
-                  Exibindo <strong>{filteredDocs.length}</strong> documentos
-                </div>
-              </div>
 
-              {isLoadingDocs ? (
-                <div className="py-12 text-center text-xs text-slate-500">
-                  Carregando biblioteca técnica da Condutiva...
+                <div className="space-y-2 max-w-xl mx-auto">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-[11px] font-mono font-semibold text-amber-300 mb-1">
+                    <span>Contrato:</span>
+                    <strong className="text-white">{cliente.numero_contrato}</strong>
+                    <span>•</span>
+                    <span>{cliente.nivel_contrato}</span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-white font-display tracking-tight">
+                    Documentação Técnica Restrita
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed pt-1">
+                    {MENSAGEM_NEGACAO_SENTINELA}
+                  </p>
                 </div>
-              ) : filteredDocs.length === 0 ? (
-                <div className="py-12 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-xs text-slate-500">
-                  Nenhum documento encontrado para o critério selecionado.
+
+                {/* Caixa explicativa com benefícios dos planos superiores */}
+                <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 sm:p-5 max-w-xl mx-auto text-left space-y-3">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-bold block">
+                    Disponível nos planos Controle Operacional e Maestro Engenharia:
+                  </span>
+                  <ul className="text-xs text-slate-300 space-y-2">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-[#8CC63F] shrink-0 mt-0.5" />
+                      <span>
+                        Download completo de <strong>manuais de operação</strong> e parametrização
+                        de equipamentos inteligentes.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-[#8CC63F] shrink-0 mt-0.5" />
+                      <span>
+                        Acesso a <strong>esquemas elétricos</strong>, diagramas unifilares e
+                        ligações em campo.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-[#8CC63F] shrink-0 mt-0.5" />
+                      <span>
+                        Datasheets de especificações e{' '}
+                        <strong>certificados metrológicos padrão RBC</strong>.
+                      </span>
+                    </li>
+                  </ul>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1">
-                  {filteredDocs.map((doc) => (
-                    <div
-                      key={doc.id}
-                      className="bg-slate-900/80 border border-slate-800 hover:border-[#8CC63F]/50 rounded-xl p-4 transition-all flex flex-col justify-between space-y-3 group"
+
+                {/* Canais claros de contato com o time comercial da Condutiva */}
+                <div className="max-w-xl mx-auto pt-2 space-y-3">
+                  <span className="text-xs font-semibold text-slate-300 block">
+                    Entre em contato com o time comercial da Condutiva para realizar o upgrade:
+                  </span>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <a
+                      href={`https://wa.me/${COMPANY_INFO.whatsappRaw}?text=${encodeURIComponent(
+                        `Olá! Sou da empresa ${cliente.nome_cliente} (Contrato ${cliente.numero_contrato}, plano Sentinela Preventivo). Tenho interesse no upgrade de contrato para liberar o módulo de Documentação Técnica (manuais e esquemas).`,
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 p-3.5 rounded-xl bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold text-xs transition shadow-lg shadow-[#8CC63F]/10 group"
                     >
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between gap-2">
-                          <Badge
-                            variant="outline"
-                            className="text-[10px] font-bold py-0.5 px-2 bg-slate-800 text-slate-300 border-slate-700"
-                          >
-                            {doc.tipo}
-                          </Badge>
-                          <span className="text-[10px] text-slate-500 font-mono">
-                            Nível: {doc.nivel_minimo_acesso}
-                          </span>
-                        </div>
-                        <h4 className="text-sm font-bold text-white group-hover:text-[#8CC63F] transition-colors leading-snug">
-                          {doc.nome}
-                        </h4>
-                        {doc.descricao && (
-                          <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-                            {doc.descricao}
-                          </p>
-                        )}
-                      </div>
+                      <MessageCircle className="w-4 h-4 shrink-0 text-slate-950" />
+                      <span>Falar via WhatsApp ({COMPANY_INFO.phoneWhatsapp})</span>
+                    </a>
 
-                      <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
-                        <span className="text-[11px] text-slate-500">Formato PDF</span>
-                        <a
-                          href={doc.arquivo_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#8CC63F]/15 hover:bg-[#8CC63F]/25 text-[#8CC63F] font-bold text-xs transition"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                          <span>Acessar PDF</span>
-                        </a>
-                      </div>
-                    </div>
-                  ))}
+                    <a
+                      href={`mailto:${COMPANY_INFO.email}?subject=${encodeURIComponent(
+                        `Solicitação de Upgrade de Contrato - Documentação Técnica [${cliente.numero_contrato}]`,
+                      )}&body=${encodeURIComponent(
+                        `Olá equipe comercial da Condutiva,\n\nGostaria de solicitar proposta para upgrade de contrato do plano Sentinela Preventivo para Controle Operacional ou Maestro Engenharia, com liberação da Documentação Técnica.\n\nEmpresa: ${cliente.nome_cliente}\nNúmero do Contrato: ${cliente.numero_contrato}\nE-mail: ${cliente.email}\n\nAtenciosamente,`,
+                      )}`}
+                      className="inline-flex items-center justify-center gap-2 p-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 text-white font-bold text-xs transition shadow-md"
+                    >
+                      <Mail className="w-4 h-4 shrink-0 text-[#8CC63F]" />
+                      <span>Enviar E-mail Comercial</span>
+                    </a>
+                  </div>
+
+                  <div className="pt-2 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-slate-500" />
+                      Telefone fixo:{' '}
+                      <a
+                        href={`tel:${COMPANY_INFO.phoneLandline.replace(/\D/g, '')}`}
+                        className="text-slate-300 hover:text-white underline underline-offset-2"
+                      >
+                        {COMPANY_INFO.phoneLandline}
+                      </a>
+                    </span>
+                    <span>•</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose()
+                        const el = document.querySelector('#planos')
+                        if (el) el.scrollIntoView({ behavior: 'smooth' })
+                      }}
+                      className="text-[#8CC63F] hover:underline underline-offset-2 font-medium"
+                    >
+                      Comparar tabela completa de planos
+                    </button>
+                  </div>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              /* CASO 2: BIBLIOTECA DE DOCUMENTOS TÉCNICOS (LIBERADA PARA CONTROLE OPERACIONAL E MAESTRO) */
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2 font-display">
+                      <BookOpen className="w-5 h-5 text-[#8CC63F]" />
+                      <span>Biblioteca de Documentos Técnicos</span>
+                    </h3>
+                    <p className="text-xs text-slate-300 mt-0.5">
+                      Download de manuais, esquemas e especificações compatíveis com seu contrato (
+                      <strong className="text-[#8CC63F]">{cliente.nivel_contrato}</strong>).
+                    </p>
+                  </div>
+
+                  <div className="text-[11px] font-mono text-slate-400">
+                    Nível de acesso:{' '}
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] font-bold py-0.5 px-2 ${getNivelBadgeClass()}`}
+                    >
+                      {cliente.nivel_contrato}
+                    </Badge>
+                  </div>
+                </div>
+
+                {docsLoadError && (
+                  <Alert
+                    variant="destructive"
+                    className="border-red-500/40 bg-red-950/40 text-red-200"
+                  >
+                    <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
+                    <AlertDescription className="text-xs ml-2">{docsLoadError}</AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Barra de Filtros: Busca textual + Filtro por Tipo */}
+                <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="relative flex-1">
+                      <Input
+                        type="text"
+                        value={searchDoc}
+                        onChange={(e) => setSearchDoc(e.target.value)}
+                        placeholder="Buscar por nome, tipo ou palavra-chave..."
+                        className="bg-slate-950 border-slate-700 text-white placeholder:text-slate-500 text-xs py-4 pl-9"
+                      />
+                      <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      {searchDoc && (
+                        <button
+                          type="button"
+                          onClick={() => setSearchDoc('')}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
+                        >
+                          Limpar
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="text-xs text-slate-400 shrink-0 font-mono">
+                      Exibindo <strong className="text-white">{filteredDocs.length}</strong> de{' '}
+                      {docs.length} disponíveis
+                    </div>
+                  </div>
+
+                  {/* Filtro por Tipo (Pills) */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-800/80">
+                    <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mr-1 flex items-center gap-1">
+                      <Filter className="w-3 h-3 text-slate-500" />
+                      Tipo:
+                    </span>
+                    {tiposDisponiveis.map((tipo) => {
+                      const isSelected = selectedTipo === tipo
+                      return (
+                        <button
+                          key={tipo}
+                          type="button"
+                          onClick={() => setSelectedTipo(tipo)}
+                          className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-all ${
+                            isSelected
+                              ? 'bg-[#8CC63F]/20 text-[#8CC63F] border-[#8CC63F]/60 font-bold'
+                              : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:bg-slate-800 hover:text-slate-200'
+                          }`}
+                        >
+                          {tipo === 'todos' ? 'Todos os Tipos' : tipo}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Listagem em Grid de Documentos */}
+                {isLoadingDocs ? (
+                  <div className="py-16 text-center text-xs text-slate-400 flex flex-col items-center justify-center gap-2">
+                    <Loader2 className="w-6 h-6 animate-spin text-[#8CC63F]" />
+                    <span>Carregando biblioteca de documentos técnicos...</span>
+                  </div>
+                ) : filteredDocs.length === 0 ? (
+                  <div className="py-12 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-xs text-slate-400 space-y-2">
+                    <BookOpen className="w-8 h-8 text-slate-600 mx-auto" />
+                    <p className="font-medium text-slate-300">
+                      Nenhum documento encontrado para os filtros selecionados.
+                    </p>
+                    {(searchDoc || selectedTipo !== 'todos') && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setSearchDoc('')
+                          setSelectedTipo('todos')
+                        }}
+                        className="text-xs text-[#8CC63F] hover:text-[#8CC63F]/80 h-8"
+                      >
+                        Limpar filtros de busca
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 max-h-[52vh] overflow-y-auto pr-1">
+                    {filteredDocs.map((doc) => {
+                      const getTipoBadgeStyle = () => {
+                        switch (doc.tipo) {
+                          case 'Manual':
+                            return 'bg-blue-500/15 text-blue-300 border-blue-500/30'
+                          case 'Esquema':
+                            return 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                          case 'Datasheet':
+                            return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                          case 'Certificado':
+                            return 'bg-purple-500/15 text-purple-300 border-purple-500/30'
+                          default:
+                            return 'bg-slate-800 text-slate-300 border-slate-700'
+                        }
+                      }
+
+                      return (
+                        <div
+                          key={doc.id}
+                          className="bg-slate-900/80 border border-slate-800 hover:border-[#8CC63F]/50 rounded-xl p-4 transition-all flex flex-col justify-between space-y-3 group shadow-md hover:shadow-[#8CC63F]/5"
+                        >
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between gap-2">
+                              <Badge
+                                variant="outline"
+                                className={`text-[10px] font-bold py-0.5 px-2 border ${getTipoBadgeStyle()}`}
+                              >
+                                {doc.tipo}
+                              </Badge>
+                              <span className="text-[10px] text-slate-500 font-mono">
+                                Nível mín.: {doc.nivel_minimo_acesso}
+                              </span>
+                            </div>
+
+                            <h4 className="text-sm font-bold text-white group-hover:text-[#8CC63F] transition-colors leading-snug">
+                              {doc.nome}
+                            </h4>
+
+                            {doc.descricao && (
+                              <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                                {doc.descricao}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="pt-2.5 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                            <span className="text-[11px] text-slate-500 font-mono flex items-center gap-1">
+                              <FileText className="w-3.5 h-3.5 text-slate-500" />
+                              <span>Documento PDF</span>
+                            </span>
+
+                            <a
+                              href={doc.arquivo_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold text-xs transition shadow-sm group-hover:scale-102"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                              <span>Baixar</span>
+                            </a>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

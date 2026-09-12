@@ -11,7 +11,7 @@ import type {
  * ao tentarem acessar Documentação Técnica restrita.
  */
 export const MENSAGEM_NEGACAO_SENTINELA =
-  'O plano Sentinela Preventivo não cobre a Documentação Técnica. Entre em contato com o time comercial da Condutiva para realizar um upgrade do seu contrato.'
+  'O plano Sentinela Preventivo não inclui a Documentação Técnica. Para acessar manuais e esquemas, entre em contato com o time comercial da Condutiva e faça um upgrade do seu contrato.'
 
 /** Mensagens exatas da especificação de Avaliar Atendimento */
 export const MENSAGEM_OS_NAO_ENCONTRADA =
