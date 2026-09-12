@@ -291,7 +291,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   border: '1px solid rgba(255, 255, 255, 0.7)',
                 }}
               >
-                <span>👑</span> MAIS ESCOLHIDO
+                <span>👑</span>O MAIS ESCOLHIDO
               </span>
             </div>
 
