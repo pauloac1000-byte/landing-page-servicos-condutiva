@@ -40,8 +40,8 @@ export function CSATSuccessScreen({ responseRecord, onReset }: CSATSuccessScreen
               Avaliação Registrada com Sucesso
             </span>
             <h1 className="text-xl sm:text-2xl font-bold leading-tight">
-              Obrigado! Sua avaliação foi registrada e ajuda a Condutiva a melhorar continuamente
-              seus serviços.
+              Avaliação enviada com sucesso. Obrigado por ajudar a Condutiva a melhorar cada vez
+              mais.
             </h1>
             <p className="text-xs text-emerald-100 mt-1">
               Suas considerações foram vinculadas ao contrato e encaminhadas à coordenação técnica
@@ -54,8 +54,8 @@ export function CSATSuccessScreen({ responseRecord, onReset }: CSATSuccessScreen
           <div className="space-y-3 border-b border-slate-100 pb-5">
             <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-xl text-emerald-950">
               <p className="text-sm sm:text-base font-bold leading-snug">
-                &ldquo;Obrigado! Sua avaliação foi registrada e ajuda a Condutiva a melhorar
-                continuamente seus serviços.&rdquo;
+                &ldquo;Avaliação enviada com sucesso. Obrigado por ajudar a Condutiva a melhorar
+                cada vez mais.&rdquo;
               </p>
             </div>
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 font-mono pt-1">

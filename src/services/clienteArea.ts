@@ -13,6 +13,14 @@ import type {
 export const MENSAGEM_NEGACAO_SENTINELA =
   'O plano Sentinela Preventivo não cobre a Documentação Técnica. Entre em contato com o time comercial da Condutiva para realizar um upgrade do seu contrato.'
 
+/** Mensagens exatas da especificação de Avaliar Atendimento */
+export const MENSAGEM_OS_NAO_ENCONTRADA =
+  'Não localizamos esta Ordem de Serviço. Confira o número e tente novamente ou contate a assistência técnica.'
+export const MENSAGEM_OS_JA_AVALIADA =
+  'Esta Ordem de Serviço já foi avaliada. Obrigado pelo retorno.'
+export const MENSAGEM_AVALIACAO_SUCESSO =
+  'Avaliação enviada com sucesso. Obrigado por ajudar a Condutiva a melhorar cada vez mais.'
+
 /**
  * Ordem hierárquica de níveis de contrato
  * Sentinela Preventivo (1) < Controle Operacional (2) < Maestro Engenharia (3)
@@ -164,6 +172,7 @@ export async function atualizarSenhaCliente(
 /**
  * Busca uma Ordem de Serviço pelo seu número (usado no fluxo "Avaliar Atendimento").
  * Permite validar se a OS existe e se a avaliação já foi realizada.
+ * Suporta busca case-insensitive para comodidade do usuário (ex: "os-8920" ou "OS-8920").
  */
 export async function buscarOrdemServico(numeroOS: string): Promise<OrdemServicoRecord | null> {
   const cleanOS = numeroOS.trim()
@@ -171,14 +180,189 @@ export async function buscarOrdemServico(numeroOS: string): Promise<OrdemServico
 
   try {
     const safeOS = cleanOS.replace(/'/g, "\\'")
-    const record = await pb
-      .collection<OrdemServicoRecord>('ordens_servico')
-      .getFirstListItem(`numero_os = '${safeOS}'`, {
-        expand: 'contrato_id',
-      })
-    return record
+    // Tenta correspondência exata primeiro
+    try {
+      const record = await pb
+        .collection<OrdemServicoRecord>('ordens_servico')
+        .getFirstListItem(`numero_os = '${safeOS}'`, {
+          expand: 'contrato_id',
+        })
+      if (record) return record
+    } catch (_) {
+      // Ignora e tenta busca por like/contains case-insensitive
+    }
+
+    const records = await pb.collection<OrdemServicoRecord>('ordens_servico').getList(1, 10, {
+      filter: `numero_os ~ '${safeOS}'`,
+      expand: 'contrato_id',
+    })
+
+    const found = records.items.find(
+      (item) => item.numero_os.trim().toLowerCase() === cleanOS.toLowerCase(),
+    )
+
+    return found || null
   } catch (_) {
     return null
+  }
+}
+
+export type ValidacaoOSResultado =
+  | {
+      valido: true
+      os: OrdemServicoRecord
+      contract: import('@/types').ContractRecord
+      motivo?: undefined
+      mensagem?: undefined
+    }
+  | {
+      valido: false
+      os?: undefined
+      contract?: undefined
+      motivo: 'nao_encontrada' | 'ja_avaliada' | 'contrato_divergente'
+      mensagem: string
+    }
+
+/**
+ * Valida uma Ordem de Serviço para iniciar a avaliação CSAT.
+ * Quando clienteId ou numeroContrato é fornecido (Área do Cliente autenticada):
+ * - Confirma se a OS pertence ao contrato do cliente logado.
+ * - Confirma se a OS já foi avaliada.
+ * - Obtém ou sintetiza os dados do ContractRecord para reaproveitar integralmente os componentes CSAT.
+ */
+export async function validarOSParaAvaliacao(
+  numeroOS: string,
+  clienteLogado?: ClienteRecord | null,
+): Promise<ValidacaoOSResultado> {
+  const cleanOS = numeroOS.trim()
+  if (!cleanOS) {
+    return {
+      valido: false,
+      motivo: 'nao_encontrada',
+      mensagem: MENSAGEM_OS_NAO_ENCONTRADA,
+    }
+  }
+
+  // 1. Busca na coleção ordens_servico
+  const osRecord = await buscarOrdemServico(cleanOS)
+
+  // 2. Se não achou em ordens_servico, tenta buscar na coleção contracts por service_order_number
+  let contractRecord: import('@/types').ContractRecord | null = null
+
+  try {
+    const safeOS = cleanOS.replace(/'/g, "\\'")
+    const contracts = await pb
+      .collection<import('@/types').ContractRecord>('contracts')
+      .getList(1, 10, {
+        filter: `service_order_number ~ '${safeOS}'`,
+      })
+    const foundContract = contracts.items.find(
+      (c) => c.service_order_number.trim().toLowerCase() === cleanOS.toLowerCase(),
+    )
+    if (foundContract) {
+      contractRecord = foundContract
+    }
+  } catch {
+    /* intentionally ignored */
+  }
+
+  // Se não encontrou nem em ordens_servico nem em contracts:
+  if (!osRecord && !contractRecord) {
+    return {
+      valido: false,
+      motivo: 'nao_encontrada',
+      mensagem: MENSAGEM_OS_NAO_ENCONTRADA,
+    }
+  }
+
+  // Se o cliente está autenticado na Área do Cliente, verificar se a OS pertence ao contrato do cliente logado
+  if (clienteLogado) {
+    let pertence = false
+
+    if (osRecord) {
+      // osRecord.contrato_id pode ser o ID do registro em clientes, ou se expandido
+      if (osRecord.contrato_id === clienteLogado.id) {
+        pertence = true
+      } else if (osRecord.expand?.contrato_id?.numero_contrato === clienteLogado.numero_contrato) {
+        pertence = true
+      }
+    }
+
+    if (contractRecord) {
+      if (
+        contractRecord.contract_number.trim().toLowerCase() ===
+        clienteLogado.numero_contrato.trim().toLowerCase()
+      ) {
+        pertence = true
+      }
+    }
+
+    if (!pertence) {
+      // OS não pertence ao contrato do cliente logado: usar mensagem de não localizada
+      return {
+        valido: false,
+        motivo: 'contrato_divergente',
+        mensagem: MENSAGEM_OS_NAO_ENCONTRADA,
+      }
+    }
+  }
+
+  // Verificar se a OS já foi avaliada
+  const jaAvaliada =
+    Boolean(osRecord?.avaliacao_realizada) || contractRecord?.questionnaire_status === 'respondido'
+
+  if (jaAvaliada) {
+    return {
+      valido: false,
+      motivo: 'ja_avaliada',
+      mensagem: MENSAGEM_OS_JA_AVALIADA,
+    }
+  }
+
+  // Garantir um ContractRecord consistente para alimentar o questionário CSAT
+  const contractFinal: import('@/types').ContractRecord = contractRecord || {
+    id: osRecord?.id || 'synthetic-os',
+    collectionId: 'contracts',
+    collectionName: 'contracts',
+    created: osRecord?.created || new Date().toISOString(),
+    updated: osRecord?.updated || new Date().toISOString(),
+    contract_number:
+      clienteLogado?.numero_contrato ||
+      osRecord?.expand?.contrato_id?.numero_contrato ||
+      'CTR-CONDUTIVA',
+    service_order_number: osRecord?.numero_os || cleanOS,
+    client_name:
+      clienteLogado?.nome_cliente ||
+      osRecord?.expand?.contrato_id?.nome_cliente ||
+      'Cliente Condutiva',
+    client_email: clienteLogado?.email || '',
+    technician_name: osRecord?.tecnico_responsavel || 'Equipe Técnica Condutiva',
+    questionnaire_status: 'pendente',
+    nivel_contrato:
+      clienteLogado?.nivel_contrato ||
+      osRecord?.expand?.contrato_id?.nivel_contrato ||
+      'Controle Operacional',
+  }
+
+  // Se não temos osRecord mas temos contractRecord, cria osRecord sintético compatível
+  const osFinal: OrdemServicoRecord = osRecord || {
+    id: contractRecord ? contractRecord.id : 'synthetic-os',
+    collectionId: 'ordens_servico',
+    collectionName: 'ordens_servico',
+    created: contractRecord ? contractRecord.created : new Date().toISOString(),
+    updated: contractRecord ? contractRecord.updated : new Date().toISOString(),
+    numero_os: contractRecord ? contractRecord.service_order_number : cleanOS,
+    contrato_id: clienteLogado?.id || '',
+    avaliacao_realizada: false,
+    tecnico_responsavel: contractRecord
+      ? contractRecord.technician_name
+      : 'Equipe Técnica Condutiva',
+  }
+
+  return {
+    valido: true,
+    os: osFinal,
+    contract: contractFinal,
   }
 }
 

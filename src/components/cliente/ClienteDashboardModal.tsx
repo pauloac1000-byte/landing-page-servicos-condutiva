@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   Star,
   BookOpen,
@@ -21,29 +21,43 @@ import {
   ChevronLeft,
   FileCheck,
   Building2,
+  Loader2,
+  ExternalLink,
 } from 'lucide-react'
 import { useClienteAuth } from '@/contexts/ClienteAuthContext'
 import {
   temAcessoDocumentacaoTecnica,
   listarDocumentosTecnicos,
-  buscarOrdemServico,
+  validarOSParaAvaliacao,
   atualizarSenhaCliente,
   hashSenhaCliente,
   MENSAGEM_NEGACAO_SENTINELA,
 } from '@/services/clienteArea'
-import type { DocumentoTecnicoRecord, OrdemServicoRecord } from '@/types'
-import { useNavigate } from 'react-router-dom'
+import { submitCSATResponse } from '@/services/csat'
+import type {
+  DocumentoTecnicoRecord,
+  OrdemServicoRecord,
+  ContractRecord,
+  CSATFormVersion,
+  CSATResponseRecord,
+  CSATSubmissionData,
+} from '@/types'
+import { CSATOptionSelector } from '@/components/csat/CSATOptionSelector'
+import { CSATFullForm } from '@/components/csat/CSATFullForm'
+import { CSATShortForm } from '@/components/csat/CSATShortForm'
+import { CSATSuccessScreen } from '@/components/csat/CSATSuccessScreen'
 
 interface ClienteDashboardModalProps {
   isOpen: boolean
   onClose: () => void
 }
 
+type AvaliacaoSubStep = 'input_os' | 'select_option' | 'form_full' | 'form_short' | 'success'
+
 type DashboardView = 'home' | 'avaliacao' | 'documentos' | 'minha_conta'
 
 export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModalProps) {
   const { cliente, clearSession, refreshCliente } = useClienteAuth()
-  const navigate = useNavigate()
 
   const [currentView, setCurrentView] = useState<DashboardView>('home')
 
@@ -52,11 +66,15 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
   const [isLoadingDocs, setIsLoadingDocs] = useState(false)
   const [searchDoc, setSearchDoc] = useState('')
 
-  // Avaliação CSAT
+  // Avaliação CSAT dentro da Área do Cliente
   const [numeroOS, setNumeroOS] = useState('')
-  const [osInfo, setOsInfo] = useState<OrdemServicoRecord | null>(null)
   const [osSearchError, setOsSearchError] = useState<string | null>(null)
   const [isSearchingOS, setIsSearchingOS] = useState(false)
+  const [validatedOS, setValidatedOS] = useState<OrdemServicoRecord | null>(null)
+  const [validatedContract, setValidatedContract] = useState<ContractRecord | null>(null)
+  const [avaliacaoStep, setAvaliacaoStep] = useState<AvaliacaoSubStep>('input_os')
+  const [isSubmittingCSAT, setIsSubmittingCSAT] = useState(false)
+  const [submittedResponse, setSubmittedResponse] = useState<CSATResponseRecord | null>(null)
 
   // Mensagem de bloqueio do plano Sentinela
   const [showUpgradeAlert, setShowUpgradeAlert] = useState(false)
@@ -78,6 +96,11 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
       setOsSearchError(null)
       setContaError(null)
       setContaSuccess(null)
+      setAvaliacaoStep('input_os')
+      setNumeroOS('')
+      setValidatedOS(null)
+      setValidatedContract(null)
+      setSubmittedResponse(null)
     }
   }, [isOpen])
 
@@ -102,6 +125,8 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
   // Handler de clique no Card 1: Avaliar Atendimento
   const handleAcessarAvaliacao = () => {
     setCurrentView('avaliacao')
+    setAvaliacaoStep('input_os')
+    setOsSearchError(null)
   }
 
   // Handler de clique no Card 2: Documentação Técnica
@@ -114,37 +139,82 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
     setCurrentView('documentos')
   }
 
-  // Handler de busca de OS para avaliação
-  const handleBuscarOS = async (e: React.FormEvent) => {
+  // Validação da OS (cliente autenticado informa apenas a OS)
+  const handleIniciarAvaliacao = async (e: React.FormEvent) => {
     e.preventDefault()
     setOsSearchError(null)
-    setOsInfo(null)
 
     const cleanOS = numeroOS.trim()
     if (!cleanOS) {
-      setOsSearchError('Informe o número da Ordem de Serviço (ex.: OS-8841).')
+      setOsSearchError(
+        'Não localizamos esta Ordem de Serviço. Confira o número e tente novamente ou contate a assistência técnica.',
+      )
       return
     }
 
     setIsSearchingOS(true)
     try {
-      const os = await buscarOrdemServico(cleanOS)
-      if (!os) {
-        setOsSearchError('Ordem de Serviço não encontrada na base da Condutiva.')
-        return
+      const resultado = await validarOSParaAvaliacao(cleanOS, cliente)
+      if (resultado.valido) {
+        setValidatedOS(resultado.os)
+        setValidatedContract(resultado.contract)
+        setAvaliacaoStep('select_option')
+      } else {
+        setOsSearchError(resultado.mensagem)
       }
-      setOsInfo(os)
     } catch (err) {
-      console.error('Erro ao buscar OS:', err)
-      setOsSearchError('Erro ao consultar a Ordem de Serviço. Tente novamente.')
+      console.error('Erro ao validar OS:', err)
+      setOsSearchError(
+        'Não localizamos esta Ordem de Serviço. Confira o número e tente novamente ou contate a assistência técnica.',
+      )
     } finally {
       setIsSearchingOS(false)
     }
   }
 
-  const handleIrParaAvaliacaoDireta = () => {
-    onClose()
-    navigate('/avaliacao')
+  // Troca entre formato Completo e Curto
+  const handleSelectOption = (option: CSATFormVersion) => {
+    if (option === 'completo') {
+      setAvaliacaoStep('form_full')
+    } else {
+      setAvaliacaoStep('form_short')
+    }
+  }
+
+  // Envio definitivo do questionário CSAT
+  const handleCSATSubmit = async (data: CSATSubmissionData) => {
+    setIsSubmittingCSAT(true)
+    try {
+      const response = await submitCSATResponse(data)
+      setSubmittedResponse(response)
+      if (validatedOS) {
+        setValidatedOS({
+          ...validatedOS,
+          avaliacao_realizada: true,
+        })
+      }
+      if (validatedContract) {
+        setValidatedContract({
+          ...validatedContract,
+          questionnaire_status: 'respondido',
+        })
+      }
+      setAvaliacaoStep('success')
+    } catch (err) {
+      console.error('Erro ao enviar avaliação CSAT:', err)
+      setOsSearchError('Ocorreu um erro ao registrar a avaliação. Por favor, tente novamente.')
+    } finally {
+      setIsSubmittingCSAT(false)
+    }
+  }
+
+  const handleResetAvaliacao = () => {
+    setAvaliacaoStep('input_os')
+    setNumeroOS('')
+    setValidatedOS(null)
+    setValidatedContract(null)
+    setSubmittedResponse(null)
+    setOsSearchError(null)
   }
 
   // Handler de troca de senha
@@ -446,126 +516,174 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
           </div>
         )}
 
-        {/* ================= TELA: AVALIAR ATENDIMENTO (OS SEARCH + REDIRECIONAMENTO) ================= */}
+        {/* ================= TELA: AVALIAR ATENDIMENTO (INTEGRADO NA ÁREA DO CLIENTE) ================= */}
         {currentView === 'avaliacao' && (
           <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="flex items-center justify-between pb-2">
+            {/* Barra superior de navegação da tela de avaliação */}
+            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setCurrentView('home')}
+                onClick={() => {
+                  if (avaliacaoStep === 'input_os' || avaliacaoStep === 'success') {
+                    setCurrentView('home')
+                  } else if (avaliacaoStep === 'select_option') {
+                    setAvaliacaoStep('input_os')
+                  } else {
+                    setAvaliacaoStep('select_option')
+                  }
+                }}
                 className="text-xs text-slate-400 hover:text-white -ml-2 h-8 flex items-center gap-1.5"
               >
                 <ChevronLeft className="w-4 h-4" />
-                <span>Voltar ao painel</span>
+                <span>
+                  {avaliacaoStep === 'input_os' || avaliacaoStep === 'success'
+                    ? 'Voltar ao painel'
+                    : avaliacaoStep === 'select_option'
+                      ? 'Trocar número da OS'
+                      : 'Voltar às opções'}
+                </span>
               </Button>
               <Badge
                 variant="outline"
                 className="text-[11px] font-bold py-0.5 px-2 bg-[#8CC63F]/10 text-[#8CC63F] border-[#8CC63F]/30"
               >
-                Avaliação de OS
+                Avaliar Atendimento • CSAT
               </Badge>
             </div>
 
-            <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5 space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#8CC63F]/15 border border-[#8CC63F]/30 flex items-center justify-center text-[#8CC63F] shrink-0">
-                  <Star className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">Avaliar Atendimento</h3>
-                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                    Avalie o atendimento recebido na sua Ordem de Serviço. Acesso pelo número da OS.
-                  </p>
-                </div>
-              </div>
-
-              {/* Consulta rápida de OS */}
-              <form onSubmit={handleBuscarOS} className="space-y-3 pt-3 border-t border-slate-800">
-                <label
-                  htmlFor="os-search"
-                  className="text-xs font-bold uppercase tracking-wider text-slate-300 block"
-                >
-                  Consultar Ordem de Serviço pelo número da OS
-                </label>
-                <div className="flex gap-2">
-                  <Input
-                    id="os-search"
-                    type="text"
-                    value={numeroOS}
-                    onChange={(e) => {
-                      setNumeroOS(e.target.value)
-                      if (osSearchError) setOsSearchError(null)
-                    }}
-                    placeholder="Ex.: OS-8841 ou OS-8920"
-                    className="bg-slate-950 border-slate-700 text-white placeholder:text-slate-500 font-mono text-sm py-4"
-                  />
-                  <Button
-                    type="submit"
-                    disabled={isSearchingOS}
-                    className="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs px-4 shrink-0"
-                  >
-                    {isSearchingOS ? 'Buscando...' : 'Verificar OS'}
-                  </Button>
-                </div>
-
-                {osSearchError && (
-                  <p className="text-xs text-red-400 flex items-center gap-1.5 pt-1">
-                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    {osSearchError}
-                  </p>
-                )}
-
-                {osInfo && (
-                  <div className="bg-slate-950/70 border border-slate-800 rounded-lg p-3 text-xs space-y-1.5 animate-in fade-in">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold text-[#8CC63F]">{osInfo.numero_os}</span>
-                      {osInfo.avaliacao_realizada ? (
-                        <Badge
-                          variant="outline"
-                          className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]"
-                        >
-                          Avaliação já registrada
-                        </Badge>
-                      ) : (
-                        <Badge
-                          variant="outline"
-                          className="bg-amber-500/10 text-amber-400 border-amber-500/30 text-[10px]"
-                        >
-                          Avaliação pendente
-                        </Badge>
-                      )}
+            {/* Sub-etapa 1: Formulário de acesso com campo único "Número da Ordem de Serviço (OS)" */}
+            {avaliacaoStep === 'input_os' && (
+              <div className="space-y-4">
+                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5 sm:p-6 space-y-5">
+                  <div className="flex items-start gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-[#8CC63F]/15 border border-[#8CC63F]/30 flex items-center justify-center text-[#8CC63F] shrink-0">
+                      <Star className="w-6 h-6" />
                     </div>
-                    {osInfo.tecnico_responsavel && (
-                      <p className="text-slate-400">
-                        Técnico responsável:{' '}
-                        <strong className="text-slate-200">{osInfo.tecnico_responsavel}</strong>
+                    <div>
+                      <h3 className="text-lg font-bold text-white font-display">
+                        Avaliar Atendimento
+                      </h3>
+                      <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                        Permite que você avalie o atendimento de uma Ordem de Serviço específica.
+                        Como você já está logado, seu contrato{' '}
+                        <strong className="text-[#8CC63F] font-mono">
+                          {cliente.numero_contrato}
+                        </strong>{' '}
+                        já está identificado: informe apenas o número da OS.
                       </p>
-                    )}
-                    {osInfo.descricao_servico && (
-                      <p className="text-slate-400">
-                        Serviço: <span className="text-slate-300">{osInfo.descricao_servico}</span>
-                      </p>
-                    )}
+                    </div>
                   </div>
-                )}
-              </form>
 
-              {/* Botão de redirecionamento para o fluxo CSAT */}
-              <div className="pt-3 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="text-xs text-slate-400">
-                  <span>Pronto para responder a pesquisa completa ou curta?</span>
+                  {osSearchError && (
+                    <Alert
+                      variant="destructive"
+                      className="border-red-500/50 bg-red-950/40 text-red-200 animate-in fade-in duration-200"
+                    >
+                      <AlertCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+                      <div className="ml-2">
+                        <AlertTitle className="text-xs font-bold uppercase tracking-wider text-red-300">
+                          Atenção
+                        </AlertTitle>
+                        <AlertDescription className="text-xs leading-relaxed text-red-200 mt-0.5">
+                          {osSearchError}
+                        </AlertDescription>
+                      </div>
+                    </Alert>
+                  )}
+
+                  <form onSubmit={handleIniciarAvaliacao} className="space-y-4 pt-1">
+                    <div>
+                      <label
+                        htmlFor="os-input-field"
+                        className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-2"
+                      >
+                        Número da Ordem de Serviço (OS) <span className="text-[#8CC63F]">*</span>
+                      </label>
+                      <Input
+                        id="os-input-field"
+                        type="text"
+                        required
+                        value={numeroOS}
+                        onChange={(e) => {
+                          setNumeroOS(e.target.value)
+                          if (osSearchError) setOsSearchError(null)
+                        }}
+                        placeholder="Ex.: OS-8841 ou OS-8920"
+                        className="bg-slate-950 border-slate-700 text-white placeholder:text-slate-500 font-mono text-sm py-5"
+                      />
+                      <span className="text-[11px] text-slate-400 mt-1.5 block">
+                        Consta no relatório de atendimento técnico ou laudo entregue em campo para o
+                        seu contrato.
+                      </span>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={isSearchingOS}
+                      className="w-full bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-xs uppercase tracking-wider py-5 rounded-xl shadow-lg shadow-[#8CC63F]/20 flex items-center justify-center gap-2 transition-all disabled:opacity-60"
+                    >
+                      {isSearchingOS ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Localizando Ordem de Serviço...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Iniciar avaliação</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
+                    </Button>
+                  </form>
                 </div>
-                <Button
-                  onClick={handleIrParaAvaliacaoDireta}
-                  className="w-full sm:w-auto bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-xs uppercase tracking-wide py-5 px-6 rounded-xl shadow-lg shadow-[#8CC63F]/20 flex items-center justify-center gap-2"
-                >
-                  <FileCheck className="w-4 h-4" />
-                  <span>Iniciar Avaliação da OS em /avaliacao</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
               </div>
-            </div>
+            )}
+
+            {/* Sub-etapa 2: Seleção de versão (Completo ou Curto) com CSATOptionSelector reaproveitado */}
+            {avaliacaoStep === 'select_option' && validatedContract && (
+              <div className="bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-800">
+                <CSATOptionSelector
+                  contract={validatedContract}
+                  onSelectOption={handleSelectOption}
+                  onResetContract={handleResetAvaliacao}
+                />
+              </div>
+            )}
+
+            {/* Sub-etapa 3a: Formulário Completo reaproveitado com revisão "Deseja enviar esta avaliação?" */}
+            {avaliacaoStep === 'form_full' && validatedContract && (
+              <div className="bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-800">
+                <CSATFullForm
+                  contract={validatedContract}
+                  isSubmitting={isSubmittingCSAT}
+                  onSubmit={handleCSATSubmit}
+                  onBack={() => setAvaliacaoStep('select_option')}
+                />
+              </div>
+            )}
+
+            {/* Sub-etapa 3b: Versão Curta reaproveitada com revisão "Deseja enviar esta avaliação?" */}
+            {avaliacaoStep === 'form_short' && validatedContract && (
+              <div className="bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-800">
+                <CSATShortForm
+                  contract={validatedContract}
+                  isSubmitting={isSubmittingCSAT}
+                  onSubmit={handleCSATSubmit}
+                  onBack={() => setAvaliacaoStep('select_option')}
+                />
+              </div>
+            )}
+
+            {/* Sub-etapa 4: Tela de Sucesso com mensagem exata reaproveitada */}
+            {avaliacaoStep === 'success' && submittedResponse && (
+              <div className="bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-800">
+                <CSATSuccessScreen
+                  responseRecord={submittedResponse}
+                  onReset={handleResetAvaliacao}
+                />
+              </div>
+            )}
           </div>
         )}
 

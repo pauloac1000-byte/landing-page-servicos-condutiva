@@ -56,10 +56,39 @@ export async function submitCSATResponse(data: CSATSubmissionData): Promise<CSAT
     }
   }
 
+  // Se não atualizou por ID (ou se o ID pertencia a outra tabela como synthetic), tenta atualizar pelo contract_number
+  try {
+    const safeContract = data.contractNumber.trim().replace(/'/g, "\\'")
+    const safeOS = data.serviceOrderNumber.trim().replace(/'/g, "\\'")
+    const contractRec = await pb
+      .collection('contracts')
+      .getFirstListItem(`contract_number = '${safeContract}' && service_order_number = '${safeOS}'`)
+    if (contractRec) {
+      await updateContractQuestionnaireStatus(contractRec.id, 'respondido')
+    }
+  } catch {
+    /* intentionally ignored */
+  }
+
   // Sincronizar também com a coleção ordens_servico caso exista a OS correspondente
   try {
-    const safeOS = data.serviceOrderNumber.trim().replace(/'/g, "\\'")
-    const osRec = await pb.collection('ordens_servico').getFirstListItem(`numero_os = '${safeOS}'`)
+    const cleanOS = data.serviceOrderNumber.trim()
+    const safeOS = cleanOS.replace(/'/g, "\\'")
+    let osRec = null
+    try {
+      osRec = await pb.collection('ordens_servico').getFirstListItem(`numero_os = '${safeOS}'`)
+    } catch (_) {
+      const list = await pb.collection('ordens_servico').getList(1, 10, {
+        filter: `numero_os ~ '${safeOS}'`,
+      })
+      osRec =
+        list.items.find(
+          (i) =>
+            (i as unknown as { numero_os: string }).numero_os.trim().toLowerCase() ===
+            cleanOS.toLowerCase(),
+        ) || null
+    }
+
     if (osRec) {
       await pb.collection('ordens_servico').update(osRec.id, {
         avaliacao_realizada: true,

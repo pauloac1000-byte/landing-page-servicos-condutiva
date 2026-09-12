@@ -16,6 +16,12 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Logo } from '@/components/Logo'
 import { findContractByNumbers } from '@/services/contracts'
 import { submitCSATResponse } from '@/services/csat'
+import {
+  validarOSParaAvaliacao,
+  MENSAGEM_OS_NAO_ENCONTRADA,
+  MENSAGEM_OS_JA_AVALIADA,
+} from '@/services/clienteArea'
+import { useClienteAuth } from '@/contexts/ClienteAuthContext'
 import type {
   ContractRecord,
   CSATFormVersion,
@@ -31,6 +37,7 @@ import { CSATSuccessScreen } from '@/components/csat/CSATSuccessScreen'
 type PageStep = 'validate' | 'select_option' | 'form_full' | 'form_short' | 'success'
 
 export default function CSATAccessPage() {
+  const { cliente } = useClienteAuth()
   const [contractNumber, setContractNumber] = useState('')
   const [serviceOrderNumber, setServiceOrderNumber] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -40,6 +47,13 @@ export default function CSATAccessPage() {
   const [currentStep, setCurrentStep] = useState<PageStep>('validate')
   const [submittedResponse, setSubmittedResponse] = useState<CSATResponseRecord | null>(null)
 
+  // Se o cliente já estiver logado, inicializar o número do contrato com o da sessão
+  useState(() => {
+    if (cliente?.numero_contrato && !contractNumber) {
+      setContractNumber(cliente.numero_contrato)
+    }
+  })
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMessage(null)
@@ -47,31 +61,58 @@ export default function CSATAccessPage() {
     const trimmedContract = contractNumber.trim()
     const trimmedOS = serviceOrderNumber.trim()
 
-    if (!trimmedContract || !trimmedOS) {
-      setErrorMessage(
-        'Não encontramos esse número de contrato ou de OS. Verifique os dados e tente novamente, ou entre em contato com o time comercial da Condutiva para obter ajuda.',
-      )
+    // Regra da especificação: "Acesso feito informando o número da OS, sem exigir login na Área do Cliente
+    // (ou, se preferir, o cliente logado informa apenas a OS)."
+    // Se o cliente informou a OS (mesmo sem digitar contrato ou com contrato preenchido):
+    if (!trimmedOS) {
+      setErrorMessage(MENSAGEM_OS_NAO_ENCONTRADA)
       return
     }
 
     setIsLoading(true)
 
     try {
-      const match = await findContractByNumbers(trimmedContract, trimmedOS)
+      // 1. Tenta validar via validarOSParaAvaliacao (que suporta acesso apenas por OS e vinculação à sessão se logado)
+      const resultadoOS = await validarOSParaAvaliacao(trimmedOS, cliente)
 
-      if (match) {
-        setValidatedContract(match)
+      if (resultadoOS.valido) {
+        // Se forneceu contrato explicitamente, checa se bate (se não bater, mensagem exata de não localizada)
+        if (
+          trimmedContract &&
+          resultadoOS.contract.contract_number.trim().toLowerCase() !==
+            trimmedContract.toLowerCase()
+        ) {
+          setErrorMessage(MENSAGEM_OS_NAO_ENCONTRADA)
+          return
+        }
+
+        setValidatedContract(resultadoOS.contract)
         setCurrentStep('select_option')
-      } else {
-        setErrorMessage(
-          'Não encontramos esse número de contrato ou de OS. Verifique os dados e tente novamente, ou entre em contato com o time comercial da Condutiva para obter ajuda.',
-        )
+        return
+      } else if (resultadoOS.motivo === 'ja_avaliada') {
+        setErrorMessage(MENSAGEM_OS_JA_AVALIADA)
+        return
       }
+
+      // 2. Fallback: se forneceu ambos contrato e OS, pesquisa na base de contracts
+      if (trimmedContract && trimmedOS) {
+        const match = await findContractByNumbers(trimmedContract, trimmedOS)
+        if (match) {
+          if (match.questionnaire_status === 'respondido') {
+            setErrorMessage(MENSAGEM_OS_JA_AVALIADA)
+            return
+          }
+          setValidatedContract(match)
+          setCurrentStep('select_option')
+          return
+        }
+      }
+
+      // Se não encontrou
+      setErrorMessage(MENSAGEM_OS_NAO_ENCONTRADA)
     } catch (err: unknown) {
       console.error('Erro na validação do contrato:', err)
-      setErrorMessage(
-        'Não encontramos esse número de contrato ou de OS. Verifique os dados e tente novamente, ou entre em contato com o time comercial da Condutiva para obter ajuda.',
-      )
+      setErrorMessage(MENSAGEM_OS_NAO_ENCONTRADA)
     } finally {
       setIsLoading(false)
     }
@@ -217,34 +258,10 @@ export default function CSATAccessPage() {
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
                       <label
-                        htmlFor="contractNumber"
-                        className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-2"
-                      >
-                        Número do contrato <span className="text-[#4d7c0f]">*</span>
-                      </label>
-                      <Input
-                        id="contractNumber"
-                        type="text"
-                        required
-                        value={contractNumber}
-                        onChange={(e) => {
-                          setContractNumber(e.target.value)
-                          if (errorMessage) setErrorMessage(null)
-                        }}
-                        placeholder="Ex.: CTR-2025-0142"
-                        className="bg-slate-50/70 border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#8CC63F] focus:bg-white text-sm py-5 font-mono"
-                      />
-                      <span className="text-[11px] text-slate-500 mt-1 block">
-                        Consta na primeira página da sua proposta ou documento de contrato.
-                      </span>
-                    </div>
-
-                    <div>
-                      <label
                         htmlFor="serviceOrderNumber"
                         className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-2"
                       >
-                        Número da OS <span className="text-[#4d7c0f]">*</span>
+                        Número da Ordem de Serviço (OS) <span className="text-[#4d7c0f]">*</span>
                       </label>
                       <Input
                         id="serviceOrderNumber"
@@ -255,7 +272,7 @@ export default function CSATAccessPage() {
                           setServiceOrderNumber(e.target.value)
                           if (errorMessage) setErrorMessage(null)
                         }}
-                        placeholder="Ex.: OS-8841"
+                        placeholder="Ex.: OS-8841 ou OS-8920"
                         className="bg-slate-50/70 border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#8CC63F] focus:bg-white text-sm py-5 font-mono"
                       />
                       <span className="text-[11px] text-slate-500 mt-1 block">
@@ -263,12 +280,38 @@ export default function CSATAccessPage() {
                       </span>
                     </div>
 
+                    <div>
+                      <label
+                        htmlFor="contractNumber"
+                        className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-2"
+                      >
+                        Número do contrato{' '}
+                        <span className="text-slate-400 font-normal">
+                          (opcional se informado número de OS válido)
+                        </span>
+                      </label>
+                      <Input
+                        id="contractNumber"
+                        type="text"
+                        value={contractNumber}
+                        onChange={(e) => {
+                          setContractNumber(e.target.value)
+                          if (errorMessage) setErrorMessage(null)
+                        }}
+                        placeholder={cliente?.numero_contrato || 'Ex.: CTR-2025-0142'}
+                        className="bg-slate-50/70 border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#8CC63F] focus:bg-white text-sm py-5 font-mono"
+                      />
+                      <span className="text-[11px] text-slate-500 mt-1 block">
+                        Consta na primeira página da sua proposta ou documento de contrato.
+                      </span>
+                    </div>
+
                     <Button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-sm uppercase tracking-wide py-6 rounded-xl shadow-lg shadow-[#8CC63F]/20 transition-all disabled:opacity-60"
+                      className="w-full bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-sm uppercase tracking-wide py-6 rounded-xl shadow-lg shadow-[#8CC63F]/20 transition-all disabled:opacity-60 cursor-pointer"
                     >
-                      {isLoading ? 'Verificando dados...' : 'Acessar'}
+                      {isLoading ? 'Verificando dados...' : 'Iniciar avaliação'}
                     </Button>
                   </form>
 
