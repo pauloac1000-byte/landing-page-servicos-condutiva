@@ -168,11 +168,12 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                       1 visita bimestral técnica com as seguintes entregas:
                     </span>
                     <ul className="space-y-1 pl-3 text-slate-600 text-[11px] list-disc marker:text-emerald-600">
-                      <li>Inspeção física do sensor e do seu ponto de montagem</li>
+                      <li>Inspeção física do sensor</li>
+                      <li>Verificação de calibração</li>
                       <li>Limpeza técnica</li>
-                      <li>Teste funcional de conjunto (sensor + controle)</li>
-                      <li>Registro de medição, análise de histórico desde a última visita</li>
-                      <li>Entrega de parecer preventivo e relatório de condição do ativo.</li>
+                      <li>Teste funcional do conjunto sensor/processador</li>
+                      <li>Registro de evidências, análise do histórico desde a última visita</li>
+                      <li>Recomendações preventivas e relatório de condição do ativo.</li>
                     </ul>
                   </div>
                 </li>
@@ -184,15 +185,29 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <div className="space-y-1 flex-1">
-                    <span className="font-semibold text-slate-900">
-                      SICO Básico para clientes com CCS200
-                    </span>
-                    <ul className="space-y-1 pl-3 text-slate-600 text-[11px] list-disc marker:text-emerald-600">
-                      <li>Monitoramento no subsistema do CCS200</li>
-                      <li>Suporte remoto prioritário em horário comercial</li>
-                    </ul>
-                  </div>
+                  <span className="text-slate-700">SICO Básico para clientes com CC5200</span>
+                </li>
+
+                <li className="flex items-start gap-2.5">
+                  <span
+                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
+                    style={{ backgroundColor: '#2E7D32' }}
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </span>
+                  <span className="text-slate-700">20% desconto na substituição do CC5200</span>
+                </li>
+
+                <li className="flex items-start gap-2.5">
+                  <span
+                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
+                    style={{ backgroundColor: '#2E7D32' }}
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </span>
+                  <span className="text-slate-700">
+                    Suporte remoto prioritário em horário comercial
+                  </span>
                 </li>
 
                 <li className="flex items-start gap-2.5">
