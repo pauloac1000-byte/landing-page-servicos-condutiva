@@ -8,19 +8,22 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet'
-import { Menu, Phone, MessageCircle, ChevronRight, Star } from 'lucide-react'
+import { Menu, Phone, MessageCircle, ChevronRight, UserCheck, Lock } from 'lucide-react'
 import { COMPANY_INFO } from '@/data/mockData'
 import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/Logo'
+import { useClienteAuth } from '@/contexts/ClienteAuthContext'
 
 interface HeaderProps {
   onOpenDiagnosticModal?: () => void
+  onOpenClienteArea?: () => void
 }
 
-export function Header({ onOpenDiagnosticModal }: HeaderProps) {
+export function Header({ onOpenDiagnosticModal, onOpenClienteArea }: HeaderProps) {
   const [activeLang, setActiveLang] = useState<'PT' | 'EN' | 'ES'>('PT')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { toast } = useToast()
+  const { isAuthenticated, openModal, cliente } = useClienteAuth()
 
   const handleLangChange = (lang: 'PT' | 'EN' | 'ES') => {
     setActiveLang(lang)
@@ -127,16 +130,29 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
           ))}
         </nav>
 
-        {/* Botão de Avaliar Atendimento & Contatos à Direita */}
+        {/* Botão de Área do Cliente & Contatos à Direita */}
         <div className="hidden md:flex items-center gap-3 shrink-0">
-          <Link
-            to="/avaliacao"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#8CC63F]/50 bg-[#8CC63F]/10 hover:bg-[#8CC63F]/20 text-slate-800 transition-all group"
-            title="Avaliação de Satisfação do Cliente (CSAT)"
+          <button
+            type="button"
+            onClick={() => {
+              if (onOpenClienteArea) {
+                onOpenClienteArea()
+              } else {
+                openModal('login')
+              }
+            }}
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-[#8CC63F] bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold transition-all shadow-sm hover:shadow-md group"
+            title="Área do Cliente Condutiva"
           >
-            <Star className="w-4 h-4 text-[#4d7c0f] group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-slate-800">Avaliar atendimento</span>
-          </Link>
+            {isAuthenticated ? (
+              <UserCheck className="w-4 h-4 text-slate-950 group-hover:scale-110 transition-transform" />
+            ) : (
+              <Lock className="w-4 h-4 text-slate-950 group-hover:scale-110 transition-transform" />
+            )}
+            <span className="text-xs font-black uppercase tracking-wider text-slate-950">
+              {isAuthenticated ? 'Área do Cliente' : 'Área do Cliente'}
+            </span>
+          </button>
 
           {/* Telefone Fixo */}
           <a
@@ -220,17 +236,28 @@ export function Header({ onOpenDiagnosticModal }: HeaderProps) {
                     </button>
                   ))}
 
-                  <Link
-                    to="/avaliacao"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-left py-2.5 px-3 bg-[#8CC63F]/15 border border-[#8CC63F]/30 text-slate-900 rounded-lg font-bold text-sm flex items-center justify-between transition-colors mt-2"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false)
+                      if (onOpenClienteArea) {
+                        onOpenClienteArea()
+                      } else {
+                        openModal('login')
+                      }
+                    }}
+                    className="text-left py-2.5 px-3 bg-[#8CC63F] text-slate-950 rounded-lg font-black text-sm flex items-center justify-between transition-colors mt-2 shadow-sm"
                   >
                     <span className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-[#4d7c0f]" />
-                      Avaliar atendimento
+                      {isAuthenticated ? (
+                        <UserCheck className="w-4 h-4 text-slate-950" />
+                      ) : (
+                        <Lock className="w-4 h-4 text-slate-950" />
+                      )}
+                      Área do Cliente
                     </span>
-                    <ChevronRight className="w-4 h-4 text-[#4d7c0f]" />
-                  </Link>
+                    <ChevronRight className="w-4 h-4 text-slate-950" />
+                  </button>
                 </div>{' '}
               </div>
 

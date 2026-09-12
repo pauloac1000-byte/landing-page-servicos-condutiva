@@ -66,12 +66,29 @@ export async function hashSenhaCliente(senhaRaw: string): Promise<string> {
  * Autentica o cliente na Área do Cliente utilizando número de contrato + senha.
  * Retorna o registro do cliente autenticado ou null se as credenciais forem inválidas.
  */
+export type AuthClienteResult =
+  | { success: true; cliente: ClienteRecord }
+  | { success: false; reason: 'not_found' | 'invalid_password' | 'corrupted' }
+
+/**
+ * Autentica o cliente na Área do Cliente utilizando número de contrato + senha.
+ * Retorna resultado tipado detalhando sucesso ou a razão da falha para mensagens exatas.
+ */
 export async function autenticarCliente(
   numeroContrato: string,
   senhaRaw: string,
 ): Promise<ClienteRecord | null> {
+  const res = await autenticarClienteComDetalhe(numeroContrato, senhaRaw)
+  return res.success ? res.cliente : null
+}
+
+export async function autenticarClienteComDetalhe(
+  numeroContrato: string,
+  senhaRaw: string,
+): Promise<AuthClienteResult> {
   const cleanContrato = numeroContrato.trim()
-  if (!cleanContrato || !senhaRaw) return null
+  if (!cleanContrato) return { success: false, reason: 'not_found' }
+  if (!senhaRaw) return { success: false, reason: 'invalid_password' }
 
   try {
     const safeContrato = cleanContrato.replace(/'/g, "\\'")
@@ -80,20 +97,24 @@ export async function autenticarCliente(
     })
 
     if (records.items.length === 0) {
-      return null
+      return { success: false, reason: 'not_found' }
     }
 
     const cliente = records.items[0]
+    if (!cliente.senha) {
+      return { success: false, reason: 'corrupted' }
+    }
+
     const hashCalculado = await hashSenhaCliente(senhaRaw)
 
     if (cliente.senha === hashCalculado) {
-      return cliente
+      return { success: true, cliente }
     }
 
-    return null
+    return { success: false, reason: 'invalid_password' }
   } catch (err) {
     console.error('Erro ao autenticar cliente:', err)
-    return null
+    return { success: false, reason: 'not_found' }
   }
 }
 

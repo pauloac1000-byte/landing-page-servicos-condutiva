@@ -18,19 +18,35 @@ import { RiskReversalBanner } from '@/components/sections/RiskReversalBanner'
 import { FaqSection } from '@/components/sections/FaqSection'
 import { DiagnosticFormSection } from '@/components/sections/DiagnosticFormSection'
 import { DiagnosticModal } from '@/components/DiagnosticModal'
+import { ClienteLoginModal } from '@/components/cliente/ClienteLoginModal'
+import { ClienteDashboardModal } from '@/components/cliente/ClienteDashboardModal'
+import { useClienteAuth } from '@/contexts/ClienteAuthContext'
 
 export default function Index() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedTopic, setSelectedTopic] = useState<string | undefined>(undefined)
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false)
+  const { isAuthenticated, openModal } = useClienteAuth()
 
   const handleOpenModal = (topic?: string) => {
     setSelectedTopic(topic)
     setIsModalOpen(true)
   }
 
+  const handleOpenClienteArea = () => {
+    if (isAuthenticated) {
+      setIsDashboardOpen(true)
+    } else {
+      openModal('login')
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-[#8CC63F] selection:text-white">
-      <Header onOpenDiagnosticModal={() => handleOpenModal()} />
+      <Header
+        onOpenDiagnosticModal={() => handleOpenModal()}
+        onOpenClienteArea={handleOpenClienteArea}
+      />
 
       <main className="flex-grow">
         <HeroSection onOpenDiagnosticModal={() => handleOpenModal('Diagnóstico Hero')} />
@@ -47,7 +63,7 @@ export default function Index() {
         <AspirationalSection
           onOpenDiagnosticModal={() => handleOpenModal('Diagnóstico Banner Parallax')}
         />
-        <TestimonialsSection />
+        <TestimonialsSection onOpenClienteArea={handleOpenClienteArea} />
         <RiskReversalBanner
           onOpenDiagnosticModal={() => handleOpenModal('Diagnóstico Banner Risco Zero')}
         />
@@ -55,13 +71,17 @@ export default function Index() {
         <DiagnosticFormSection initialService={selectedTopic} />
       </main>
 
-      <Footer />
+      <Footer onOpenClienteArea={handleOpenClienteArea} />
 
       <DiagnosticModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         preselectedTitle={selectedTopic}
       />
+
+      {/* Modais da Área do Cliente */}
+      <ClienteLoginModal />
+      <ClienteDashboardModal isOpen={isDashboardOpen} onClose={() => setIsDashboardOpen(false)} />
     </div>
   )
 }

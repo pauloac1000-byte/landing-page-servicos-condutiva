@@ -1,7 +1,13 @@
 import { TESTIMONIALS } from '@/data/mockData'
-import { Star, Quote } from 'lucide-react'
+import { Star, Quote, UserCheck } from 'lucide-react'
+import { useClienteAuth } from '@/contexts/ClienteAuthContext'
 
-export function TestimonialsSection() {
+interface TestimonialsSectionProps {
+  onOpenClienteArea?: () => void
+}
+
+export function TestimonialsSection({ onOpenClienteArea }: TestimonialsSectionProps) {
+  const { openModal } = useClienteAuth()
   return (
     <section className="py-20 bg-white text-slate-900">
       <div className="container mx-auto px-4">
@@ -47,23 +53,31 @@ export function TestimonialsSection() {
         <div className="mt-12 p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-4xl mx-auto shadow-subtle">
           <div className="space-y-1 text-center sm:text-left">
             <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#4d7c0f] bg-[#8CC63F]/15 px-2.5 py-1 rounded">
-              Pesquisa de Satisfação
+              Acesso Exclusivo à Base Instalada
             </span>
             <h3 className="text-lg font-bold text-slate-900 pt-1">
-              Já recebeu atendimento da equipe técnica da Condutiva?
+              Já possui contrato de serviços ou atendimento técnico ativo?
             </h3>
             <p className="text-xs text-slate-600 max-w-xl">
-              Sua avaliação orienta a evolução contínua dos nossos serviços industriais. Acesse com
-              seu número de contrato e OS.
+              Acesse a Área do Cliente para avaliar ordens de serviço, consultar a documentação
+              técnica e gerenciar sua conta com segurança.
             </p>
           </div>
 
-          <a
-            href="/avaliacao"
+          <button
+            type="button"
+            onClick={() => {
+              if (onOpenClienteArea) {
+                onOpenClienteArea()
+              } else {
+                openModal('login')
+              }
+            }}
             className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold text-sm transition shadow-sm shrink-0 whitespace-nowrap"
           >
-            Avaliar atendimento
-          </a>
+            <UserCheck className="w-4 h-4" />
+            <span>Área do Cliente</span>
+          </button>
         </div>
       </div>
     </section>
