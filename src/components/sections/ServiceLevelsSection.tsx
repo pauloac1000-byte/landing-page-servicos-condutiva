@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { Check, Zap } from 'lucide-react'
+import { Check, Sparkles, Zap } from 'lucide-react'
 
 interface ServiceLevelsProps {
   onSelectPlan: (planName: string) => void
@@ -291,7 +291,8 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   border: '1px solid rgba(255, 255, 255, 0.7)',
                 }}
               >
-                <span>👑</span>O MAIS ESCOLHIDO
+                <Sparkles className="w-3.5 h-3.5 text-amber-950 fill-amber-100/90 drop-shadow-[0_1px_2px_rgba(255,255,255,0.6)] shrink-0" />
+                O MAIS ESCOLHIDO
               </span>
             </div>
 
