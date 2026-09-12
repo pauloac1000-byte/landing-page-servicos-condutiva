@@ -95,11 +95,6 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                     <path d="M12 11v6" stroke="white" strokeWidth="2.2" />
                   </svg>
                 </div>
-
-                {/* Badge Sob Consulta */}
-                <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-md shrink-0">
-                  Sob consulta
-                </span>
               </div>
 
               {/* Título & Descrição */}
@@ -338,11 +333,6 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                     <path d="M7 11l4-4 2 2 4-4" stroke="white" strokeWidth="1.8" />
                   </svg>
                 </div>
-
-                {/* Badge Sob Consulta */}
-                <span className="text-[11px] font-semibold text-amber-900 bg-amber-50 border border-amber-200/90 px-2.5 py-1 rounded-md shrink-0">
-                  Sob consulta
-                </span>
               </div>
 
               {/* Título & Descrição */}
@@ -608,11 +598,6 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                     />
                   </svg>
                 </div>
-
-                {/* Badge Sob Consulta */}
-                <span className="text-[11px] font-semibold text-purple-900 bg-purple-50 border border-purple-200/80 px-2.5 py-1 rounded-md shrink-0">
-                  Sob consulta
-                </span>
               </div>
 
               {/* Título & Descrição */}
