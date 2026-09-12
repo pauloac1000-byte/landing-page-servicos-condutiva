@@ -141,7 +141,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
           <div className="relative flex flex-col bg-slate-900 border-2 border-[#8CC63F] rounded-2xl shadow-2xl shadow-[#8CC63F]/20 lg:scale-[1.03] z-10 overflow-hidden ring-1 ring-[#8CC63F]/30">
             {/* Badge PLANO RECOMENDADO */}
             <div className="bg-[#8CC63F] text-slate-950 font-black text-[11px] uppercase tracking-wider py-1.5 text-center shadow-md">
-              ★ PLANO RECOMENDADO
+              ★ O MAIS ESCOLHIDO
             </div>
 
             {/* Bloco Superior: Cabeçalho do Plano */}
