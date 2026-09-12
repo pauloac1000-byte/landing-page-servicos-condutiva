@@ -342,7 +342,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               {/* Título & Descrição */}
               <div className="mt-4">
                 <h3 className="text-[1.35rem] font-black text-slate-900 font-display leading-tight">
-                  Plano Controle Operacional SIGA
+                  Plano Controle Operacional&nbsp;
                 </h3>
                 <span className="text-sm font-bold text-amber-900 block mt-0.5">
                   (Intermediário)
