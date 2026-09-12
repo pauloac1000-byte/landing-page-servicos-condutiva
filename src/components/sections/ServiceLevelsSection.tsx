@@ -138,42 +138,43 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
           </div>
 
           {/* COLUNA 2: Plano Controle Operacional (Intermediário) — DESTAQUE MÁXIMO */}
-          <div className="relative flex flex-col bg-[#14230d] border-2 border-[#8CC63F] rounded-2xl shadow-2xl shadow-[#8CC63F]/25 lg:scale-[1.03] z-10 overflow-hidden">
+          <div className="relative flex flex-col bg-slate-900 border-2 border-[#8CC63F] rounded-2xl shadow-2xl shadow-[#8CC63F]/20 lg:scale-[1.03] z-10 overflow-hidden ring-1 ring-[#8CC63F]/30">
             {/* Badge PLANO RECOMENDADO */}
             <div className="bg-[#8CC63F] text-slate-950 font-black text-[11px] uppercase tracking-wider py-1.5 text-center shadow-md">
-              ★ O MAIS ESCOLHIDO
+              ★ PLANO RECOMENDADO
             </div>
 
             {/* Bloco Superior: Cabeçalho do Plano */}
-            <div className="p-6 sm:p-7 border-b border-[#8CC63F]/20 bg-[#172b0f]/60">
-              <h3 className="text-xl font-extrabold text-white font-display flex items-center justify-between">
+            <div className="p-6 sm:p-7 border-b border-slate-800 bg-slate-900/95 relative">
+              <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#8CC63F]/10 to-transparent pointer-events-none" />
+              <h3 className="text-xl font-extrabold text-white font-display flex items-center justify-between relative">
                 <span>Plano Controle Operacional (Intermediário)</span>
               </h3>
-              <p className="text-[#8CC63F]/80 text-xs italic mt-2 min-h-[32px]">
+              <p className="text-slate-300 text-xs italic mt-2 min-h-[32px] relative">
                 O equilíbrio entre investimento e controle operacional.
               </p>
 
               {/* Preço */}
-              <div className="mt-5 pt-4 border-t border-[#8CC63F]/20">
-                <span className="text-xs text-[#8CC63F]/60 line-through block font-mono">
+              <div className="mt-5 pt-4 border-t border-slate-800/90 relative">
+                <span className="text-xs text-slate-500 line-through block font-mono">
                   De: R$ 2.890,00
                 </span>
                 <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="text-xs font-semibold text-[#8CC63F]">por R$</span>
+                  <span className="text-xs font-semibold text-slate-300">por R$</span>
                   <span className="text-3xl sm:text-4xl font-extrabold text-[#8CC63F] tracking-tight">
                     1.990,00
                   </span>
-                  <span className="text-xs font-normal text-[#8CC63F]/80">/mês</span>
+                  <span className="text-xs font-normal text-slate-300">/mês</span>
                 </div>
-                <span className="text-[11px] text-[#8CC63F]/70 block mt-1 font-mono">
+                <span className="text-[11px] text-slate-400 block mt-1 font-mono">
                   por equipamento
                 </span>
               </div>
             </div>
 
             {/* Bloco Superior: Lista de Itens Inclusos */}
-            <div className="p-6 sm:p-7 flex-grow space-y-4 bg-[#14230d]">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#8CC63F] block pb-1 border-b border-[#8CC63F]/20">
+            <div className="p-6 sm:p-7 flex-grow space-y-4 bg-slate-900/70">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#8CC63F] block pb-1 border-b border-slate-800">
                 INCLUSO NO PACOTE:
               </span>
 
@@ -219,19 +220,19 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   </span>
                 </li>
 
-                <li className="flex items-start gap-2.5 pt-1.5 pb-1 px-2.5 bg-[#8CC63F]/10 rounded-lg border border-[#8CC63F]/20">
+                <li className="flex items-start gap-2.5 pt-1.5 pb-1 px-2.5 bg-[#8CC63F]/10 rounded-lg border border-[#8CC63F]/25">
                   <span className="text-[#8CC63F] font-bold text-xs shrink-0 mt-0.5">★</span>
-                  <span className="text-[#d7f7a5] text-[11px] leading-relaxed">
-                    <strong>BÔNUS:</strong> Você manda no calendário: e a emergência aparece,
-                    adiante com a sua própria equipe na hora, dentro do plano
+                  <span className="text-slate-200 text-[11px] leading-relaxed">
+                    <strong className="text-[#8CC63F]">BÔNUS:</strong> Você manda no calendário: se
+                    a emergência aparece, adiante com a sua própria equipe na hora, dentro do plano
                   </span>
                 </li>
               </ul>
             </div>
 
             {/* Bloco Inferior: "O retorno na prática" */}
-            <div className="p-6 sm:p-7 border-t border-[#8CC63F]/20 bg-[#101c0a] space-y-4">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#8CC63F] underline underline-offset-4 decoration-[#8CC63F]/60">
+            <div className="p-6 sm:p-7 border-t border-slate-800 bg-slate-950/80 space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#8CC63F] underline underline-offset-4 decoration-[#8CC63F]/50">
                 O retorno na prática
               </h4>
               <p className="text-xs text-slate-300 leading-relaxed">
@@ -250,7 +251,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 </li>
               </ul>
 
-              <div className="pt-2 text-[11px] text-[#8CC63F] italic">
+              <div className="pt-2 text-[11px] text-slate-300 italic">
                 Ideal para: múltiplos sensores e causa raiz recorrente.
               </div>
 
