@@ -31,7 +31,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
             <div className="p-6 sm:p-7 border-b border-slate-800 bg-slate-900/90">
               <div className="h-6 mb-2" /> {/* Espaçador alinhado com o badge da coluna 2 */}
               <h3 className="text-xl font-bold text-white font-display">
-                Plano Sentinela Preventiva (Básico)
+                Plano Sentinela Preventivo (Básico)
               </h3>
               <p className="text-slate-400 text-xs italic mt-2 min-h-[32px]">
                 Manutenção preventiva com cobertura essencial.
