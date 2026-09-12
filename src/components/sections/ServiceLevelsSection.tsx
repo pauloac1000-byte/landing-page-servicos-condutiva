@@ -18,8 +18,8 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
             Planos de manutenção e calibração dimensionados para a sua demanda.
           </h2>
           <p className="text-slate-400 text-sm sm:text-base">
-            Elimine a incerteza de chamados avulsos e tenha prioridade absoluta de atendimento
-            presencial em campo.
+            Elimine a incerteza de chamados avulsos e tenha prioridade de atendimento presencial em
+            campo.
           </p>
         </div>
 
