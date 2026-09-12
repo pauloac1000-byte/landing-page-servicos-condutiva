@@ -668,16 +668,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 INCLUSO NO PACOTE:
               </span>
 
-              <ul className="space-y-3.5 text-xs text-slate-700">
-                <li className="flex items-start gap-2.5">
-                  <span
-                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#7B1FA2' }}
-                  >
-                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </span>
-                  <span className="font-semibold text-slate-900">
-                    Tudo do Controle Operacional SIGA
+              <ul className="space-y-3 text-xs text-slate-700">
+                <li className="pt-0.5 pb-1">
+                  <span className="font-bold text-slate-900 text-[13px] tracking-tight block">
+                    Tudo do Controle Operacional
                   </span>
                 </li>
 
@@ -688,7 +682,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <span>Visita bimestral com engenheiro dedicado</span>
+                  <span>
+                    <strong className="text-purple-700 font-bold">+</strong> Visita bimestral com
+                    engenheiro dedicado
+                  </span>
                 </li>
 
                 <li className="flex items-start gap-2.5">
@@ -698,7 +695,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <span>Relatório executivo mensal (presencial)</span>
+                  <span>
+                    <strong className="text-purple-700 font-bold">+</strong> Relatório executivo
+                    mensal presencial
+                  </span>
                 </li>
 
                 <li className="flex items-start gap-2.5">
@@ -708,7 +708,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <span>KPI anual de reposição completo com desconto especial</span>
+                  <span>
+                    <strong className="text-purple-700 font-bold">+</strong> Kit anual de reposição
+                    completo com desconto especial
+                  </span>
                 </li>
 
                 <li className="flex items-start gap-2.5">
@@ -718,7 +721,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <span>Atendimento prioritário com dedicação integral</span>
+                  <span>
+                    <strong className="text-purple-700 font-bold">+</strong> Atendimento prioritário
+                    com dedicação integral
+                  </span>
                 </li>
 
                 <li className="flex items-start gap-2.5">
@@ -728,19 +734,14 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <span>Coletórcio anual</span>
-                </li>
-
-                <li className="flex items-start gap-2.5">
-                  <span
-                    className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#7B1FA2' }}
-                  >
-                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </span>
-                  <span>Adesão mediante a disponibilidade de vagas do ciclo anual.</span>
+                  <span>Contrato anual</span>
                 </li>
               </ul>
+
+              {/* Nota de rodapé da lista */}
+              <p className="text-[11px] text-slate-500 italic pt-1 leading-snug">
+                Adesão mediante a disponibilidade de vagas do ciclo anual.
+              </p>
 
               {/* Bloco 2 Motivos de Adesão */}
               <div
