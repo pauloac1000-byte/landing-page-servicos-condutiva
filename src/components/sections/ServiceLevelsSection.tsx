@@ -650,9 +650,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   5.690,00
                   <span className="text-base sm:text-lg font-bold text-purple-100">/mês</span>
                 </div>
-                <span className="text-[11px] text-purple-100/90 block mt-1 font-mono">
-                  por equipamento
-                </span>
+                <p className="text-[11px] text-purple-100/90 leading-snug mt-2.5 max-w-[280px] mx-auto">
+                  Consulte nossos vendedores, o valor final será definido após uma avaliação dos
+                  equipamentos — considerando quantidade e condições de cada um.
+                </p>
               </div>
             </div>
 
