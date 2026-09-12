@@ -7,7 +7,7 @@ import { updateContractQuestionnaireStatus } from './contracts'
  */
 export async function submitCSATResponse(data: CSATSubmissionData): Promise<CSATResponseRecord> {
   const payload = {
-    contract_id: data.contractId || null,
+    contract_id: data.contractId || undefined,
     contract_number: data.contractNumber.trim(),
     service_order_number: data.serviceOrderNumber.trim(),
     form_version: data.formVersion,
@@ -54,6 +54,19 @@ export async function submitCSATResponse(data: CSATSubmissionData): Promise<CSAT
     } catch (err) {
       console.warn('Could not auto-update contract status by ID:', err)
     }
+  }
+
+  // Sincronizar também com a coleção ordens_servico caso exista a OS correspondente
+  try {
+    const safeOS = data.serviceOrderNumber.trim().replace(/'/g, "\\'")
+    const osRec = await pb.collection('ordens_servico').getFirstListItem(`numero_os = '${safeOS}'`)
+    if (osRec) {
+      await pb.collection('ordens_servico').update(osRec.id, {
+        avaliacao_realizada: true,
+      })
+    }
+  } catch (_) {
+    // OS não cadastrada previamente na tabela ordens_servico ou já atualizada
   }
 
   return createdRecord

@@ -53,14 +53,18 @@ export async function findContractByNumbers(
  * Creates a new contract & service order record.
  */
 export async function createContract(data: ContractFormData): Promise<ContractRecord> {
-  return await pb.collection<ContractRecord>('contracts').create({
+  const payload: Record<string, unknown> = {
     contract_number: data.contractNumber.trim(),
     service_order_number: data.serviceOrderNumber.trim(),
     client_name: data.clientName.trim(),
     client_email: data.clientEmail.trim().toLowerCase(),
     technician_name: data.technicianName.trim(),
     questionnaire_status: data.questionnaireStatus,
-  })
+  }
+  if (data.nivelContrato) {
+    payload.nivel_contrato = data.nivelContrato
+  }
+  return await pb.collection<ContractRecord>('contracts').create(payload)
 }
 
 /**
@@ -79,6 +83,7 @@ export async function updateContract(
   if (data.technicianName !== undefined) payload.technician_name = data.technicianName.trim()
   if (data.questionnaireStatus !== undefined)
     payload.questionnaire_status = data.questionnaireStatus
+  if (data.nivelContrato !== undefined) payload.nivel_contrato = data.nivelContrato
 
   return await pb.collection<ContractRecord>('contracts').update(id, payload)
 }

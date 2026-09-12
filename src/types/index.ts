@@ -85,6 +85,8 @@ export interface LeadRecord {
 
 export type QuestionnaireStatus = 'pendente' | 'respondido'
 
+export type NivelContrato = 'Sentinela Preventivo' | 'Controle Operacional' | 'Maestro Engenharia'
+
 export interface ContractFormData {
   contractNumber: string
   serviceOrderNumber: string
@@ -92,6 +94,7 @@ export interface ContractFormData {
   clientEmail: string
   technicianName: string
   questionnaireStatus: QuestionnaireStatus
+  nivelContrato?: NivelContrato
 }
 
 export interface ContractRecord {
@@ -106,6 +109,55 @@ export interface ContractRecord {
   client_email: string
   technician_name: string
   questionnaire_status: QuestionnaireStatus
+  nivel_contrato?: NivelContrato
+}
+
+export interface ClienteRecord {
+  id: string
+  collectionId: string
+  collectionName: string
+  created: string
+  updated: string
+  numero_contrato: string
+  nome_cliente: string
+  email?: string
+  senha: string
+  nivel_contrato: NivelContrato
+  senha_alterada_em?: string
+  primeiro_acesso_em?: string
+}
+
+export interface OrdemServicoRecord {
+  id: string
+  collectionId: string
+  collectionName: string
+  created: string
+  updated: string
+  numero_os: string
+  contrato_id: string
+  avaliacao_realizada?: boolean
+  descricao_servico?: string
+  tecnico_responsavel?: string
+  expand?: {
+    contrato_id?: ClienteRecord
+  }
+}
+
+export type TipoDocumentoTecnico = 'Manual' | 'Esquema' | 'Datasheet' | 'Certificado'
+
+export interface DocumentoTecnicoRecord {
+  id: string
+  collectionId: string
+  collectionName: string
+  created: string
+  updated: string
+  nome: string
+  tipo: TipoDocumentoTecnico
+  arquivo_url: string
+  nivel_minimo_acesso: NivelContrato
+  ativo?: boolean
+  criado_em?: string
+  descricao?: string
 }
 
 export type CSATFormVersion = 'completo' | 'curto'
