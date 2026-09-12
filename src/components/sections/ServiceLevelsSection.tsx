@@ -81,19 +81,21 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   <Check className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <div className="space-y-1">
                     <span className="font-semibold text-slate-200">
-                      SIGO Básico para clientes com o CS2000
+                      SIGO Básico para clientes com o CC5200
                     </span>
-                    <ul className="space-y-1 pl-3 text-slate-400 text-[11px] list-disc marker:text-slate-600">
-                      <li>Monitoramento no subsistema do CS200</li>
-                      <li>Suporte remoto prioritário em horário comercial</li>
-                    </ul>
+                    <div>
+                      <ul className="space-y-1 pl-3 text-slate-400 text-[11px] list-disc marker:text-slate-600">
+                        <li>Monitoramento no subsistema do CS200</li>
+                        <li>Suporte remoto prioritário em horário comercial</li>
+                      </ul>
+                    </div>
                   </div>
                 </li>
 
                 <li className="flex items-start gap-2.5">
                   <Check className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <span className="text-slate-300">
-                    Desconto por sensor: 10 / 15 / 20% (2/4/8+)
+                    Desconto por sensor: 10 / 15 / 20% (2/3/4+)
                   </span>
                 </li>
               </ul>
@@ -139,7 +141,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
           <div className="relative flex flex-col bg-[#14230d] border-2 border-[#8CC63F] rounded-2xl shadow-2xl shadow-[#8CC63F]/25 lg:scale-[1.03] z-10 overflow-hidden">
             {/* Badge PLANO RECOMENDADO */}
             <div className="bg-[#8CC63F] text-slate-950 font-black text-[11px] uppercase tracking-wider py-1.5 text-center shadow-md">
-              ★ PLANO RECOMENDADO
+              ★ O MAIS ESCOLHIDO
             </div>
 
             {/* Bloco Superior: Cabeçalho do Plano */}
