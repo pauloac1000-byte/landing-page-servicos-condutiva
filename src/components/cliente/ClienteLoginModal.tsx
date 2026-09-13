@@ -27,6 +27,7 @@ import {
   buscarClientePorContrato,
   atualizarSenhaCliente,
   recuperarSenhaCliente,
+  redefinirSenhaClienteComValidacao,
 } from '@/services/clienteArea'
 
 export function ClienteLoginModal() {
@@ -49,10 +50,20 @@ export function ClienteLoginModal() {
   const [cadastroSuccess, setCadastroSuccess] = useState<string | null>(null)
   const [isCadastrando, setIsCadastrando] = useState(false)
 
-  // Tab 3: Esqueci minha senha
+  // Tab 3: Redefinir / Esqueci minha senha
   const [esqueciContrato, setEsqueciContrato] = useState('')
+  const [redefinirSenhaAtual, setRedefinirSenhaAtual] = useState('')
+  const [redefinirNovaSenha, setRedefinirNovaSenha] = useState('')
+  const [redefinirConfirmSenha, setRedefinirConfirmSenha] = useState('')
+  const [showRedefinirSenhaAtual, setShowRedefinirSenhaAtual] = useState(false)
+  const [showRedefinirNovaSenha, setShowRedefinirNovaSenha] = useState(false)
   const [esqueciError, setEsqueciError] = useState<string | null>(null)
   const [esqueciSuccess, setEsqueciSuccess] = useState<string | null>(null)
+  const [provisoriaFeedback, setProvisoriaFeedback] = useState<{
+    tipo: 'success' | 'error'
+    mensagem: string
+  } | null>(null)
+  const [isEnviandoProvisoria, setIsEnviandoProvisoria] = useState(false)
   const [isRedefinindo, setIsRedefinindo] = useState(false)
 
   // Clear fields / errors when modal opens or closes
@@ -63,6 +74,7 @@ export function ClienteLoginModal() {
       setCadastroSuccess(null)
       setEsqueciError(null)
       setEsqueciSuccess(null)
+      setProvisoriaFeedback(null)
     }
   }, [isModalOpen])
 
@@ -168,37 +180,107 @@ export function ClienteLoginModal() {
     }
   }
 
-  // Esqueci minha senha handler
-  const handleEsqueciSubmit = async (e: React.FormEvent) => {
+  // Solicitar envio de senha provisória por e-mail (fluxo existente preservado)
+  const handleSolicitarSenhaProvisoria = async () => {
+    setProvisoriaFeedback(null)
+    setEsqueciError(null)
+
+    const contrato = esqueciContrato.trim()
+    if (!contrato) {
+      setProvisoriaFeedback({
+        tipo: 'error',
+        mensagem: 'Informe o número do contrato para receber a senha provisória.',
+      })
+      return
+    }
+
+    setIsEnviandoProvisoria(true)
+    try {
+      const res = await recuperarSenhaCliente(contrato)
+      if (res && res.ok === true) {
+        setProvisoriaFeedback({
+          tipo: 'success',
+          mensagem:
+            'Senha provisória enviada para o e-mail cadastrado no contrato. Digite-a no campo "Senha atual" abaixo.',
+        })
+      } else {
+        setProvisoriaFeedback({
+          tipo: 'error',
+          mensagem:
+            'Não foi possível concluir a recuperação. Verifique o número do contrato ou entre em contato com o suporte técnico.',
+        })
+      }
+    } catch (err) {
+      console.error('Erro ao recuperar senha:', err)
+      setProvisoriaFeedback({
+        tipo: 'error',
+        mensagem:
+          'Não foi possível concluir a recuperação. Entre em contato com o suporte técnico.',
+      })
+    } finally {
+      setIsEnviandoProvisoria(false)
+    }
+  }
+
+  // Redefinir senha com validação da Senha Atual / Provisória
+  const handleRedefinirSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setEsqueciError(null)
     setEsqueciSuccess(null)
 
     const contrato = esqueciContrato.trim()
     if (!contrato) {
-      setEsqueciError(
-        'Não foi possível concluir a recuperação. Entre em contato com o suporte técnico.',
-      )
+      setEsqueciError('Informe o número do contrato.')
+      return
+    }
+
+    if (!redefinirSenhaAtual) {
+      setEsqueciError('Informe a senha atual ou provisória recebida por e-mail.')
+      return
+    }
+
+    if (redefinirNovaSenha.length < 8) {
+      setEsqueciError('A nova senha deve ter no mínimo 8 caracteres.')
+      return
+    }
+
+    if (redefinirNovaSenha !== redefinirConfirmSenha) {
+      setEsqueciError('A confirmação da nova senha não confere.')
       return
     }
 
     setIsRedefinindo(true)
     try {
-      const res = await recuperarSenhaCliente(contrato)
+      const result = await redefinirSenhaClienteComValidacao(
+        contrato,
+        redefinirSenhaAtual,
+        redefinirNovaSenha,
+      )
 
-      if (res && res.ok === true) {
-        setEsqueciSuccess('Verifique seu e-mail para acessar a senha provisória.')
-        setEsqueciContrato('')
+      if (result.success === true) {
+        setEsqueciSuccess('Senha redefinida com sucesso! Você já pode entrar com a nova senha.')
+        setLoginContrato(contrato)
+        setLoginSenha('')
+        setRedefinirSenhaAtual('')
+        setRedefinirNovaSenha('')
+        setRedefinirConfirmSenha('')
+        setProvisoriaFeedback(null)
       } else {
-        setEsqueciError(
-          'Não foi possível concluir a recuperação. Entre em contato com o suporte técnico.',
-        )
+        if (result.reason === 'senha_atual_invalida') {
+          setEsqueciError(
+            'Senha atual ou provisória incorreta. Verifique o valor digitado ou solicite uma nova senha provisória.',
+          )
+        } else if (result.reason === 'contrato_nao_encontrado') {
+          setEsqueciError(
+            'Contrato não encontrado. Verifique o número informado ou contate a assistência técnica.',
+          )
+        } else {
+          setEsqueciError('Ocorreu um erro ao redefinir a senha. Tente novamente mais tarde.')
+        }
       }
     } catch (err) {
-      console.error('Erro ao recuperar senha:', err)
-      setEsqueciError(
-        'Não foi possível concluir a recuperação. Entre em contato com o suporte técnico.',
-      )
+      console.error('Erro ao redefinir senha:', err)
+      setEsqueciError('Ocorreu um erro ao redefinir a senha. Tente novamente mais tarde.')
     } finally {
       setIsRedefinindo(false)
     }
@@ -498,7 +580,7 @@ export function ClienteLoginModal() {
             </div>
           </TabsContent>
 
-          {/* ================= ABA 3: ESQUECI MINHA SENHA ================= */}
+          {/* ================= ABA 3: REDEFINIR SENHA ================= */}
           <TabsContent value="esqueci_senha" className="space-y-4 focus-visible:outline-none">
             {esqueciError && (
               <Alert
@@ -512,6 +594,38 @@ export function ClienteLoginModal() {
                   </AlertTitle>
                   <AlertDescription className="text-xs leading-relaxed text-red-200 mt-0.5">
                     {esqueciError}
+                  </AlertDescription>
+                </div>
+              </Alert>
+            )}
+
+            {provisoriaFeedback && (
+              <Alert
+                className={`animate-in fade-in ${
+                  provisoriaFeedback.tipo === 'success'
+                    ? 'border-[#8CC63F]/50 bg-emerald-950/40 text-emerald-200'
+                    : 'border-red-500/40 bg-red-950/40 text-red-200'
+                }`}
+              >
+                {provisoriaFeedback.tipo === 'success' ? (
+                  <CheckCircle2 className="h-4 w-4 text-[#8CC63F] shrink-0" />
+                ) : (
+                  <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
+                )}
+                <div className="ml-2">
+                  <AlertTitle
+                    className={`text-xs font-bold uppercase tracking-wider ${
+                      provisoriaFeedback.tipo === 'success' ? 'text-[#8CC63F]' : 'text-red-300'
+                    }`}
+                  >
+                    {provisoriaFeedback.tipo === 'success' ? 'Senha Provisória' : 'Atenção'}
+                  </AlertTitle>
+                  <AlertDescription
+                    className={`text-xs leading-relaxed mt-0.5 ${
+                      provisoriaFeedback.tipo === 'success' ? 'text-emerald-100' : 'text-red-200'
+                    }`}
+                  >
+                    {provisoriaFeedback.mensagem}
                   </AlertDescription>
                 </div>
               </Alert>
@@ -539,33 +653,141 @@ export function ClienteLoginModal() {
                   }}
                   className="w-full bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-sm uppercase tracking-wide py-6 rounded-xl shadow-lg shadow-[#8CC63F]/20 transition-all"
                 >
-                  Ir para o Login
+                  Ir para o Login com a Nova Senha
                 </Button>
               </div>
             ) : (
-              <form onSubmit={handleEsqueciSubmit} className="space-y-4">
+              <form onSubmit={handleRedefinirSubmit} className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label
+                      htmlFor="esqueci-contrato"
+                      className="text-xs font-bold uppercase tracking-wider text-slate-300 block"
+                    >
+                      Número do Contrato <span className="text-[#8CC63F]">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleSolicitarSenhaProvisoria}
+                      disabled={isEnviandoProvisoria || !esqueciContrato.trim()}
+                      className="text-xs text-[#8CC63F] hover:underline font-medium disabled:opacity-50 disabled:no-underline"
+                    >
+                      {isEnviandoProvisoria ? 'Enviando...' : 'Enviar senha provisória por e-mail'}
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      id="esqueci-contrato"
+                      type="text"
+                      required
+                      value={esqueciContrato}
+                      onChange={(e) => {
+                        setEsqueciContrato(e.target.value)
+                        if (esqueciError) setEsqueciError(null)
+                      }}
+                      placeholder="Ex.: CTR-2025-0142"
+                      className="bg-slate-900/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#8CC63F] focus:ring-1 focus:ring-[#8CC63F] font-mono text-sm py-5 pr-10"
+                    />
+                    <FileText className="w-4 h-4 text-slate-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                  <span className="text-[11px] text-slate-400 mt-1 block">
+                    Não lembra sua senha atual? Clique acima para receber uma senha provisória por
+                    e-mail.
+                  </span>
+                </div>
+
                 <div>
                   <label
-                    htmlFor="esqueci-contrato"
+                    htmlFor="redefinir-senha-atual"
                     className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-1.5"
                   >
-                    Número do Contrato <span className="text-[#8CC63F]">*</span>
+                    Senha atual <span className="text-[#8CC63F]">*</span>
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="redefinir-senha-atual"
+                      type={showRedefinirSenhaAtual ? 'text' : 'password'}
+                      required
+                      value={redefinirSenhaAtual}
+                      onChange={(e) => {
+                        setRedefinirSenhaAtual(e.target.value)
+                        if (esqueciError) setEsqueciError(null)
+                      }}
+                      placeholder="Senha atual ou senha provisória recebida por e-mail"
+                      className="bg-slate-900/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#8CC63F] focus:ring-1 focus:ring-[#8CC63F] text-sm py-5 pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowRedefinirSenhaAtual(!showRedefinirSenhaAtual)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+                      title={showRedefinirSenhaAtual ? 'Ocultar senha' : 'Exibir senha'}
+                    >
+                      {showRedefinirSenhaAtual ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                  <span className="text-[11px] text-slate-400 mt-1 block">
+                    Aceita a sua senha atual ou a senha provisória enviada para seu e-mail.
+                  </span>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="redefinir-nova-senha"
+                    className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-1.5"
+                  >
+                    Nova senha <span className="text-[#8CC63F]">*</span>
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="redefinir-nova-senha"
+                      type={showRedefinirNovaSenha ? 'text' : 'password'}
+                      required
+                      value={redefinirNovaSenha}
+                      onChange={(e) => {
+                        setRedefinirNovaSenha(e.target.value)
+                        if (esqueciError) setEsqueciError(null)
+                      }}
+                      placeholder="Mínimo 8 caracteres"
+                      className="bg-slate-900/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#8CC63F] focus:ring-1 focus:ring-[#8CC63F] text-sm py-5 pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowRedefinirNovaSenha(!showRedefinirNovaSenha)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+                      title={showRedefinirNovaSenha ? 'Ocultar senha' : 'Exibir senha'}
+                    >
+                      {showRedefinirNovaSenha ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="redefinir-confirm-senha"
+                    className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-1.5"
+                  >
+                    Confirmar nova senha <span className="text-[#8CC63F]">*</span>
                   </label>
                   <Input
-                    id="esqueci-contrato"
-                    type="text"
+                    id="redefinir-confirm-senha"
+                    type={showRedefinirNovaSenha ? 'text' : 'password'}
                     required
-                    value={esqueciContrato}
+                    value={redefinirConfirmSenha}
                     onChange={(e) => {
-                      setEsqueciContrato(e.target.value)
+                      setRedefinirConfirmSenha(e.target.value)
                       if (esqueciError) setEsqueciError(null)
                     }}
-                    placeholder="Ex.: CTR-2025-0142"
-                    className="bg-slate-900/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#8CC63F] focus:ring-1 focus:ring-[#8CC63F] font-mono text-sm py-5"
+                    placeholder="Repita a nova senha definida"
+                    className="bg-slate-900/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#8CC63F] focus:ring-1 focus:ring-[#8CC63F] text-sm py-5"
                   />
-                  <span className="text-[11px] text-slate-400 mt-1 block">
-                    Enviaremos uma senha provisória para o e-mail cadastrado no contrato.
-                  </span>
                 </div>
 
                 <Button
@@ -573,7 +795,7 @@ export function ClienteLoginModal() {
                   disabled={isRedefinindo}
                   className="w-full bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-sm uppercase tracking-wide py-6 rounded-xl shadow-lg shadow-[#8CC63F]/20 transition-all disabled:opacity-60"
                 >
-                  {isRedefinindo ? 'Enviando...' : 'Redefinir senha'}
+                  {isRedefinindo ? 'Salvando...' : 'Salvar nova senha'}
                 </Button>
               </form>
             )}

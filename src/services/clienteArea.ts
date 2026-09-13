@@ -189,6 +189,49 @@ export async function atualizarSenhaCliente(
   return await pb.collection<ClienteRecord>('clientes').update(clienteId, payload)
 }
 
+export type RedefinirSenhaResult =
+  | { success: true; cliente: ClienteRecord }
+  | { success: false; reason: 'contrato_nao_encontrado' | 'senha_atual_invalida' | 'erro_interno' }
+
+/**
+ * Redefine a senha do cliente a partir do Número do Contrato e da Senha Atual
+ * (que pode ser a senha atual em uso ou a senha provisória gerada por e-mail).
+ * Valida a senha informada contra o hash armazenado no contrato antes de atualizar.
+ * Se correta, grava a nova senha com o mesmo hash SHA-256(senha + salt) e atualiza senha_alterada_em.
+ */
+export async function redefinirSenhaClienteComValidacao(
+  numeroContrato: string,
+  senhaAtualRaw: string,
+  novaSenhaRaw: string,
+): Promise<RedefinirSenhaResult> {
+  const cleanContrato = numeroContrato.trim()
+  if (!cleanContrato) {
+    return { success: false, reason: 'contrato_nao_encontrado' }
+  }
+
+  try {
+    const cliente = await buscarClientePorContrato(cleanContrato)
+    if (!cliente) {
+      return { success: false, reason: 'contrato_nao_encontrado' }
+    }
+
+    if (!cliente.senha) {
+      return { success: false, reason: 'erro_interno' }
+    }
+
+    const hashAtualInformada = await hashSenhaCliente(senhaAtualRaw)
+    if (cliente.senha !== hashAtualInformada) {
+      return { success: false, reason: 'senha_atual_invalida' }
+    }
+
+    const atualizado = await atualizarSenhaCliente(cliente.id, novaSenhaRaw, false)
+    return { success: true, cliente: atualizado }
+  } catch (err) {
+    console.error('Erro ao redefinir senha do cliente com validação:', err)
+    return { success: false, reason: 'erro_interno' }
+  }
+}
+
 /**
  * Busca uma Ordem de Serviço pelo seu número (usado no fluxo "Avaliar Atendimento").
  * Permite validar se a OS existe e se a avaliação já foi realizada.
