@@ -175,6 +175,41 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
     setOsSearchError(null)
   }
 
+  // Handler direto para iniciar avaliação a partir de uma OS específica da lista
+  const handleAvaliarOSIndividual = async (os: OrdemServicoRecord) => {
+    setNumeroOS(os.numero_os)
+    setOsSearchError(null)
+    setCurrentView('avaliacao')
+
+    // Se já avaliada, exibe a etapa de input com a mensagem exata
+    if (os.avaliacao_realizada) {
+      setAvaliacaoStep('input_os')
+      setOsSearchError('Esta Ordem de Serviço já foi avaliada. Obrigado pelo retorno.')
+      return
+    }
+
+    setIsSearchingOS(true)
+    try {
+      const resultado = await validarOSParaAvaliacao(os.numero_os, cliente)
+      if (resultado.valido) {
+        setValidatedOS(resultado.os)
+        setValidatedContract(resultado.contract)
+        setAvaliacaoStep('select_option')
+      } else {
+        setAvaliacaoStep('input_os')
+        setOsSearchError(resultado.mensagem)
+      }
+    } catch (err) {
+      console.error('Erro ao validar OS:', err)
+      setAvaliacaoStep('input_os')
+      setOsSearchError(
+        'Não localizamos esta Ordem de Serviço. Confira o número e tente novamente ou contate a assistência técnica.',
+      )
+    } finally {
+      setIsSearchingOS(false)
+    }
+  }
+
   // Handler de clique no Card 2: Documentação Técnica
   const handleAcessarDocumentacao = () => {
     if (!acessoDoc.permitido) {
@@ -246,6 +281,21 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
           ...validatedContract,
           questionnaire_status: 'respondido',
         })
+      }
+      // Atualizar lista de OS localmente para refletir avaliacao_realizada imediatamente
+      const cleanTargetOS = data.serviceOrderNumber.trim().toLowerCase()
+      setOrdensServico((prev) =>
+        prev.map((item) =>
+          item.numero_os.trim().toLowerCase() === cleanTargetOS
+            ? { ...item, avaliacao_realizada: true }
+            : item,
+        ),
+      )
+      // Recarregar lista do servidor para garantir sincronismo
+      if (cliente?.id) {
+        getOrdensServicoByContratoId(cliente.id)
+          .then((list) => setOrdensServico(list))
+          .catch(() => {})
       }
       setAvaliacaoStep('success')
     } catch (err) {
@@ -720,18 +770,44 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
                           </div>
                         </div>
 
-                        {/* Botão Baixar arquivo da OS */}
-                        <div className="shrink-0 pt-2 md:pt-0 border-t border-slate-800/80 md:border-t-0 flex items-center justify-end">
+                        {/* Ações da OS: Responder questionário de satisfação & Baixar arquivo da OS */}
+                        <div className="shrink-0 pt-3 md:pt-0 border-t border-slate-800/80 md:border-t-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2">
+                          {/* Botão 'Responder questionário de satisfação' para cada OS */}
+                          {os.avaliacao_realizada ? (
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled
+                                className="border-slate-800 bg-slate-950/60 text-slate-400 text-xs h-9 cursor-not-allowed opacity-75 inline-flex items-center gap-1.5"
+                                title="Esta Ordem de Serviço já foi avaliada. Obrigado pelo retorno."
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>Questionário já respondido</span>
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button
+                              onClick={() => handleAvaliarOSIndividual(os)}
+                              className="bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold text-xs h-9 px-3.5 rounded-lg shadow-sm hover:shadow-[#8CC63F]/20 transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                              title={`Responder questionário de satisfação da ${os.numero_os}`}
+                            >
+                              <Star className="w-3.5 h-3.5 fill-slate-950" />
+                              <span>Responder questionário de satisfação</span>
+                            </Button>
+                          )}
+
+                          {/* Botão Baixar arquivo da OS */}
                           {fileUrl ? (
                             <a
                               href={fileUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               download
-                              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold text-xs transition shadow-sm hover:shadow-[#8CC63F]/20 active:scale-95"
+                              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-white font-medium text-xs transition shadow-sm h-9"
                               title={`Baixar arquivo da ${os.numero_os}`}
                             >
-                              <Download className="w-3.5 h-3.5" />
+                              <Download className="w-3.5 h-3.5 text-[#8CC63F]" />
                               <span>Baixar arquivo da OS</span>
                             </a>
                           ) : (

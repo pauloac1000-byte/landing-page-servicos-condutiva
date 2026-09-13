@@ -2045,11 +2045,20 @@ export default function ContractsPage() {
                               </Badge>
                             )}
 
-                            {/* Badge Avaliação CSAT */}
+                            {/* Badge Avaliação CSAT com atalho para a aba de CSAT */}
                             {os.avaliacao_realizada ? (
-                              <Badge className="bg-blue-500/15 text-blue-400 border border-blue-500/30 text-[10px] py-0.5 px-2">
-                                CSAT Avaliado
-                              </Badge>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveTab('avaliacoes')
+                                  setContractForOSModal(null)
+                                }}
+                                title="Visualizar a avaliação CSAT desta OS na aba Avaliações CSAT"
+                                className="inline-flex items-center gap-1 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-semibold py-0.5 px-2 rounded-full hover:bg-emerald-500/25 transition cursor-pointer"
+                              >
+                                <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
+                                <span>CSAT Avaliado</span>
+                              </button>
                             ) : (
                               <Badge className="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] py-0.5 px-2">
                                 Aguardando CSAT

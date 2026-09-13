@@ -94,10 +94,9 @@ export async function submitCSATResponse(data: CSATSubmissionData): Promise<CSAT
         avaliacao_realizada: true,
       })
     }
-  } catch (_) {
-    // OS não cadastrada previamente na tabela ordens_servico ou já atualizada
+  } catch (err) {
+    console.warn('Erro ao atualizar avaliacao_realizada na coleção ordens_servico:', err)
   }
-
   return createdRecord
 }
 
