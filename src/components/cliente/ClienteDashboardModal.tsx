@@ -45,7 +45,11 @@ import {
   listarDocumentosTecnicos,
 } from '@/services/clienteArea'
 import { submitCSATResponse } from '@/services/csat'
-import { getOrdensServicoByContratoId, getOrdemServicoFileUrl } from '@/services/ordensServico'
+import {
+  getOrdensServicoByContratoId,
+  getOrdemServicoFileUrl,
+  getOrdemServicoRelatorioUrl,
+} from '@/services/ordensServico'
 import type {
   DocumentoTecnicoRecord,
   OrdemServicoRecord,
@@ -790,7 +794,7 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
                         </div>
                       )
 
-                      const relatorioUrl = os.relatorio_pdf_url?.trim()
+                      const relatorioUrl = getOrdemServicoRelatorioUrl(os)
 
                       return (
                         <div
