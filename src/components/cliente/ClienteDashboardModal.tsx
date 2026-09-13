@@ -31,6 +31,7 @@ import {
   FileCheck2,
   FileSpreadsheet,
   Filter,
+  FileDown,
 } from 'lucide-react'
 import { useClienteAuth } from '@/contexts/ClienteAuthContext'
 import { COMPANY_INFO } from '@/data/mockData'
@@ -701,132 +702,148 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
                   </p>
                 </div>
               ) : (
-                /* Listagem de Ordens de Serviço */
-                <div className="space-y-3">
-                  {ordensServico.map((os) => {
-                    const fileUrl = getOrdemServicoFileUrl(os)
-                    const isExecutada = os.status === 'executada'
-                    // Descrição = campo observações da OS (conforme especificação), com fallback para descricao_servico
-                    const descricaoOS = os.observacoes || os.descricao_servico
+                /* Apresentação de Ordens de Serviço baseada em Ícones clicáveis para Download do PDF */
+                <div className="space-y-2">
+                  <p className="text-[11px] text-slate-400">
+                    Clique no ícone de qualquer OS para baixar ou visualizar o PDF da Ordem de
+                    Serviço.
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-1">
+                    {ordensServico.map((os) => {
+                      const fileUrl = getOrdemServicoFileUrl(os)
+                      const isExecutada = os.status === 'executada'
+                      const dataFormatada = os.data
+                        ? new Date(os.data).toLocaleDateString('pt-BR')
+                        : os.created
+                          ? new Date(os.created).toLocaleDateString('pt-BR')
+                          : null
 
-                    return (
-                      <div
-                        key={os.id}
-                        className="bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-md"
-                      >
-                        <div className="space-y-2 flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2">
-                            {/* Número da OS */}
-                            <span className="font-mono font-bold text-white text-sm bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">
+                      const CardContent = (
+                        <div className="p-3.5 flex flex-col items-center text-center space-y-2.5">
+                          {/* Ícone principal de Documento / PDF */}
+                          <div className="relative">
+                            <div
+                              className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-200 ${
+                                fileUrl
+                                  ? 'bg-[#8CC63F]/15 border border-[#8CC63F]/35 text-[#8CC63F] group-hover:scale-105 group-hover:bg-[#8CC63F]/25 group-hover:border-[#8CC63F] shadow-sm shadow-[#8CC63F]/10'
+                                  : 'bg-slate-800/60 border border-slate-700/60 text-slate-500'
+                              }`}
+                            >
+                              {fileUrl ? (
+                                <FileDown className="w-7 h-7 text-[#8CC63F] group-hover:animate-bounce" />
+                              ) : (
+                                <FileText className="w-7 h-7 text-slate-500" />
+                              )}
+                            </div>
+
+                            {/* Badge 'PDF' no canto do ícone */}
+                            <span
+                              className={`absolute -bottom-1 -right-1 text-[9px] font-black font-mono px-1.5 py-0.2 rounded border uppercase tracking-wider ${
+                                fileUrl
+                                  ? 'bg-[#8CC63F] text-slate-950 border-[#8CC63F]'
+                                  : 'bg-slate-800 text-slate-400 border-slate-700'
+                              }`}
+                            >
+                              PDF
+                            </span>
+                          </div>
+
+                          {/* Identificação da OS: Número em destaque */}
+                          <div className="w-full space-y-1">
+                            <span className="font-mono font-bold text-white text-xs block truncate group-hover:text-[#8CC63F] transition-colors">
                               {os.numero_os}
                             </span>
 
-                            {/* Badge de Status */}
-                            {isExecutada ? (
-                              <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold py-0.5 px-2">
-                                Executada
-                              </Badge>
-                            ) : (
-                              <Badge className="bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px] font-bold py-0.5 px-2">
-                                Aberta
-                              </Badge>
-                            )}
+                            {/* Status (Executada / Aberta) */}
+                            <div className="flex items-center justify-center">
+                              {isExecutada ? (
+                                <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold py-0 px-1.5 leading-tight">
+                                  Executada
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[9px] font-bold py-0 px-1.5 leading-tight">
+                                  Aberta
+                                </Badge>
+                              )}
+                            </div>
 
                             {/* Data */}
-                            {os.data ? (
-                              <span className="text-[11px] text-slate-400 font-mono">
-                                Data: {new Date(os.data).toLocaleDateString('pt-BR')}
-                              </span>
-                            ) : os.created ? (
-                              <span className="text-[11px] text-slate-500 font-mono">
-                                Registrada em: {new Date(os.created).toLocaleDateString('pt-BR')}
-                              </span>
-                            ) : null}
-
-                            {/* Técnico Responsável */}
-                            {os.tecnico_responsavel && (
-                              <span className="text-[11px] text-slate-400 hidden sm:inline">
-                                • Técnico:{' '}
-                                <strong className="text-slate-300 font-normal">
-                                  {os.tecnico_responsavel}
-                                </strong>
+                            {dataFormatada && (
+                              <span className="text-[10px] text-slate-400 font-mono block truncate">
+                                {dataFormatada}
                               </span>
                             )}
                           </div>
 
-                          {/* Descrição (campo observações da OS) */}
-                          <div className="text-xs text-slate-300 leading-relaxed">
-                            {descricaoOS ? (
-                              <p className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80 text-slate-300 text-xs">
-                                <span className="font-semibold text-slate-400 mr-1">
-                                  Descrição:
-                                </span>
-                                {descricaoOS}
-                              </p>
+                          {/* Ação ou indicação de Download */}
+                          <div className="w-full pt-1 border-t border-slate-800/80">
+                            {fileUrl ? (
+                              <span className="inline-flex items-center justify-center gap-1 text-[11px] font-medium text-[#8CC63F] group-hover:underline">
+                                <Download className="w-3 h-3" />
+                                <span>Baixar PDF</span>
+                              </span>
                             ) : (
-                              <p className="text-slate-500 italic text-[11px]">
-                                Sem observações registradas para esta OS.
-                              </p>
+                              <span className="text-[10px] text-slate-500 block truncate">
+                                Sem PDF anexado
+                              </span>
                             )}
                           </div>
                         </div>
+                      )
 
-                        {/* Ações da OS: Responder questionário de satisfação & Baixar arquivo da OS */}
-                        <div className="shrink-0 pt-3 md:pt-0 border-t border-slate-800/80 md:border-t-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2">
-                          {/* Botão 'Responder questionário de satisfação' para cada OS */}
-                          {os.avaliacao_realizada ? (
-                            <div className="flex items-center gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                disabled
-                                className="border-slate-800 bg-slate-950/60 text-slate-400 text-xs h-9 cursor-not-allowed opacity-75 inline-flex items-center gap-1.5"
-                                title="Esta Ordem de Serviço já foi avaliada. Obrigado pelo retorno."
-                              >
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                                <span>Questionário já respondido</span>
-                              </Button>
-                            </div>
-                          ) : (
-                            <Button
-                              onClick={() => handleAvaliarOSIndividual(os)}
-                              className="bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold text-xs h-9 px-3.5 rounded-lg shadow-sm hover:shadow-[#8CC63F]/20 transition-all flex items-center justify-center gap-1.5 active:scale-95"
-                              title={`Responder questionário de satisfação da ${os.numero_os}`}
-                            >
-                              <Star className="w-3.5 h-3.5 fill-slate-950" />
-                              <span>Responder questionário de satisfação</span>
-                            </Button>
-                          )}
-
-                          {/* Botão Baixar arquivo da OS */}
+                      return (
+                        <div
+                          key={os.id}
+                          className="flex flex-col bg-slate-900/80 rounded-xl border border-slate-800 overflow-hidden shadow-md transition-all duration-200"
+                        >
+                          {/* Ícone Clicável Principal de Download */}
                           {fileUrl ? (
                             <a
                               href={fileUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               download
-                              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-white font-medium text-xs transition shadow-sm h-9"
-                              title={`Baixar arquivo da ${os.numero_os}`}
+                              title={`Clique para baixar o PDF da ${os.numero_os}`}
+                              className="group flex-1 cursor-pointer hover:bg-slate-900 hover:border-[#8CC63F]/50 transition-colors block focus:outline-none focus:ring-1 focus:ring-[#8CC63F]"
                             >
-                              <Download className="w-3.5 h-3.5 text-[#8CC63F]" />
-                              <span>Baixar arquivo da OS</span>
+                              {CardContent}
                             </a>
                           ) : (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled
-                              className="border-slate-800 bg-slate-950/40 text-slate-500 text-xs h-9 cursor-not-allowed opacity-60"
-                              title="Nenhum arquivo PDF anexado a esta OS"
+                            <div
+                              title={`Ordem de Serviço ${os.numero_os} (sem arquivo PDF anexado no momento)`}
+                              className="group flex-1 opacity-60 cursor-not-allowed bg-slate-950/40"
                             >
-                              <Download className="w-3.5 h-3.5 mr-1.5 opacity-50" />
-                              <span>Baixar arquivo da OS</span>
-                            </Button>
+                              {CardContent}
+                            </div>
                           )}
+
+                          {/* Ação secundária: Avaliar atendimento da OS */}
+                          <div className="p-2 pt-0 bg-transparent">
+                            {os.avaliacao_realizada ? (
+                              <div
+                                className="w-full text-center py-1 text-[10px] text-slate-500 flex items-center justify-center gap-1 bg-slate-950/60 rounded border border-slate-800/80"
+                                title="Esta OS já foi avaliada. Obrigado!"
+                              >
+                                <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+                                <span className="truncate">Avaliada</span>
+                              </div>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleAvaliarOSIndividual(os)}
+                                className="w-full h-6 text-[10px] px-1.5 border-slate-800 hover:border-[#8CC63F]/60 bg-slate-950/80 text-slate-300 hover:text-white flex items-center justify-center gap-1"
+                                title={`Avaliar atendimento da ${os.numero_os}`}
+                              >
+                                <Star className="w-2.5 h-2.5 text-[#8CC63F] fill-[#8CC63F]" />
+                                <span className="truncate">Avaliar OS</span>
+                              </Button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
+                  </div>
                 </div>
               )}
             </div>
