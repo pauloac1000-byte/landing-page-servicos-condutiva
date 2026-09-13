@@ -23,6 +23,12 @@ import {
   X,
   FileCheck2,
   User,
+  FileUp,
+  Download,
+  Calendar,
+  Layers,
+  ChevronRight,
+  ExternalLink,
 } from 'lucide-react'
 import {
   getContracts,
@@ -31,6 +37,15 @@ import {
   updateContractQuestionnaireStatus,
   deleteContract,
 } from '@/services/contracts'
+import {
+  getOrdensServico,
+  getClientesContratos,
+  createOrdemServico,
+  updateOrdemServico,
+  deleteOrdemServico,
+  getOrdemServicoFileUrl,
+  findOrdemServicoByNumero,
+} from '@/services/ordensServico'
 import { getCSATResponses } from '@/services/csat'
 import { useRealtime } from '@/hooks/use-realtime'
 import { useAuth } from '@/hooks/use-auth'
@@ -39,9 +54,14 @@ import type {
   ContractFormData,
   QuestionnaireStatus,
   CSATResponseRecord,
+  OrdemServicoRecord,
+  OrdemServicoFormData,
+  ClienteRecord,
+  StatusOrdemServico,
 } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -75,6 +95,40 @@ export default function ContractsPage() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | QuestionnaireStatus>('all')
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
+
+  // Ordens de Serviço (múltiplas OS por contrato)
+  const [ordensServico, setOrdensServico] = useState<OrdemServicoRecord[]>([])
+  const [clientesContratos, setClientesContratos] = useState<ClienteRecord[]>([])
+  const [loadingOS, setLoadingOS] = useState(true)
+  const [osSearch, setOsSearch] = useState('')
+  const [osStatusFilter, setOsStatusFilter] = useState<'all' | StatusOrdemServico>('all')
+  const [selectedContratoFilter, setSelectedContratoFilter] = useState<string>('all')
+
+  // Modal de OS (criar / editar)
+  const [isOSModalOpen, setIsOSModalOpen] = useState(false)
+  const [editingOS, setEditingOS] = useState<OrdemServicoRecord | null>(null)
+  const [osFormData, setOsFormData] = useState<OrdemServicoFormData>({
+    numero_os: '',
+    contrato_id: '',
+    data: new Date().toISOString().slice(0, 10),
+    status: 'aberta',
+    observacoes: '',
+    arquivo: null,
+    descricao_servico: '',
+    tecnico_responsavel: '',
+  })
+  const [osFormErrors, setOsFormErrors] = useState<Record<string, string>>({})
+  const [isSubmittingOS, setIsSubmittingOS] = useState(false)
+  const [selectedFileName, setSelectedFileName] = useState<string>('')
+
+  // Modal de listagem detalhada de OS de um contrato específico
+  const [contractForOSModal, setContractForOSModal] = useState<
+    ContractRecord | ClienteRecord | null
+  >(null)
+
+  // Modal de exclusão de OS
+  const [osToDelete, setOsToDelete] = useState<OrdemServicoRecord | null>(null)
+  const [isDeletingOS, setIsDeletingOS] = useState(false)
 
   // CSAT responses data state
   const [csatResponses, setCsatResponses] = useState<CSATResponseRecord[]>([])
@@ -137,9 +191,23 @@ export default function ContractsPage() {
     }
   }
 
+  const loadOSData = async (silent = false) => {
+    if (!silent) setLoadingOS(true)
+    try {
+      const [osData, clientsData] = await Promise.all([getOrdensServico(), getClientesContratos()])
+      setOrdensServico(osData)
+      setClientesContratos(clientsData)
+    } catch (err: unknown) {
+      console.error('Error fetching OS data:', err)
+    } finally {
+      if (!silent) setLoadingOS(false)
+    }
+  }
+
   const loadAllData = (silent = false) => {
     loadContractsData(silent)
     loadCSATData(silent)
+    loadOSData(silent)
   }
 
   useEffect(() => {
@@ -152,6 +220,14 @@ export default function ContractsPage() {
   useRealtime<ContractRecord>('contracts', () => {
     if (isAuthenticated) {
       loadContractsData(true)
+      loadOSData(true)
+    }
+  })
+
+  // Realtime updates on ordens_servico collection
+  useRealtime<OrdemServicoRecord>('ordens_servico', () => {
+    if (isAuthenticated) {
+      loadOSData(true)
     }
   })
 
@@ -170,28 +246,78 @@ export default function ContractsPage() {
     })
   }
 
+  // Mapa de OS por número do contrato (ou contrato_id)
+  const ordensPorContrato = useMemo(() => {
+    const map = new Map<string, OrdemServicoRecord[]>()
+    for (const os of ordensServico) {
+      // O contrato pode estar no contrato_id ou no expand.contrato_id.numero_contrato
+      const contractNum = os.expand?.contrato_id?.numero_contrato || ''
+      const clientId = os.contrato_id || ''
+
+      if (contractNum) {
+        const list = map.get(contractNum) || []
+        list.push(os)
+        map.set(contractNum, list)
+      }
+      if (clientId) {
+        const list = map.get(clientId) || []
+        list.push(os)
+        map.set(clientId, list)
+      }
+    }
+    return map
+  }, [ordensServico])
+
+  // Obter todas as OS vinculadas a um ContractRecord específico
+  const getOSDoContrato = (c: ContractRecord): OrdemServicoRecord[] => {
+    // Busca pelo número de contrato (ex: CTR-2025-0142)
+    const porNumero = ordensPorContrato.get(c.contract_number) || []
+    if (porNumero.length > 0) return porNumero
+
+    // Se cliente correspondente tiver ID
+    const clienteCorresp = clientesContratos.find(
+      (cl) => cl.numero_contrato.toLowerCase() === c.contract_number.toLowerCase(),
+    )
+    if (clienteCorresp) {
+      const porId = ordensPorContrato.get(clienteCorresp.id) || []
+      if (porId.length > 0) return porId
+    }
+
+    return []
+  }
+
   // Filtered contracts
   const filteredContracts = useMemo(() => {
     return contracts.filter((item) => {
       const q = search.toLowerCase().trim()
+      const osDoContrato = getOSDoContrato(item)
+      const matchesOSList = osDoContrato.some(
+        (os) =>
+          os.numero_os.toLowerCase().includes(q) ||
+          (os.observacoes && os.observacoes.toLowerCase().includes(q)) ||
+          (os.descricao_servico && os.descricao_servico.toLowerCase().includes(q)),
+      )
+
       const matchesSearch =
         !q ||
         item.contract_number.toLowerCase().includes(q) ||
         item.service_order_number.toLowerCase().includes(q) ||
         item.client_name.toLowerCase().includes(q) ||
         item.client_email.toLowerCase().includes(q) ||
-        item.technician_name.toLowerCase().includes(q)
+        item.technician_name.toLowerCase().includes(q) ||
+        matchesOSList
 
       const matchesStatus = statusFilter === 'all' || item.questionnaire_status === statusFilter
 
       return matchesSearch && matchesStatus
     })
-  }, [contracts, search, statusFilter])
+  }, [contracts, search, statusFilter, ordensPorContrato, clientesContratos])
 
   // Stats
   const totalCount = contracts.length
   const pendingCount = contracts.filter((c) => c.questionnaire_status === 'pendente').length
   const answeredCount = contracts.filter((c) => c.questionnaire_status === 'respondido').length
+  const totalOSCount = ordensServico.length
 
   // Quick toggle status
   const handleToggleStatus = async (contract: ContractRecord, e?: React.MouseEvent) => {
@@ -338,6 +464,162 @@ export default function ContractsPage() {
       })
     } finally {
       setIsDeleting(false)
+    }
+  }
+
+  // =================== GESTÃO DE MÚLTIPLAS ORDENS DE SERVIÇO ===================
+  const handleOpenCreateOSModal = (targetContrato?: ContractRecord | ClienteRecord) => {
+    setEditingOS(null)
+    setSelectedFileName('')
+
+    // Determinar o contrato_id inicial
+    let initialContratoId = ''
+    if (targetContrato) {
+      if ('numero_contrato' in targetContrato) {
+        initialContratoId = targetContrato.id
+      } else {
+        const found = clientesContratos.find(
+          (cl) => cl.numero_contrato.toLowerCase() === targetContrato.contract_number.toLowerCase(),
+        )
+        if (found) initialContratoId = found.id
+      }
+    } else if (clientesContratos.length > 0) {
+      initialContratoId = clientesContratos[0].id
+    }
+
+    setOsFormData({
+      numero_os: '',
+      contrato_id: initialContratoId,
+      data: new Date().toISOString().slice(0, 10),
+      status: 'aberta',
+      observacoes: '',
+      arquivo: null,
+      descricao_servico: '',
+      tecnico_responsavel: '',
+    })
+    setOsFormErrors({})
+    setIsOSModalOpen(true)
+  }
+
+  const handleOpenEditOSModal = (os: OrdemServicoRecord, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation()
+    setEditingOS(os)
+    setSelectedFileName(os.arquivo ? 'Arquivo PDF já anexado' : '')
+    setOsFormData({
+      numero_os: os.numero_os,
+      contrato_id: os.contrato_id,
+      data: os.data ? os.data.slice(0, 10) : new Date().toISOString().slice(0, 10),
+      status: os.status || 'aberta',
+      observacoes: os.observacoes || '',
+      arquivo: null,
+      descricao_servico: os.descricao_servico || '',
+      tecnico_responsavel: os.tecnico_responsavel || '',
+    })
+    setOsFormErrors({})
+    setIsOSModalOpen(true)
+  }
+
+  const validateOSForm = async (): Promise<boolean> => {
+    const errors: Record<string, string> = {}
+    if (!osFormData.numero_os.trim()) {
+      errors.numero_os = 'Número da OS é obrigatório.'
+    } else {
+      // Verificar unicidade da OS (não pode duplicar número de OS)
+      const existing = await findOrdemServicoByNumero(osFormData.numero_os.trim())
+      if (existing && (!editingOS || existing.id !== editingOS.id)) {
+        errors.numero_os = 'Já existe uma OS cadastrada com este número.'
+      }
+    }
+
+    if (!osFormData.contrato_id) {
+      errors.contrato_id = 'Selecione o contrato correspondente.'
+    }
+
+    if (!osFormData.data) {
+      errors.data = 'Data da OS é obrigatória.'
+    }
+
+    if (!osFormData.status) {
+      errors.status = 'Selecione o status da OS (aberta ou executada).'
+    }
+
+    // Validação de arquivo (se fornecido, deve ser PDF)
+    if (osFormData.arquivo) {
+      if (osFormData.arquivo.type !== 'application/pdf') {
+        errors.arquivo = 'O arquivo da OS deve ser obrigatoriamente um documento PDF.'
+      } else if (osFormData.arquivo.size > 10 * 1024 * 1024) {
+        errors.arquivo = 'O tamanho máximo do PDF é 10 MB.'
+      }
+    }
+
+    setOsFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  const handleSubmitOSForm = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmittingOS(true)
+    try {
+      const isValid = await validateOSForm()
+      if (!isValid) {
+        setIsSubmittingOS(false)
+        return
+      }
+
+      if (editingOS) {
+        const updated = await updateOrdemServico(editingOS.id, osFormData)
+        setOrdensServico((prev) => prev.map((o) => (o.id === updated.id ? updated : o)))
+        toast({
+          title: 'Ordem de Serviço atualizada',
+          description: `A OS ${updated.numero_os} foi atualizada com sucesso.`,
+        })
+      } else {
+        const created = await createOrdemServico(osFormData)
+        setOrdensServico((prev) => [created, ...prev])
+        toast({
+          title: 'Ordem de Serviço cadastrada',
+          description: `A OS ${created.numero_os} foi vinculada ao contrato com sucesso.`,
+        })
+      }
+      setIsOSModalOpen(false)
+    } catch (err: unknown) {
+      console.error('Error saving OS:', err)
+      toast({
+        title: 'Erro ao salvar OS',
+        description: 'Verifique se os dados estão corretos e tente novamente.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmittingOS(false)
+    }
+  }
+
+  const handleDeleteOSClick = (os: OrdemServicoRecord, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation()
+    setOsToDelete(os)
+  }
+
+  const handleConfirmDeleteOS = async () => {
+    if (!osToDelete) return
+    setIsDeletingOS(true)
+    const target = osToDelete
+    try {
+      await deleteOrdemServico(target.id)
+      setOrdensServico((prev) => prev.filter((o) => o.id !== target.id))
+      setOsToDelete(null)
+      toast({
+        title: 'OS excluída',
+        description: `A OS ${target.numero_os} foi removida com sucesso.`,
+      })
+    } catch (err: unknown) {
+      console.error('Error deleting OS:', err)
+      toast({
+        title: 'Erro ao excluir OS',
+        description: 'Não foi possível remover a Ordem de Serviço.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsDeletingOS(false)
     }
   }
 
@@ -624,9 +906,8 @@ export default function ContractsPage() {
                     Contratos & Ordens de Serviço
                   </h1>
                   <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-                    Controle unificado de contratos, números de OS vinculados ao mesmo cliente,
-                    técnico da Condutiva responsável e acompanhamento do questionário de
-                    atendimento.
+                    Controle unificado de contratos, múltiplas Ordens de Serviço (OS) vinculadas ao
+                    mesmo contrato, upload de laudos em PDF e acompanhamento em tempo real.
                   </p>
                 </div>
 
@@ -637,8 +918,18 @@ export default function ContractsPage() {
                       <FileText className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className="text-xs text-slate-400 font-medium">Total de Contratos</div>
+                      <div className="text-xs text-slate-400 font-medium">Contratos</div>
                       <div className="text-xl font-black text-white">{totalCount}</div>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-950 border border-slate-800 px-4 py-2.5 rounded-xl flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                      <Layers className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-400 font-medium">Total de OS</div>
+                      <div className="text-xl font-black text-white">{totalOSCount}</div>
                     </div>
                   </div>
 
@@ -661,6 +952,15 @@ export default function ContractsPage() {
                       <div className="text-xl font-black text-white">{pendingCount}</div>
                     </div>
                   </div>
+
+                  <Button
+                    size="sm"
+                    onClick={() => handleOpenCreateOSModal()}
+                    className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs h-12 px-4 rounded-xl shadow-lg shadow-[#8CC63F]/20 flex items-center gap-1.5"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Nova OS
+                  </Button>
                 </div>
               </div>
             </div>
@@ -832,17 +1132,72 @@ export default function ContractsPage() {
                         <tr key={item.id} className="hover:bg-slate-800/30 transition-colors group">
                           {/* Contract & OS numbers linked to client */}
                           <td className="py-3.5 px-4">
-                            <div className="flex flex-col gap-0.5">
+                            <div className="flex flex-col gap-1.5">
                               <span className="font-bold text-white font-mono text-sm flex items-center gap-1.5">
                                 <span className="w-2 h-2 rounded-full bg-[#8CC63F]" />
                                 {item.contract_number}
                               </span>
-                              <span className="text-slate-400 font-mono text-[11px] pl-3.5">
-                                OS:{' '}
-                                <strong className="text-slate-200">
-                                  {item.service_order_number}
-                                </strong>
-                              </span>
+
+                              {/* Múltiplas OS do Contrato */}
+                              <div className="pl-3.5 flex flex-wrap items-center gap-1.5">
+                                {(() => {
+                                  const osList = getOSDoContrato(item)
+                                  if (osList.length === 0) {
+                                    return (
+                                      <span className="text-slate-400 font-mono text-[11px]">
+                                        OS:{' '}
+                                        <strong className="text-slate-200">
+                                          {item.service_order_number}
+                                        </strong>
+                                      </span>
+                                    )
+                                  }
+
+                                  return (
+                                    <>
+                                      <div className="flex flex-wrap gap-1">
+                                        {osList.slice(0, 3).map((os) => (
+                                          <button
+                                            key={os.id}
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation()
+                                              handleOpenEditOSModal(os)
+                                            }}
+                                            title={`OS ${os.numero_os} (${os.status || 'aberta'}) - Clique para editar`}
+                                            className={`inline-flex items-center gap-1 font-mono text-[10px] px-2 py-0.5 rounded-md border font-semibold transition hover:scale-105 ${
+                                              os.status === 'executada'
+                                                ? 'bg-emerald-950/70 border-emerald-700/60 text-emerald-300'
+                                                : 'bg-amber-950/70 border-amber-700/60 text-amber-300'
+                                            }`}
+                                          >
+                                            <span>{os.numero_os}</span>
+                                            {os.arquivo && (
+                                              <FileText className="w-2.5 h-2.5 opacity-80" />
+                                            )}
+                                          </button>
+                                        ))}
+                                        {osList.length > 3 && (
+                                          <span className="text-[10px] text-slate-400 font-mono self-center">
+                                            +{osList.length - 3}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          setContractForOSModal(item)
+                                        }}
+                                        className="text-[10px] text-[#8CC63F] hover:underline font-mono ml-1 inline-flex items-center gap-0.5"
+                                        title="Ver todas as Ordens de Serviço deste contrato"
+                                      >
+                                        <span>({osList.length} OS)</span>
+                                      </button>
+                                    </>
+                                  )
+                                })()}
+                              </div>
                             </div>
                           </td>
 
@@ -916,11 +1271,36 @@ export default function ContractsPage() {
                           <td className="py-3.5 px-4 text-right">
                             <div className="flex items-center justify-end gap-1.5">
                               <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleOpenCreateOSModal(item)
+                                }}
+                                className="h-8 px-2.5 bg-slate-900 border-slate-700 text-[#8CC63F] hover:bg-[#8CC63F]/10 hover:border-[#8CC63F]/50 text-xs font-semibold gap-1"
+                                title="Cadastrar nova OS para este contrato"
+                              >
+                                <Plus className="w-3 h-3" />
+                                <span>OS</span>
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setContractForOSModal(item)
+                                }}
+                                className="h-8 w-8 p-0 text-slate-400 hover:text-[#8CC63F] hover:bg-slate-800"
+                                title="Ver e gerenciar todas as OS do contrato"
+                              >
+                                <Layers className="w-3.5 h-3.5" />
+                              </Button>
+                              <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={(e) => handleOpenEditModal(item, e)}
                                 className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-800"
-                                title="Editar contrato / OS"
+                                title="Editar contrato"
                               >
                                 <Pencil className="w-3.5 h-3.5" />
                               </Button>
@@ -995,10 +1375,24 @@ export default function ContractsPage() {
 
                       <div className="space-y-1.5 text-xs text-slate-300 pt-1 border-t border-slate-800/80">
                         <div className="flex items-center justify-between text-slate-400">
-                          <span>Ordem de Serviço:</span>
-                          <span className="font-mono font-bold text-white">
-                            {item.service_order_number}
-                          </span>
+                          <span>Ordens de Serviço:</span>
+                          {(() => {
+                            const osList = getOSDoContrato(item)
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => setContractForOSModal(item)}
+                                className="font-mono font-bold text-[#8CC63F] hover:underline flex items-center gap-1"
+                              >
+                                <span>
+                                  {osList.length > 0
+                                    ? `${osList.length} OS cadastradas`
+                                    : item.service_order_number}
+                                </span>
+                                <ChevronRight className="w-3 h-3" />
+                              </button>
+                            )
+                          })()}
                         </div>
                         <div className="flex items-center justify-between text-slate-400">
                           <span>Técnico Responsável:</span>
@@ -1018,6 +1412,15 @@ export default function ContractsPage() {
                       <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500">
                         <span>Cadastrado em {formatDate(item.created)}</span>
                         <div className="flex items-center gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenCreateOSModal(item)}
+                            className="h-7 px-2 bg-slate-900 border-slate-700 text-[#8CC63F] hover:bg-[#8CC63F]/10 text-xs font-semibold gap-1"
+                          >
+                            <Plus className="w-3 h-3" />
+                            OS
+                          </Button>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -1265,6 +1668,525 @@ export default function ContractsPage() {
               className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
             >
               {isDeleting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  Excluindo...
+                </>
+              ) : (
+                'Confirmar Exclusão'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ================= MODAL: CADASTRO / EDIÇÃO DE ORDEM DE SERVIÇO (OS) ================= */}
+      <Dialog open={isOSModalOpen} onOpenChange={setIsOSModalOpen}>
+        <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-lg rounded-2xl shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+              <Layers className="w-5 h-5 text-[#8CC63F]" />
+              {editingOS ? 'Editar Ordem de Serviço (OS)' : 'Cadastrar Nova Ordem de Serviço (OS)'}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Cadastre e vincule múltiplas Ordens de Serviço a um contrato existente, com data,
+              status e upload de arquivo PDF.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmitOSForm} className="space-y-4 pt-2">
+            {/* Contrato Vinculado */}
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-300">Contrato Vinculado *</label>
+              <Select
+                value={osFormData.contrato_id}
+                onValueChange={(val) => {
+                  setOsFormData({ ...osFormData, contrato_id: val })
+                  if (osFormErrors.contrato_id) {
+                    setOsFormErrors({ ...osFormErrors, contrato_id: '' })
+                  }
+                }}
+              >
+                <SelectTrigger
+                  className={`bg-slate-950 border ${
+                    osFormErrors.contrato_id ? 'border-red-500' : 'border-slate-800'
+                  } text-white text-xs h-9 rounded-xl`}
+                >
+                  <SelectValue placeholder="Selecione o contrato..." />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-900 border-slate-800 text-white max-h-56">
+                  {clientesContratos.map((cliente) => (
+                    <SelectItem key={cliente.id} value={cliente.id}>
+                      {cliente.numero_contrato} - {cliente.nome_cliente}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {osFormErrors.contrato_id && (
+                <p className="text-[11px] text-red-400">{osFormErrors.contrato_id}</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Número da OS */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-300">Número da OS *</label>
+                <Input
+                  placeholder="Ex: OS-2025-089"
+                  value={osFormData.numero_os}
+                  onChange={(e) => {
+                    setOsFormData({ ...osFormData, numero_os: e.target.value })
+                    if (osFormErrors.numero_os) {
+                      setOsFormErrors({ ...osFormErrors, numero_os: '' })
+                    }
+                  }}
+                  className={`bg-slate-950 border ${
+                    osFormErrors.numero_os ? 'border-red-500' : 'border-slate-800'
+                  } text-white text-xs h-9 rounded-xl font-mono`}
+                />
+                {osFormErrors.numero_os && (
+                  <p className="text-[11px] text-red-400">{osFormErrors.numero_os}</p>
+                )}
+              </div>
+
+              {/* Data da OS */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-300">Data da OS *</label>
+                <div className="relative">
+                  <Input
+                    type="date"
+                    value={osFormData.data || ''}
+                    onChange={(e) => {
+                      setOsFormData({ ...osFormData, data: e.target.value })
+                      if (osFormErrors.data) {
+                        setOsFormErrors({ ...osFormErrors, data: '' })
+                      }
+                    }}
+                    className={`bg-slate-950 border ${
+                      osFormErrors.data ? 'border-red-500' : 'border-slate-800'
+                    } text-white text-xs h-9 rounded-xl`}
+                  />
+                </div>
+                {osFormErrors.data && (
+                  <p className="text-[11px] text-red-400">{osFormErrors.data}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Status da OS */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-300">Status da OS *</label>
+                <Select
+                  value={osFormData.status}
+                  onValueChange={(val: StatusOrdemServico) =>
+                    setOsFormData({ ...osFormData, status: val })
+                  }
+                >
+                  <SelectTrigger className="bg-slate-950 border-slate-800 text-white text-xs h-9 rounded-xl">
+                    <SelectValue placeholder="Selecione o status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-800 text-white">
+                    <SelectItem value="aberta">Aberta</SelectItem>
+                    <SelectItem value="executada">Executada</SelectItem>
+                  </SelectContent>
+                </Select>
+                {osFormErrors.status && (
+                  <p className="text-[11px] text-red-400">{osFormErrors.status}</p>
+                )}
+              </div>
+
+              {/* Técnico Responsável */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-300">Técnico Responsável</label>
+                <Input
+                  placeholder="Ex: Rafael Albuquerque"
+                  value={osFormData.tecnico_responsavel || ''}
+                  onChange={(e) =>
+                    setOsFormData({ ...osFormData, tecnico_responsavel: e.target.value })
+                  }
+                  className="bg-slate-950 border-slate-800 text-white text-xs h-9 rounded-xl"
+                />
+              </div>
+            </div>
+
+            {/* Descrição do Serviço */}
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-300">Descrição do Serviço</label>
+              <Input
+                placeholder="Ex: Manutenção preventiva semestral em transformadores a seco"
+                value={osFormData.descricao_servico || ''}
+                onChange={(e) =>
+                  setOsFormData({ ...osFormData, descricao_servico: e.target.value })
+                }
+                className="bg-slate-950 border-slate-800 text-white text-xs h-9 rounded-xl"
+              />
+            </div>
+
+            {/* Upload do Arquivo PDF da OS */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-slate-300 flex items-center justify-between">
+                <span>Arquivo da OS (PDF)</span>
+                {editingOS?.arquivo && !osFormData.arquivo && (
+                  <a
+                    href={getOrdemServicoFileUrl(editingOS) || '#'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] text-[#8CC63F] hover:underline inline-flex items-center gap-1"
+                  >
+                    <Download className="w-3 h-3" />
+                    Baixar PDF Atual
+                  </a>
+                )}
+              </label>
+
+              <div className="border border-dashed border-slate-700 hover:border-[#8CC63F]/60 rounded-xl p-3 bg-slate-950/60 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-[#8CC63F]/10 border border-[#8CC63F]/20 flex items-center justify-center text-[#8CC63F] shrink-0">
+                    <FileUp className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <input
+                      type="file"
+                      id="os-pdf-upload"
+                      accept=".pdf,application/pdf"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null
+                        setOsFormData({ ...osFormData, arquivo: file })
+                        setSelectedFileName(file ? file.name : '')
+                        if (osFormErrors.arquivo) {
+                          setOsFormErrors({ ...osFormErrors, arquivo: '' })
+                        }
+                      }}
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="os-pdf-upload"
+                      className="cursor-pointer block text-xs text-slate-300 hover:text-white truncate font-medium"
+                    >
+                      {selectedFileName || 'Clique para selecionar o PDF da Ordem de Serviço'}
+                    </label>
+                    <p className="text-[10px] text-slate-500">Formato PDF aceito (máximo 10 MB)</p>
+                  </div>
+                  {osFormData.arquivo && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setOsFormData({ ...osFormData, arquivo: null })
+                        setSelectedFileName(editingOS?.arquivo ? 'Arquivo PDF já anexado' : '')
+                      }}
+                      className="h-7 w-7 p-0 text-slate-400 hover:text-red-400"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+              {osFormErrors.arquivo && (
+                <p className="text-[11px] text-red-400">{osFormErrors.arquivo}</p>
+              )}
+            </div>
+
+            {/* Observações */}
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-300">Observações</label>
+              <Textarea
+                placeholder="Anotações internas, escopo executado, pendências ou observações para o cliente..."
+                value={osFormData.observacoes || ''}
+                onChange={(e) => setOsFormData({ ...osFormData, observacoes: e.target.value })}
+                rows={3}
+                className="bg-slate-950 border-slate-800 text-white text-xs rounded-xl resize-none"
+              />
+            </div>
+
+            <DialogFooter className="pt-2 gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsOSModalOpen(false)}
+                className="bg-slate-800 border-slate-700 text-slate-300 hover:text-white text-xs"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmittingOS}
+                className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs"
+              >
+                {isSubmittingOS ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                    Salvando OS...
+                  </>
+                ) : editingOS ? (
+                  'Salvar Alterações da OS'
+                ) : (
+                  'Cadastrar Ordem de Serviço'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* ================= MODAL: LISTAGEM DE TODAS AS OS DO CONTRATO ================= */}
+      <Dialog
+        open={!!contractForOSModal}
+        onOpenChange={(open) => !open && setContractForOSModal(null)}
+      >
+        <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-3xl rounded-2xl shadow-2xl max-h-[85vh] flex flex-col">
+          <DialogHeader className="pb-3 border-b border-slate-800">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-[#8CC63F]" />
+                  <span>Ordens de Serviço do Contrato</span>
+                  <Badge className="bg-[#8CC63F]/20 text-[#8CC63F] border border-[#8CC63F]/30 font-mono text-xs">
+                    {contractForOSModal
+                      ? 'contract_number' in contractForOSModal
+                        ? contractForOSModal.contract_number
+                        : contractForOSModal.numero_contrato
+                      : ''}
+                  </Badge>
+                </DialogTitle>
+                <DialogDescription className="text-xs text-slate-400 mt-1">
+                  Cliente:{' '}
+                  <strong className="text-white">
+                    {contractForOSModal
+                      ? 'client_name' in contractForOSModal
+                        ? contractForOSModal.client_name
+                        : contractForOSModal.nome_cliente
+                      : ''}
+                  </strong>{' '}
+                  — Todas as OS cadastradas e vinculadas a este contrato.
+                </DialogDescription>
+              </div>
+
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (contractForOSModal) {
+                    handleOpenCreateOSModal(contractForOSModal)
+                  }
+                }}
+                className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" />
+                Nova OS
+              </Button>
+            </div>
+          </DialogHeader>
+
+          {/* Listagem das OS do contrato selecionado */}
+          <div className="flex-1 overflow-y-auto py-3 space-y-3 pr-1">
+            {(() => {
+              if (!contractForOSModal) return null
+              const contractNum =
+                'contract_number' in contractForOSModal
+                  ? contractForOSModal.contract_number
+                  : contractForOSModal.numero_contrato
+
+              // Filtrar todas as OS vinculadas
+              const osList = ordensServico.filter((os) => {
+                const matchNum =
+                  os.expand?.contrato_id?.numero_contrato?.toLowerCase() ===
+                  contractNum.toLowerCase()
+                const matchId = os.contrato_id === contractForOSModal.id
+                return matchNum || matchId
+              })
+
+              if (osList.length === 0) {
+                return (
+                  <div className="text-center py-12 border border-dashed border-slate-800 rounded-xl bg-slate-950/40">
+                    <Layers className="w-10 h-10 text-slate-600 mx-auto mb-2" />
+                    <h4 className="text-sm font-semibold text-white">Nenhuma OS cadastrada</h4>
+                    <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                      Este contrato ainda não possui Ordens de Serviço cadastradas no banco de
+                      dados.
+                    </p>
+                    <Button
+                      size="sm"
+                      onClick={() => handleOpenCreateOSModal(contractForOSModal)}
+                      className="mt-4 bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs"
+                    >
+                      <Plus className="w-3.5 h-3.5 mr-1" />
+                      Cadastrar Primeira OS
+                    </Button>
+                  </div>
+                )
+              }
+
+              return (
+                <div className="space-y-2.5">
+                  {osList.map((os) => {
+                    const fileUrl = getOrdemServicoFileUrl(os)
+                    return (
+                      <div
+                        key={os.id}
+                        className="bg-slate-950/70 border border-slate-800 hover:border-slate-700 rounded-xl p-3.5 transition flex flex-col md:flex-row md:items-center justify-between gap-3"
+                      >
+                        <div className="space-y-1.5 flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono font-bold text-white text-sm">
+                              {os.numero_os}
+                            </span>
+
+                            {/* Badge Status */}
+                            {os.status === 'executada' ? (
+                              <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] py-0.5 px-2">
+                                Executada
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px] py-0.5 px-2">
+                                Aberta
+                              </Badge>
+                            )}
+
+                            {/* Badge Avaliação CSAT */}
+                            {os.avaliacao_realizada ? (
+                              <Badge className="bg-blue-500/15 text-blue-400 border border-blue-500/30 text-[10px] py-0.5 px-2">
+                                CSAT Avaliado
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] py-0.5 px-2">
+                                Aguardando CSAT
+                              </Badge>
+                            )}
+
+                            {/* Data */}
+                            {os.data && (
+                              <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1 ml-auto md:ml-0">
+                                <Calendar className="w-3 h-3 text-slate-500" />
+                                {new Date(os.data).toLocaleDateString('pt-BR')}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Descrição e Técnico */}
+                          {(os.descricao_servico || os.tecnico_responsavel) && (
+                            <p className="text-xs text-slate-300">
+                              {os.descricao_servico && <span>{os.descricao_servico}</span>}
+                              {os.tecnico_responsavel && (
+                                <span className="text-slate-400 ml-2">
+                                  — Técnico:{' '}
+                                  <strong className="text-slate-200">
+                                    {os.tecnico_responsavel}
+                                  </strong>
+                                </span>
+                              )}
+                            </p>
+                          )}
+
+                          {/* Observações */}
+                          {os.observacoes && (
+                            <div className="text-[11px] text-slate-400 bg-slate-900/80 p-2 rounded-lg border border-slate-800/80">
+                              <span className="font-medium text-slate-300">Observações: </span>
+                              {os.observacoes}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Ações da OS */}
+                        <div className="flex items-center gap-1.5 shrink-0 self-end md:self-center">
+                          {fileUrl ? (
+                            <a
+                              href={fileUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-[#8CC63F] hover:bg-[#8CC63F]/15 hover:border-[#8CC63F]/40 transition font-medium"
+                              title="Abrir arquivo PDF da Ordem de Serviço"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                              <span>PDF</span>
+                              <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                            </a>
+                          ) : (
+                            <span className="text-[11px] text-slate-500 italic px-2">Sem PDF</span>
+                          )}
+
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleOpenEditOSModal(os)}
+                            className="h-8 px-2 text-slate-400 hover:text-white hover:bg-slate-800 text-xs"
+                            title="Editar esta OS"
+                          >
+                            <Pencil className="w-3.5 h-3.5 mr-1" />
+                            Editar
+                          </Button>
+
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => handleDeleteOSClick(os, e)}
+                            className="h-8 w-8 p-0 text-slate-400 hover:text-red-400 hover:bg-red-950/30"
+                            title="Excluir OS"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })()}
+          </div>
+
+          <DialogFooter className="pt-3 border-t border-slate-800 flex justify-between items-center sm:justify-between">
+            <span className="text-xs text-slate-500">
+              Cada OS possui sua própria credencial de avaliação CSAT para o cliente.
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setContractForOSModal(null)}
+              className="bg-slate-800 border-slate-700 text-slate-300 hover:text-white text-xs"
+            >
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ================= MODAL: CONFIRMAÇÃO DE EXCLUSÃO DE OS ================= */}
+      <Dialog open={!!osToDelete} onOpenChange={(open) => !open && setOsToDelete(null)}>
+        <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-md rounded-2xl shadow-2xl">
+          <DialogHeader>
+            <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mb-2">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <DialogTitle className="text-base font-bold text-white">
+              Excluir Ordem de Serviço?
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Tem certeza de que deseja excluir permanentemente a Ordem de Serviço{' '}
+              <strong className="text-white">{osToDelete?.numero_os}</strong>? O arquivo PDF
+              associado também será removido. Esta ação não pode ser desfeita.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="gap-2 pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setOsToDelete(null)}
+              disabled={isDeletingOS}
+              className="bg-slate-800 border-slate-700 text-slate-300 hover:text-white text-xs"
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleConfirmDeleteOS}
+              disabled={isDeletingOS}
+              className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
+            >
+              {isDeletingOS ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
                   Excluindo...

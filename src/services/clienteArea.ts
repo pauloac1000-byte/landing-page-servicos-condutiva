@@ -245,7 +245,6 @@ export async function validarOSParaAvaliacao(
 
   // 1. Busca na coleção ordens_servico
   const osRecord = await buscarOrdemServico(cleanOS)
-
   // 2. Se não achou em ordens_servico, tenta buscar na coleção contracts por service_order_number
   let contractRecord: import('@/types').ContractRecord | null = null
 

@@ -127,6 +127,8 @@ export interface ClienteRecord {
   primeiro_acesso_em?: string
 }
 
+export type StatusOrdemServico = 'aberta' | 'executada'
+
 export interface OrdemServicoRecord {
   id: string
   collectionId: string
@@ -135,12 +137,27 @@ export interface OrdemServicoRecord {
   updated: string
   numero_os: string
   contrato_id: string
+  data?: string
+  status?: StatusOrdemServico
+  arquivo?: string
+  observacoes?: string
   avaliacao_realizada?: boolean
   descricao_servico?: string
   tecnico_responsavel?: string
   expand?: {
     contrato_id?: ClienteRecord
   }
+}
+
+export interface OrdemServicoFormData {
+  numero_os: string
+  contrato_id: string
+  data?: string
+  status?: StatusOrdemServico
+  observacoes?: string
+  arquivo?: File | null
+  descricao_servico?: string
+  tecnico_responsavel?: string
 }
 
 export type TipoDocumentoTecnico = 'Manual' | 'Esquema' | 'Datasheet' | 'Certificado'
