@@ -32,9 +32,9 @@
     "README.md"
   ],
   "deployment": {
-    "lastDevBuildRef": "0784466",
-    "lastProdBuildRef": "0784466",
-    "publishedAt": "2026-09-13T10:29:34.844Z",
-    "lastPublishedRef": "0784466"
+    "lastDevBuildRef": "8a87f85",
+    "lastProdBuildRef": "8a87f85",
+    "publishedAt": "2026-09-13T10:41:03.723Z",
+    "lastPublishedRef": "8a87f85"
   }
 }

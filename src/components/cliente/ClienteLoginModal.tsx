@@ -681,7 +681,7 @@ export function ClienteLoginModal() {
                   </div>
                   <span className="text-[11px] text-slate-400 mt-1 block">
                     {
-                      'Não lembra sua senha atual? Insira o número contrato e clique em "Enviar senha provisória por e-mail"  para receber uma senha provisória no e-mail cadastrado.'
+                      'Não lembra sua senha atual? Insira o número do contrato e clique em "Enviar senha provisória por e-mail" para receber uma senha provisória no e-mail cadastrado.'
                     }
                   </span>
                 </div>
