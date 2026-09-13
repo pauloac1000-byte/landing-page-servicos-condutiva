@@ -26,6 +26,7 @@ import {
   autenticarClienteComDetalhe,
   buscarClientePorContrato,
   atualizarSenhaCliente,
+  recuperarSenhaCliente,
 } from '@/services/clienteArea'
 
 export function ClienteLoginModal() {
@@ -50,9 +51,6 @@ export function ClienteLoginModal() {
 
   // Tab 3: Esqueci minha senha
   const [esqueciContrato, setEsqueciContrato] = useState('')
-  const [esqueciNovaSenha, setEsqueciNovaSenha] = useState('')
-  const [esqueciConfirmSenha, setEsqueciConfirmSenha] = useState('')
-  const [showEsqueciSenha, setShowEsqueciSenha] = useState(false)
   const [esqueciError, setEsqueciError] = useState<string | null>(null)
   const [esqueciSuccess, setEsqueciSuccess] = useState<string | null>(null)
   const [isRedefinindo, setIsRedefinindo] = useState(false)
@@ -178,49 +176,28 @@ export function ClienteLoginModal() {
 
     const contrato = esqueciContrato.trim()
     if (!contrato) {
-      setEsqueciError('Informe o número do contrato.')
-      return
-    }
-
-    if (esqueciNovaSenha.length < 8) {
-      setEsqueciError('A nova senha deve ter no mínimo 8 caracteres.')
-      return
-    }
-
-    if (esqueciNovaSenha !== esqueciConfirmSenha) {
-      setEsqueciError('A confirmação da senha não confere com a nova senha digitada.')
+      setEsqueciError(
+        'Não foi possível concluir a recuperação. Entre em contato com o suporte técnico.',
+      )
       return
     }
 
     setIsRedefinindo(true)
     try {
-      const clienteExistente = await buscarClientePorContrato(contrato)
+      const res = await recuperarSenhaCliente(contrato)
 
-      if (!clienteExistente) {
-        setEsqueciError(
-          'Não encontramos este contrato. Entre em contato com a assistência técnica ou com o time comercial da Condutiva para regularizar.',
-        )
-        return
-      }
-
-      // Atualiza senha
-      const atualizado = await atualizarSenhaCliente(clienteExistente.id, esqueciNovaSenha, false)
-
-      setEsqueciSuccess('Senha redefinida com sucesso! Você já pode entrar com a nova senha.')
-
-      // Opcional: efetuar login automático ou mudar para a aba de login
-      setTimeout(() => {
-        setSession(atualizado)
-        closeModal()
+      if (res && res.ok === true) {
+        setEsqueciSuccess('Verifique seu e-mail para acessar a senha provisória.')
         setEsqueciContrato('')
-        setEsqueciNovaSenha('')
-        setEsqueciConfirmSenha('')
-        setEsqueciSuccess(null)
-      }, 1200)
+      } else {
+        setEsqueciError(
+          'Não foi possível concluir a recuperação. Entre em contato com o suporte técnico.',
+        )
+      }
     } catch (err) {
-      console.error('Erro ao redefinir senha:', err)
+      console.error('Erro ao recuperar senha:', err)
       setEsqueciError(
-        'Não encontramos este contrato. Entre em contato com a assistência técnica ou com o time comercial da Condutiva para regularizar.',
+        'Não foi possível concluir a recuperação. Entre em contato com o suporte técnico.',
       )
     } finally {
       setIsRedefinindo(false)
@@ -540,105 +517,66 @@ export function ClienteLoginModal() {
               </Alert>
             )}
 
-            {esqueciSuccess && (
-              <Alert className="border-[#8CC63F]/50 bg-emerald-950/40 text-emerald-200 animate-in fade-in">
-                <CheckCircle2 className="h-4 w-4 text-[#8CC63F] shrink-0" />
-                <div className="ml-2">
-                  <AlertTitle className="text-xs font-bold uppercase tracking-wider text-[#8CC63F]">
-                    Sucesso
-                  </AlertTitle>
-                  <AlertDescription className="text-xs leading-relaxed text-emerald-100 mt-0.5">
-                    {esqueciSuccess}
-                  </AlertDescription>
-                </div>
-              </Alert>
-            )}
+            {esqueciSuccess ? (
+              <div className="space-y-4 animate-in fade-in">
+                <Alert className="border-[#8CC63F]/50 bg-emerald-950/40 text-emerald-200">
+                  <CheckCircle2 className="h-4 w-4 text-[#8CC63F] shrink-0" />
+                  <div className="ml-2">
+                    <AlertTitle className="text-xs font-bold uppercase tracking-wider text-[#8CC63F]">
+                      Sucesso
+                    </AlertTitle>
+                    <AlertDescription className="text-xs leading-relaxed text-emerald-100 mt-0.5">
+                      {esqueciSuccess}
+                    </AlertDescription>
+                  </div>
+                </Alert>
 
-            <form onSubmit={handleEsqueciSubmit} className="space-y-4">
-              <div>
-                <label
-                  htmlFor="esqueci-contrato"
-                  className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-1.5"
-                >
-                  Número do Contrato <span className="text-[#8CC63F]">*</span>
-                </label>
-                <Input
-                  id="esqueci-contrato"
-                  type="text"
-                  required
-                  value={esqueciContrato}
-                  onChange={(e) => {
-                    setEsqueciContrato(e.target.value)
-                    if (esqueciError) setEsqueciError(null)
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setActiveModalTab('login')
+                    setEsqueciSuccess(null)
                   }}
-                  placeholder="Ex.: CTR-2025-0142"
-                  className="bg-slate-900/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#8CC63F] focus:ring-1 focus:ring-[#8CC63F] font-mono text-sm py-5"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="esqueci-nova-senha"
-                  className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-1.5"
+                  className="w-full bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-sm uppercase tracking-wide py-6 rounded-xl shadow-lg shadow-[#8CC63F]/20 transition-all"
                 >
-                  Nova Senha <span className="text-[#8CC63F]">*</span>
-                </label>
-                <div className="relative">
+                  Ir para o Login
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleEsqueciSubmit} className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="esqueci-contrato"
+                    className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-1.5"
+                  >
+                    Número do Contrato <span className="text-[#8CC63F]">*</span>
+                  </label>
                   <Input
-                    id="esqueci-nova-senha"
-                    type={showEsqueciSenha ? 'text' : 'password'}
+                    id="esqueci-contrato"
+                    type="text"
                     required
-                    value={esqueciNovaSenha}
+                    value={esqueciContrato}
                     onChange={(e) => {
-                      setEsqueciNovaSenha(e.target.value)
+                      setEsqueciContrato(e.target.value)
                       if (esqueciError) setEsqueciError(null)
                     }}
-                    placeholder="Mínimo 8 caracteres"
-                    className="bg-slate-900/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#8CC63F] focus:ring-1 focus:ring-[#8CC63F] text-sm py-5 pr-10"
+                    placeholder="Ex.: CTR-2025-0142"
+                    className="bg-slate-900/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#8CC63F] focus:ring-1 focus:ring-[#8CC63F] font-mono text-sm py-5"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowEsqueciSenha(!showEsqueciSenha)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
-                  >
-                    {showEsqueciSenha ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
+                  <span className="text-[11px] text-slate-400 mt-1 block">
+                    Enviaremos uma senha provisória para o e-mail cadastrado no contrato.
+                  </span>
                 </div>
-              </div>
 
-              <div>
-                <label
-                  htmlFor="esqueci-confirm-senha"
-                  className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-1.5"
+                <Button
+                  type="submit"
+                  disabled={isRedefinindo}
+                  className="w-full bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-sm uppercase tracking-wide py-6 rounded-xl shadow-lg shadow-[#8CC63F]/20 transition-all disabled:opacity-60"
                 >
-                  Confirmar Nova Senha <span className="text-[#8CC63F]">*</span>
-                </label>
-                <Input
-                  id="esqueci-confirm-senha"
-                  type={showEsqueciSenha ? 'text' : 'password'}
-                  required
-                  value={esqueciConfirmSenha}
-                  onChange={(e) => {
-                    setEsqueciConfirmSenha(e.target.value)
-                    if (esqueciError) setEsqueciError(null)
-                  }}
-                  placeholder="Repita a nova senha"
-                  className="bg-slate-900/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#8CC63F] focus:ring-1 focus:ring-[#8CC63F] text-sm py-5"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isRedefinindo}
-                className="w-full bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-black text-sm uppercase tracking-wide py-6 rounded-xl shadow-lg shadow-[#8CC63F]/20 transition-all disabled:opacity-60"
-              >
-                {isRedefinindo ? 'Atualizando...' : 'Redefinir Senha e Entrar'}
-              </Button>
-            </form>
+                  {isRedefinindo ? 'Enviando...' : 'Redefinir senha'}
+                </Button>
+              </form>
+            )}
 
             <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
               <span>Lembrou sua senha?</span>

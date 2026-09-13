@@ -127,6 +127,26 @@ export async function autenticarClienteComDetalhe(
 }
 
 /**
+ * Solicita a recuperação de senha provisória para o contrato informado.
+ * Dispara e-mail via backend Skip Cloud se o contrato existir e possuir e-mail.
+ */
+export async function recuperarSenhaCliente(numeroContrato: string): Promise<{ ok: boolean }> {
+  const cleanContrato = numeroContrato.trim()
+  if (!cleanContrato) return { ok: false }
+
+  try {
+    const res = await pb.send<{ ok: boolean }>('/backend/v1/recuperar-senha', {
+      method: 'POST',
+      body: { numero_contrato: cleanContrato },
+    })
+    return res && typeof res.ok === 'boolean' ? res : { ok: false }
+  } catch (err) {
+    console.error('Erro na rota de recuperação de senha:', err)
+    return { ok: false }
+  }
+}
+
+/**
  * Busca dados do cliente pelo número de contrato.
  */
 export async function buscarClientePorContrato(
