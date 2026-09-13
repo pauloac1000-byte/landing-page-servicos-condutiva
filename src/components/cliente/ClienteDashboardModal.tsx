@@ -43,6 +43,7 @@ import {
   MENSAGEM_NEGACAO_SENTINELA,
 } from '@/services/clienteArea'
 import { submitCSATResponse } from '@/services/csat'
+import { getOrdensServicoByContratoId, getOrdemServicoFileUrl } from '@/services/ordensServico'
 import type {
   DocumentoTecnicoRecord,
   OrdemServicoRecord,
@@ -99,6 +100,11 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
   const [contaSuccess, setContaSuccess] = useState<string | null>(null)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
 
+  // Ordens de Serviço do Contrato
+  const [ordensServico, setOrdensServico] = useState<OrdemServicoRecord[]>([])
+  const [isLoadingOS, setIsLoadingOS] = useState(false)
+  const [osLoadError, setOsLoadError] = useState<string | null>(null)
+
   // Reset view to 'home' when opened
   useEffect(() => {
     if (isOpen) {
@@ -117,6 +123,25 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
       setSubmittedResponse(null)
     }
   }, [isOpen])
+
+  // Carregar Ordens de Serviço do contrato do cliente autenticado
+  useEffect(() => {
+    if (isOpen && cliente?.id) {
+      setIsLoadingOS(true)
+      setOsLoadError(null)
+      getOrdensServicoByContratoId(cliente.id)
+        .then((list) => {
+          setOrdensServico(list)
+        })
+        .catch((err) => {
+          console.error('Erro ao carregar Ordens de Serviço do cliente:', err)
+          setOsLoadError('Não foi possível carregar as Ordens de Serviço no momento.')
+        })
+        .finally(() => {
+          setIsLoadingOS(false)
+        })
+    }
+  }, [isOpen, cliente?.id])
 
   useEffect(() => {
     if (isOpen && cliente) {
@@ -567,6 +592,166 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
                   </Button>
                 </div>
               </div>
+            </div>
+
+            {/* Nova seção: Minhas Ordens de Serviço (carregada diretamente do banco de dados) */}
+            <div className="pt-2 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-t border-slate-800/80 pt-5">
+                <div>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300 font-mono flex items-center gap-2">
+                    <FileCheck2 className="w-4 h-4 text-[#8CC63F]" />
+                    <span>Minhas Ordens de Serviço</span>
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Histórico de OS vinculadas ao contrato{' '}
+                    <strong className="text-slate-200 font-mono">{cliente.numero_contrato}</strong>
+                  </p>
+                </div>
+
+                {!isLoadingOS && ordensServico.length > 0 && (
+                  <Badge
+                    variant="outline"
+                    className="text-[11px] font-mono py-0.5 px-2.5 border-slate-700 bg-slate-900/60 text-slate-300 self-start sm:self-auto"
+                  >
+                    Total: <strong className="text-white ml-1">{ordensServico.length}</strong>
+                  </Badge>
+                )}
+              </div>
+
+              {/* Estado de Erro */}
+              {osLoadError && (
+                <Alert
+                  variant="destructive"
+                  className="border-red-500/40 bg-red-950/40 text-red-200"
+                >
+                  <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
+                  <AlertDescription className="text-xs ml-2">{osLoadError}</AlertDescription>
+                </Alert>
+              )}
+
+              {/* Estado de Carregamento */}
+              {isLoadingOS ? (
+                <div className="py-10 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-xs text-slate-400 flex flex-col items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin text-[#8CC63F]" />
+                  <span>Carregando Ordens de Serviço do seu contrato...</span>
+                </div>
+              ) : ordensServico.length === 0 ? (
+                /* Estado Vazio Amigável */
+                <div className="py-8 px-4 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-xs text-slate-400 space-y-2">
+                  <div className="w-10 h-10 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center justify-center text-slate-500 mx-auto">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <p className="font-medium text-slate-300">
+                    Nenhuma Ordem de Serviço cadastrada para este contrato no momento.
+                  </p>
+                  <p className="text-[11px] text-slate-500 max-w-md mx-auto">
+                    Assim que uma manutenção ou calibração for registrada pela equipe técnica, ela
+                    ficará visível aqui com seu laudo em PDF para download.
+                  </p>
+                </div>
+              ) : (
+                /* Listagem de Ordens de Serviço */
+                <div className="space-y-3">
+                  {ordensServico.map((os) => {
+                    const fileUrl = getOrdemServicoFileUrl(os)
+                    const isExecutada = os.status === 'executada'
+                    // Descrição = campo observações da OS (conforme especificação), com fallback para descricao_servico
+                    const descricaoOS = os.observacoes || os.descricao_servico
+
+                    return (
+                      <div
+                        key={os.id}
+                        className="bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-md"
+                      >
+                        <div className="space-y-2 flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {/* Número da OS */}
+                            <span className="font-mono font-bold text-white text-sm bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">
+                              {os.numero_os}
+                            </span>
+
+                            {/* Badge de Status */}
+                            {isExecutada ? (
+                              <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold py-0.5 px-2">
+                                Executada
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px] font-bold py-0.5 px-2">
+                                Aberta
+                              </Badge>
+                            )}
+
+                            {/* Data */}
+                            {os.data ? (
+                              <span className="text-[11px] text-slate-400 font-mono">
+                                Data: {new Date(os.data).toLocaleDateString('pt-BR')}
+                              </span>
+                            ) : os.created ? (
+                              <span className="text-[11px] text-slate-500 font-mono">
+                                Registrada em: {new Date(os.created).toLocaleDateString('pt-BR')}
+                              </span>
+                            ) : null}
+
+                            {/* Técnico Responsável */}
+                            {os.tecnico_responsavel && (
+                              <span className="text-[11px] text-slate-400 hidden sm:inline">
+                                • Técnico:{' '}
+                                <strong className="text-slate-300 font-normal">
+                                  {os.tecnico_responsavel}
+                                </strong>
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Descrição (campo observações da OS) */}
+                          <div className="text-xs text-slate-300 leading-relaxed">
+                            {descricaoOS ? (
+                              <p className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80 text-slate-300 text-xs">
+                                <span className="font-semibold text-slate-400 mr-1">
+                                  Descrição:
+                                </span>
+                                {descricaoOS}
+                              </p>
+                            ) : (
+                              <p className="text-slate-500 italic text-[11px]">
+                                Sem observações registradas para esta OS.
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Botão Baixar arquivo da OS */}
+                        <div className="shrink-0 pt-2 md:pt-0 border-t border-slate-800/80 md:border-t-0 flex items-center justify-end">
+                          {fileUrl ? (
+                            <a
+                              href={fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              download
+                              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold text-xs transition shadow-sm hover:shadow-[#8CC63F]/20 active:scale-95"
+                              title={`Baixar arquivo da ${os.numero_os}`}
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                              <span>Baixar arquivo da OS</span>
+                            </a>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled
+                              className="border-slate-800 bg-slate-950/40 text-slate-500 text-xs h-9 cursor-not-allowed opacity-60"
+                              title="Nenhum arquivo PDF anexado a esta OS"
+                            >
+                              <Download className="w-3.5 h-3.5 mr-1.5 opacity-50" />
+                              <span>Baixar arquivo da OS</span>
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
         )}
