@@ -213,6 +213,18 @@ export async function redefinirSenhaClienteComValidacao(
     return { success: false, reason: 'contrato_nao_encontrado' }
   }
 
+  // Sanitiza a senha atual informada: remove espaços no início/fim e caracteres invisíveis comuns de cópia/cola
+  const cleanSenhaAtual = senhaAtualRaw.trim()
+  const cleanNovaSenha = novaSenhaRaw.trim()
+
+  if (!cleanSenhaAtual) {
+    return { success: false, reason: 'senha_atual_invalida' }
+  }
+
+  if (cleanNovaSenha.length < 8) {
+    return { success: false, reason: 'erro_interno' }
+  }
+
   try {
     const cliente = await buscarClientePorContrato(cleanContrato)
     if (!cliente) {
@@ -223,12 +235,34 @@ export async function redefinirSenhaClienteComValidacao(
       return { success: false, reason: 'erro_interno' }
     }
 
-    const hashAtualInformada = await hashSenhaCliente(senhaAtualRaw)
-    if (cliente.senha !== hashAtualInformada) {
+    // Compara primeiro com a senha atual limpa (trim)
+    let hashAtualInformada = await hashSenhaCliente(cleanSenhaAtual)
+    let confere = cliente.senha === hashAtualInformada
+
+    // Se o usuário digitou sem trim ou com aspas por cópia externa acidental, testa também raw
+    if (!confere && senhaAtualRaw !== cleanSenhaAtual) {
+      const hashRaw = await hashSenhaCliente(senhaAtualRaw)
+      if (cliente.senha === hashRaw) {
+        confere = true
+      }
+    }
+
+    // Se não conferiu, testa sem aspas envolventes acidentais que possam ter vindo do leitor de e-mail
+    if (!confere) {
+      const semAspas = cleanSenhaAtual.replace(/^["'`]|["'`]$/g, '').trim()
+      if (semAspas && semAspas !== cleanSenhaAtual) {
+        const hashSemAspas = await hashSenhaCliente(semAspas)
+        if (cliente.senha === hashSemAspas) {
+          confere = true
+        }
+      }
+    }
+
+    if (!confere) {
       return { success: false, reason: 'senha_atual_invalida' }
     }
 
-    const atualizado = await atualizarSenhaCliente(cliente.id, novaSenhaRaw, false)
+    const atualizado = await atualizarSenhaCliente(cliente.id, cleanNovaSenha, false)
     return { success: true, cliente: atualizado }
   } catch (err) {
     console.error('Erro ao redefinir senha do cliente com validação:', err)

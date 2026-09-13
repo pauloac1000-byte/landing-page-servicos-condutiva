@@ -38,14 +38,17 @@ routerAdd('POST', '/backend/v1/recuperar-senha', (e) => {
 
     const nomeCliente = clienteRecord.get('nome_cliente') || 'Prezado(a) Cliente'
 
-    // 2. Gerar senha provisória aleatória segura (10 caracteres, sem caracteres ambíguos)
-    // Evitando 0, O, o, 1, l, I
+    // 2. Gerar senha provisória aleatória segura com NO MÁXIMO 10 caracteres
+    // Exclui caracteres ambíguos ou que quebrem formatação e facilitem cópia incorreta:
+    // Evitando: 0 (zero), O (o maiúsculo), o (o minúsculo), 1 (um), I (i maiúsculo), l (L minúsculo)
+    // Caracteres limpos e fáceis de copiar sem confusão:
     const chars = '23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'
     let senhaProvisoria = ''
     for (let i = 0; i < 10; i++) {
       const idx = Math.floor(Math.random() * chars.length)
       senhaProvisoria += chars.charAt(idx)
     }
+    senhaProvisoria = senhaProvisoria.trim().slice(0, 10)
 
     // 3. Configurar SMTP (mesmo padrão dos hooks on_lead_create e on_csat_create)
     try {
@@ -103,9 +106,12 @@ routerAdd('POST', '/backend/v1/recuperar-senha', (e) => {
       '</strong>. Abaixo está a sua senha provisória para acesso imediato:</p>' +
       '<div style="margin:20px 0;padding:16px;background:#f8fafc;border:2px dashed #8CC63F;border-radius:8px;text-align:center">' +
       '<span style="display:block;font-size:12px;font-weight:700;text-transform:uppercase;color:#64748b;letter-spacing:0.5px">Sua Senha Provisória</span>' +
-      '<span style="display:inline-block;margin-top:6px;font-family:Consolas,Monaco,monospace;font-size:24px;font-weight:900;color:#0f172a;letter-spacing:3px;background:#ffffff;padding:8px 18px;border:1px solid #cbd5e1;border-radius:6px">' +
+      '<div style="margin-top:8px;">' +
+      '<code style="display:inline-block;font-family:Consolas,Monaco,\'Courier New\',monospace;font-size:22px;font-weight:700;color:#0f172a;background:#ffffff;padding:10px 20px;border:1px solid #cbd5e1;border-radius:6px;user-select:all;-webkit-user-select:all;">' +
       esc(senhaProvisoria) +
-      '</span>' +
+      '</code>' +
+      '</div>' +
+      '<p style="margin:8px 0 0;font-size:11px;color:#64748b">Dica: dê um clique duplo na senha acima para selecioná-la e copie sem espaços extras.</p>' +
       '</div>' +
       '<div style="margin-top:18px;padding:12px 14px;background:#eff6ff;border-left:4px solid #3b82f6;border-radius:4px;color:#1e3a8a;font-size:13px;line-height:1.4">' +
       '<strong>Importante:</strong> Ao entrar na Área do Cliente utilizando esta senha provisória, recomendamos que você altere sua senha imediatamente acessando o menu <strong>"Minha conta"</strong>.' +

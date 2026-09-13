@@ -228,22 +228,26 @@ export function ClienteLoginModal() {
     setEsqueciSuccess(null)
 
     const contrato = esqueciContrato.trim()
+    const senhaAtualLimpa = redefinirSenhaAtual.trim()
+    const novaSenhaLimpa = redefinirNovaSenha.trim()
+    const confirmSenhaLimpa = redefinirConfirmSenha.trim()
+
     if (!contrato) {
       setEsqueciError('Informe o número do contrato.')
       return
     }
 
-    if (!redefinirSenhaAtual) {
+    if (!senhaAtualLimpa) {
       setEsqueciError('Informe a senha atual ou provisória recebida por e-mail.')
       return
     }
 
-    if (redefinirNovaSenha.length < 8) {
+    if (novaSenhaLimpa.length < 8) {
       setEsqueciError('A nova senha deve ter no mínimo 8 caracteres.')
       return
     }
 
-    if (redefinirNovaSenha !== redefinirConfirmSenha) {
+    if (novaSenhaLimpa !== confirmSenhaLimpa) {
       setEsqueciError('A confirmação da nova senha não confere.')
       return
     }
@@ -252,8 +256,8 @@ export function ClienteLoginModal() {
     try {
       const result = await redefinirSenhaClienteComValidacao(
         contrato,
-        redefinirSenhaAtual,
-        redefinirNovaSenha,
+        senhaAtualLimpa,
+        novaSenhaLimpa,
       )
 
       if (result.success === true) {
