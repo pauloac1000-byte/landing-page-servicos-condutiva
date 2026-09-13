@@ -75,6 +75,74 @@ export async function hashSenhaCliente(senhaRaw: string): Promise<string> {
 }
 
 /**
+ * Verifica se a string armazenada no banco possui o formato de um hash hexadecimal SHA-256 (64 caracteres hexadecimais).
+ * Se não for, indica que a senha foi gravada/editada em texto puro (ex: manualmente pelo administrador no painel).
+ */
+export function isHashSha256Hex(str: string): boolean {
+  if (!str || typeof str !== 'string') return false
+  return /^[0-9a-fA-F]{64}$/.test(str.trim())
+}
+
+/**
+ * Valida a senha informada pelo usuário contra o valor armazenado no registro do cliente.
+ * - Se o valor armazenado for um hash SHA-256 (64 hex), compara o hash computado (com salt).
+ * - Se o valor armazenado NÃO for um hash (ou seja, texto puro gravado manualmente por administrador),
+ *   compara diretamente em texto puro com tolerância a espaços e aspas acidentais.
+ * Retorna se a senha confere e se deve ser migrada para hash no banco.
+ */
+export async function conferirSenhaCliente(
+  senhaArmazenada: string,
+  senhaInformadaRaw: string,
+): Promise<{ confere: boolean; precisaNormalizarParaHash: boolean }> {
+  if (!senhaArmazenada || !senhaInformadaRaw) {
+    return { confere: false, precisaNormalizarParaHash: false }
+  }
+
+  const stored = senhaArmazenada.trim()
+  const cleanInput = senhaInformadaRaw.trim()
+  const semAspasInput = cleanInput.replace(/^["'`]|["'`]$/g, '').trim()
+
+  // CASO 1: A senha armazenada no banco é um hash hexadecimal SHA-256 (64 chars)
+  if (isHashSha256Hex(stored)) {
+    const hashClean = await hashSenhaCliente(cleanInput)
+    if (stored.toLowerCase() === hashClean.toLowerCase()) {
+      return { confere: true, precisaNormalizarParaHash: false }
+    }
+
+    if (senhaInformadaRaw !== cleanInput) {
+      const hashRaw = await hashSenhaCliente(senhaInformadaRaw)
+      if (stored.toLowerCase() === hashRaw.toLowerCase()) {
+        return { confere: true, precisaNormalizarParaHash: false }
+      }
+    }
+
+    if (semAspasInput && semAspasInput !== cleanInput) {
+      const hashSemAspas = await hashSenhaCliente(semAspasInput)
+      if (stored.toLowerCase() === hashSemAspas.toLowerCase()) {
+        return { confere: true, precisaNormalizarParaHash: false }
+      }
+    }
+
+    return { confere: false, precisaNormalizarParaHash: false }
+  }
+
+  // CASO 2: A senha armazenada no banco está em TEXTO PURO (ex: "eb9ba046ed" gravada manualmente por admin)
+  const storedSemAspas = stored.replace(/^["'`]|["'`]$/g, '').trim()
+
+  const confereTextoPuro =
+    stored === senhaInformadaRaw ||
+    stored === cleanInput ||
+    storedSemAspas === cleanInput ||
+    storedSemAspas === semAspasInput
+
+  if (confereTextoPuro) {
+    return { confere: true, precisaNormalizarParaHash: true }
+  }
+
+  return { confere: false, precisaNormalizarParaHash: false }
+}
+
+/**
  * Autentica o cliente na Área do Cliente utilizando número de contrato + senha.
  * Retorna o registro do cliente autenticado ou null se as credenciais forem inválidas.
  */
@@ -112,14 +180,31 @@ export async function autenticarClienteComDetalhe(
       return { success: false, reason: 'not_found' }
     }
 
-    const cliente = records.items[0]
+    let cliente = records.items[0]
     if (!cliente.senha) {
       return { success: false, reason: 'corrupted' }
     }
 
-    const hashCalculado = await hashSenhaCliente(senhaRaw)
+    const { confere, precisaNormalizarParaHash } = await conferirSenhaCliente(
+      cliente.senha,
+      senhaRaw,
+    )
 
-    if (cliente.senha === hashCalculado) {
+    if (confere) {
+      // Se a senha estava em texto puro (ajuste manual de admin), normaliza para hash seguro na primeira tentativa bem-sucedida
+      if (precisaNormalizarParaHash) {
+        try {
+          const hashNovo = await hashSenhaCliente(senhaRaw.trim())
+          const agora = new Date().toISOString()
+          cliente = await pb.collection<ClienteRecord>('clientes').update(cliente.id, {
+            senha: hashNovo,
+            senha_alterada_em: agora,
+          })
+        } catch (updateErr) {
+          console.warn('Falha ao normalizar hash da senha do cliente:', updateErr)
+          // Mantém login autorizado mesmo se o update falhar por rede/permissão pontual
+        }
+      }
       return { success: true, cliente }
     }
 
@@ -235,28 +320,7 @@ export async function redefinirSenhaClienteComValidacao(
       return { success: false, reason: 'erro_interno' }
     }
 
-    // Compara primeiro com a senha atual limpa (trim)
-    let hashAtualInformada = await hashSenhaCliente(cleanSenhaAtual)
-    let confere = cliente.senha === hashAtualInformada
-
-    // Se o usuário digitou sem trim ou com aspas por cópia externa acidental, testa também raw
-    if (!confere && senhaAtualRaw !== cleanSenhaAtual) {
-      const hashRaw = await hashSenhaCliente(senhaAtualRaw)
-      if (cliente.senha === hashRaw) {
-        confere = true
-      }
-    }
-
-    // Se não conferiu, testa sem aspas envolventes acidentais que possam ter vindo do leitor de e-mail
-    if (!confere) {
-      const semAspas = cleanSenhaAtual.replace(/^["'`]|["'`]$/g, '').trim()
-      if (semAspas && semAspas !== cleanSenhaAtual) {
-        const hashSemAspas = await hashSenhaCliente(semAspas)
-        if (cliente.senha === hashSemAspas) {
-          confere = true
-        }
-      }
-    }
+    const { confere } = await conferirSenhaCliente(cliente.senha, senhaAtualRaw)
 
     if (!confere) {
       return { success: false, reason: 'senha_atual_invalida' }

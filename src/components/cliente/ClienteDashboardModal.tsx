@@ -35,12 +35,13 @@ import {
 import { useClienteAuth } from '@/contexts/ClienteAuthContext'
 import { COMPANY_INFO } from '@/data/mockData'
 import {
+  MENSAGEM_NEGACAO_SENTINELA,
+  MENSAGEM_OS_NAO_ENCONTRADA,
   temAcessoDocumentacaoTecnica,
-  listarDocumentosTecnicos,
   validarOSParaAvaliacao,
   atualizarSenhaCliente,
-  hashSenhaCliente,
-  MENSAGEM_NEGACAO_SENTINELA,
+  conferirSenhaCliente,
+  listarDocumentosTecnicos,
 } from '@/services/clienteArea'
 import { submitCSATResponse } from '@/services/csat'
 import { getOrdensServicoByContratoId, getOrdemServicoFileUrl } from '@/services/ordensServico'
@@ -338,8 +339,8 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
 
     setIsChangingPassword(true)
     try {
-      const hashAtual = await hashSenhaCliente(senhaAtual)
-      if (cliente.senha !== hashAtual) {
+      const { confere } = await conferirSenhaCliente(cliente.senha, senhaAtual)
+      if (!confere) {
         setContaError('A senha atual digitada está incorreta.')
         setIsChangingPassword(false)
         return
