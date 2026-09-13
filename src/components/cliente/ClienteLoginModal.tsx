@@ -76,8 +76,19 @@ export function ClienteLoginModal() {
       setEsqueciError(null)
       setEsqueciSuccess(null)
       setProvisoriaFeedback(null)
+    } else {
+      setLoginContrato('')
+      setLoginSenha('')
+      setShowLoginSenha(false)
     }
   }, [isModalOpen])
+
+  const handleCloseAndClearLogin = () => {
+    setLoginContrato('')
+    setLoginSenha('')
+    setShowLoginSenha(false)
+    closeModal()
+  }
 
   // Login handler
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -281,7 +292,11 @@ export function ClienteLoginModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={(open) => (!open ? closeModal() : null)}>
-      <DialogContent className="bg-[#0b132b] border border-slate-800 text-white max-w-lg max-h-[92vh] overflow-y-auto p-5 sm:p-7 shadow-2xl">
+      <DialogContent
+        onPointerDownOutside={handleCloseAndClearLogin}
+        onEscapeKeyDown={handleCloseAndClearLogin}
+        className="bg-[#0b132b] border border-slate-800 text-white max-w-lg max-h-[92vh] overflow-y-auto p-5 sm:p-7 shadow-2xl"
+      >
         <DialogHeader className="text-left mb-3">
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2.5 h-2.5 rounded-full bg-[#8CC63F] shadow-[0_0_8px_#8CC63F]"></span>

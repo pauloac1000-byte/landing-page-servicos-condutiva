@@ -399,7 +399,11 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => (!open ? onClose() : null)}>
-      <DialogContent className="bg-[#0b132b] border border-slate-800 text-white max-w-3xl max-h-[92vh] overflow-y-auto p-5 sm:p-7 shadow-2xl">
+      <DialogContent
+        onPointerDownOutside={() => handleLogout()}
+        onEscapeKeyDown={() => handleLogout()}
+        className="bg-[#0b132b] border border-slate-800 text-white max-w-3xl max-h-[92vh] overflow-y-auto p-5 sm:p-7 shadow-2xl"
+      >
         {/* Cabeçalho do Painel: Empresa, Contrato, Nível do Plano, Minha Conta e Sair */}
         <DialogHeader className="text-left border-b border-slate-800/80 pb-4 mb-5">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
