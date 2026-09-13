@@ -423,17 +423,8 @@ export async function validarOSParaAvaliacao(
     }
   }
 
-  // Verificar se a OS já foi avaliada
-  const jaAvaliada =
-    Boolean(osRecord?.avaliacao_realizada) || contractRecord?.questionnaire_status === 'respondido'
-
-  if (jaAvaliada) {
-    return {
-      valido: false,
-      motivo: 'ja_avaliada',
-      mensagem: MENSAGEM_OS_JA_AVALIADA,
-    }
-  }
+  // Observação: Conforme nova regra de negócio, avaliações já realizadas NÃO bloqueiam o acesso.
+  // O cliente pode acessar e responder novamente; o registro continua sendo gravado no banco.
 
   // Garantir um ContractRecord consistente para alimentar o questionário CSAT
   const contractFinal: import('@/types').ContractRecord = contractRecord || {

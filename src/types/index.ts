@@ -144,6 +144,7 @@ export interface OrdemServicoRecord {
   avaliacao_realizada?: boolean
   descricao_servico?: string
   tecnico_responsavel?: string
+  relatorio_pdf_url?: string
   expand?: {
     contrato_id?: ClienteRecord
   }
@@ -158,6 +159,7 @@ export interface OrdemServicoFormData {
   arquivo?: File | null
   descricao_servico?: string
   tecnico_responsavel?: string
+  relatorio_pdf_url?: string
 }
 
 export type TipoDocumentoTecnico = 'Manual' | 'Esquema' | 'Datasheet' | 'Certificado'

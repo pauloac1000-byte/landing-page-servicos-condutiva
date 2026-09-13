@@ -81,6 +81,9 @@ export async function createOrdemServico(data: OrdemServicoFormData): Promise<Or
     if (data.tecnico_responsavel) {
       formData.append('tecnico_responsavel', data.tecnico_responsavel.trim())
     }
+    if (data.relatorio_pdf_url !== undefined) {
+      formData.append('relatorio_pdf_url', data.relatorio_pdf_url.trim())
+    }
     formData.append('arquivo', data.arquivo)
 
     return await pb.collection<OrdemServicoRecord>('ordens_servico').create(formData, {
@@ -98,6 +101,8 @@ export async function createOrdemServico(data: OrdemServicoFormData): Promise<Or
   if (data.observacoes) payload.observacoes = data.observacoes.trim()
   if (data.descricao_servico) payload.descricao_servico = data.descricao_servico.trim()
   if (data.tecnico_responsavel) payload.tecnico_responsavel = data.tecnico_responsavel.trim()
+  if (data.relatorio_pdf_url !== undefined)
+    payload.relatorio_pdf_url = data.relatorio_pdf_url.trim()
 
   return await pb.collection<OrdemServicoRecord>('ordens_servico').create(payload, {
     expand: 'contrato_id',
@@ -122,6 +127,8 @@ export async function updateOrdemServico(
       formData.append('descricao_servico', data.descricao_servico.trim())
     if (data.tecnico_responsavel !== undefined)
       formData.append('tecnico_responsavel', data.tecnico_responsavel.trim())
+    if (data.relatorio_pdf_url !== undefined)
+      formData.append('relatorio_pdf_url', data.relatorio_pdf_url.trim())
     formData.append('arquivo', data.arquivo)
 
     return await pb.collection<OrdemServicoRecord>('ordens_servico').update(id, formData, {
@@ -139,6 +146,8 @@ export async function updateOrdemServico(
     payload.descricao_servico = data.descricao_servico.trim()
   if (data.tecnico_responsavel !== undefined)
     payload.tecnico_responsavel = data.tecnico_responsavel.trim()
+  if (data.relatorio_pdf_url !== undefined)
+    payload.relatorio_pdf_url = data.relatorio_pdf_url.trim()
 
   return await pb.collection<OrdemServicoRecord>('ordens_servico').update(id, payload, {
     expand: 'contrato_id',

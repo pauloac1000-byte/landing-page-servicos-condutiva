@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-13T12:09:13.695Z",
+  "generatedAt": "2026-09-13T12:28:46.884Z",
   "collections": [
     {
       "name": "users",
@@ -538,6 +538,12 @@
         },
         {
           "name": "observacoes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "relatorio_pdf_url",
           "type": "text",
           "required": false,
           "system": false

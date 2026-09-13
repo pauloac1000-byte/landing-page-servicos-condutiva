@@ -89,19 +89,13 @@ export default function CSATAccessPage() {
         setValidatedContract(resultadoOS.contract)
         setCurrentStep('select_option')
         return
-      } else if (resultadoOS.motivo === 'ja_avaliada') {
-        setErrorMessage(MENSAGEM_OS_JA_AVALIADA)
-        return
       }
 
       // 2. Fallback: se forneceu ambos contrato e OS, pesquisa na base de contracts
       if (trimmedContract && trimmedOS) {
         const match = await findContractByNumbers(trimmedContract, trimmedOS)
         if (match) {
-          if (match.questionnaire_status === 'respondido') {
-            setErrorMessage(MENSAGEM_OS_JA_AVALIADA)
-            return
-          }
+          // Não bloqueia mais se respondido
           setValidatedContract(match)
           setCurrentStep('select_option')
           return

@@ -183,13 +183,8 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
     setOsSearchError(null)
     setCurrentView('avaliacao')
 
-    // Se já avaliada, exibe a etapa de input com a mensagem exata
-    if (os.avaliacao_realizada) {
-      setAvaliacaoStep('input_os')
-      setOsSearchError('Esta Ordem de Serviço já foi avaliada. Obrigado pelo retorno.')
-      return
-    }
-
+    // Conforme regra atualizada, avaliações já realizadas NÃO bloqueiam o acesso.
+    // O cliente pode acessar diretamente as opções e responder novamente.
     setIsSearchingOS(true)
     try {
       const resultado = await validarOSParaAvaliacao(os.numero_os, cliente)
@@ -795,6 +790,8 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
                         </div>
                       )
 
+                      const relatorioUrl = os.relatorio_pdf_url?.trim()
+
                       return (
                         <div
                           key={os.id}
@@ -821,16 +818,44 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
                             </div>
                           )}
 
+                          {/* Seção do Relatório de Atividades da OS */}
+                          <div className="px-2 pb-1.5 pt-0">
+                            {relatorioUrl ? (
+                              <a
+                                href={relatorioUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                download
+                                title={`Abrir/baixar relatório de atividades em PDF da ${os.numero_os}`}
+                                className="w-full h-6 text-[10px] px-1.5 rounded border border-[#8CC63F]/40 hover:border-[#8CC63F] bg-[#8CC63F]/10 hover:bg-[#8CC63F]/20 text-[#8CC63F] hover:text-white flex items-center justify-center gap-1 transition-colors font-medium truncate"
+                              >
+                                <FileText className="w-2.5 h-2.5 shrink-0" />
+                                <span className="truncate">Ver Relatório</span>
+                                <Download className="w-2.5 h-2.5 shrink-0 ml-0.5" />
+                              </a>
+                            ) : (
+                              <div
+                                className="w-full text-center py-1 px-1 text-[9.5px] leading-tight text-slate-500 rounded border border-slate-800/60 bg-slate-950/40 truncate"
+                                title="O relatório de atividades ainda não foi disponibilizado pelo administrador"
+                              >
+                                Relatório ainda não disponível
+                              </div>
+                            )}
+                          </div>
+
                           {/* Ação secundária: Avaliar atendimento da OS */}
                           <div className="p-2 pt-0 bg-transparent">
                             {os.avaliacao_realizada ? (
-                              <div
-                                className="w-full text-center py-1 text-[10px] text-slate-500 flex items-center justify-center gap-1 bg-slate-950/60 rounded border border-slate-800/80"
-                                title="Esta OS já foi avaliada. Obrigado!"
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleAvaliarOSIndividual(os)}
+                                className="w-full h-6 text-[10px] px-1.5 border-emerald-500/30 hover:border-[#8CC63F] bg-slate-950/80 text-emerald-400 hover:text-white flex items-center justify-center gap-1"
+                                title={`Esta OS já foi avaliada. Clique para acessar ou responder novamente.`}
                               >
-                                <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
-                                <span className="truncate">Avaliada</span>
-                              </div>
+                                <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
+                                <span className="truncate">Avaliada • Reavaliar</span>
+                              </Button>
                             ) : (
                               <Button
                                 size="sm"

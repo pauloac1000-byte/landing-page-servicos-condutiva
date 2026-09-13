@@ -520,6 +520,7 @@ export default function ContractsPage() {
       arquivo: null,
       descricao_servico: '',
       tecnico_responsavel: '',
+      relatorio_pdf_url: '',
     })
     setOsFormErrors({})
     setIsOSModalOpen(true)
@@ -538,6 +539,7 @@ export default function ContractsPage() {
       arquivo: null,
       descricao_servico: os.descricao_servico || '',
       tecnico_responsavel: os.tecnico_responsavel || '',
+      relatorio_pdf_url: os.relatorio_pdf_url || '',
     })
     setOsFormErrors({})
     setIsOSModalOpen(true)
@@ -1969,6 +1971,37 @@ export default function ContractsPage() {
               )}
             </div>
 
+            {/* URL do Relatório de Atividades (PDF) */}
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-300 flex items-center justify-between">
+                <span>URL do Relatório de Atividades (PDF)</span>
+                {osFormData.relatorio_pdf_url?.trim() && (
+                  <a
+                    href={osFormData.relatorio_pdf_url.trim()}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] text-[#8CC63F] hover:underline inline-flex items-center gap-1"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    Testar Link
+                  </a>
+                )}
+              </label>
+              <Input
+                placeholder="Ex: https://storage.exemplo.com/relatorios/relatorio-os-8841.pdf (opcional)"
+                value={osFormData.relatorio_pdf_url || ''}
+                onChange={(e) =>
+                  setOsFormData({ ...osFormData, relatorio_pdf_url: e.target.value })
+                }
+                className="bg-slate-950 border-slate-800 text-white text-xs h-9 rounded-xl font-mono"
+              />
+              <p className="text-[10px] text-slate-500">
+                Opcional. Se vazio, o cliente verá &quot;Relatório ainda não disponível&quot;.
+                Quando preenchido com a URL do PDF, o cliente poderá abrir/baixar o relatório na
+                Área do Cliente.
+              </p>
+            </div>
+
             {/* Observações */}
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-300">Observações</label>
@@ -2259,6 +2292,20 @@ export default function ContractsPage() {
                           ) : (
                             <span className="text-[11px] text-slate-500 italic px-2">Sem PDF</span>
                           )}
+
+                          {os.relatorio_pdf_url?.trim() ? (
+                            <a
+                              href={os.relatorio_pdf_url.trim()}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-sky-400 hover:bg-sky-500/15 hover:border-sky-500/40 transition font-medium"
+                              title="Abrir PDF do relatório de atividades"
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                              <span>Relatório</span>
+                              <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                            </a>
+                          ) : null}
 
                           {/* Botão para visualizar respostas do questionário da OS */}
                           {(() => {
