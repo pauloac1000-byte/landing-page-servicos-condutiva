@@ -44,6 +44,7 @@ import {
   updateOrdemServico,
   deleteOrdemServico,
   getOrdemServicoFileUrl,
+  getOrdemServicoRelatorioUrl,
   findOrdemServicoByNumero,
 } from '@/services/ordensServico'
 import { getCSATResponses } from '@/services/csat'
@@ -115,12 +116,16 @@ export default function ContractsPage() {
     status: 'aberta',
     observacoes: '',
     arquivo: null,
+    relatorio_arquivo: null,
     descricao_servico: '',
     tecnico_responsavel: '',
+    relatorio_pdf_url: '',
   })
   const [osFormErrors, setOsFormErrors] = useState<Record<string, string>>({})
   const [isSubmittingOS, setIsSubmittingOS] = useState(false)
   const [selectedFileName, setSelectedFileName] = useState<string>('')
+  const [selectedRelatorioFileName, setSelectedRelatorioFileName] = useState<string>('')
+  const [showManualUrlInput, setShowManualUrlInput] = useState(false)
 
   // Modal de listagem detalhada de OS de um contrato específico
   const [contractForOSModal, setContractForOSModal] = useState<
@@ -511,6 +516,9 @@ export default function ContractsPage() {
       initialContratoId = clientesContratos[0].id
     }
 
+    setSelectedFileName('')
+    setSelectedRelatorioFileName('')
+    setShowManualUrlInput(false)
     setOsFormData({
       numero_os: '',
       contrato_id: initialContratoId,
@@ -518,6 +526,7 @@ export default function ContractsPage() {
       status: 'aberta',
       observacoes: '',
       arquivo: null,
+      relatorio_arquivo: null,
       descricao_servico: '',
       tecnico_responsavel: '',
       relatorio_pdf_url: '',
@@ -529,7 +538,16 @@ export default function ContractsPage() {
   const handleOpenEditOSModal = (os: OrdemServicoRecord, e?: React.MouseEvent) => {
     if (e) e.stopPropagation()
     setEditingOS(os)
-    setSelectedFileName(os.arquivo ? 'Arquivo PDF já anexado' : '')
+    setSelectedFileName(os.arquivo ? 'Arquivo PDF da OS já anexado' : '')
+    const hasRelatorio = Boolean(os.relatorio_arquivo || os.relatorio_pdf_url?.trim())
+    setSelectedRelatorioFileName(
+      os.relatorio_arquivo
+        ? 'Relatório PDF já anexado no sistema'
+        : os.relatorio_pdf_url?.trim()
+          ? 'Relatório configurado via link externo'
+          : '',
+    )
+    setShowManualUrlInput(Boolean(!os.relatorio_arquivo && os.relatorio_pdf_url?.trim()))
     setOsFormData({
       numero_os: os.numero_os,
       contrato_id: os.contrato_id,
@@ -537,6 +555,7 @@ export default function ContractsPage() {
       status: os.status || 'aberta',
       observacoes: os.observacoes || '',
       arquivo: null,
+      relatorio_arquivo: null,
       descricao_servico: os.descricao_servico || '',
       tecnico_responsavel: os.tecnico_responsavel || '',
       relatorio_pdf_url: os.relatorio_pdf_url || '',
@@ -569,12 +588,28 @@ export default function ContractsPage() {
       errors.status = 'Selecione o status da OS (aberta ou executada).'
     }
 
-    // Validação de arquivo (se fornecido, deve ser PDF)
+    // Validação de arquivo da OS (se fornecido, deve ser PDF)
     if (osFormData.arquivo) {
-      if (osFormData.arquivo.type !== 'application/pdf') {
-        errors.arquivo = 'O arquivo da OS deve ser obrigatoriamente um documento PDF.'
-      } else if (osFormData.arquivo.size > 10 * 1024 * 1024) {
-        errors.arquivo = 'O tamanho máximo do PDF é 10 MB.'
+      const isPdf =
+        osFormData.arquivo.type === 'application/pdf' ||
+        osFormData.arquivo.name.toLowerCase().endsWith('.pdf')
+      if (!isPdf) {
+        errors.arquivo = 'O arquivo da OS deve ser obrigatoriamente um documento PDF (.pdf).'
+      } else if (osFormData.arquivo.size > 15 * 1024 * 1024) {
+        errors.arquivo = 'O tamanho máximo do PDF da OS é 15 MB.'
+      }
+    }
+
+    // Validação de arquivo do Relatório de Atividades (se fornecido, deve ser PDF)
+    if (osFormData.relatorio_arquivo) {
+      const isPdf =
+        osFormData.relatorio_arquivo.type === 'application/pdf' ||
+        osFormData.relatorio_arquivo.name.toLowerCase().endsWith('.pdf')
+      if (!isPdf) {
+        errors.relatorio_arquivo =
+          'O Relatório de Atividades deve ser obrigatoriamente um documento PDF (.pdf).'
+      } else if (osFormData.relatorio_arquivo.size > 15 * 1024 * 1024) {
+        errors.relatorio_arquivo = 'O tamanho máximo do PDF do relatório é 15 MB.'
       }
     }
 
@@ -1971,35 +2006,172 @@ export default function ContractsPage() {
               )}
             </div>
 
-            {/* URL do Relatório de Atividades (PDF) */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-300 flex items-center justify-between">
-                <span>URL do Relatório de Atividades (PDF)</span>
-                {osFormData.relatorio_pdf_url?.trim() && (
-                  <a
-                    href={osFormData.relatorio_pdf_url.trim()}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[11px] text-[#8CC63F] hover:underline inline-flex items-center gap-1"
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                    Testar Link
-                  </a>
+            {/* Campo de Upload do Relatório de Atividades (PDF) */}
+            <div className="space-y-1.5 p-3 rounded-xl bg-slate-950/70 border border-slate-800">
+              <div className="flex items-center justify-between gap-2">
+                <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-[#8CC63F]" />
+                  <span>Relatório de Atividades (PDF)</span>
+                </label>
+                {/* Visualizar / Abrir relatório atual, se houver */}
+                {(() => {
+                  const currentRelatorioUrl =
+                    (editingOS && getOrdemServicoRelatorioUrl(editingOS)) ||
+                    (osFormData.relatorio_pdf_url?.trim()
+                      ? osFormData.relatorio_pdf_url.trim()
+                      : null)
+
+                  if (currentRelatorioUrl) {
+                    return (
+                      <a
+                        href={currentRelatorioUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] text-[#8CC63F] hover:underline inline-flex items-center gap-1 font-medium bg-[#8CC63F]/10 hover:bg-[#8CC63F]/20 px-2 py-0.5 rounded-md transition"
+                        title="Abrir o relatório de atividades atualmente anexado em nova aba"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        Ver Relatório Atual
+                      </a>
+                    )
+                  }
+                  return null
+                })()}
+              </div>
+
+              {/* Box de Upload */}
+              <div className="border border-dashed border-slate-700 hover:border-[#8CC63F]/60 rounded-xl p-3 bg-slate-900/60 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-[#8CC63F]/15 border border-[#8CC63F]/30 flex items-center justify-center text-[#8CC63F] shrink-0">
+                    <FileUp className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <input
+                      type="file"
+                      id="relatorio-pdf-upload"
+                      accept=".pdf,application/pdf"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null
+                        if (!file) return
+
+                        const isPdf =
+                          file.type === 'application/pdf' ||
+                          file.name.toLowerCase().endsWith('.pdf')
+
+                        if (!isPdf) {
+                          setOsFormErrors({
+                            ...osFormErrors,
+                            relatorio_arquivo:
+                              'Arquivo inválido. Por favor, envie apenas documentos com extensão .pdf.',
+                          })
+                          return
+                        }
+
+                        if (file.size > 15 * 1024 * 1024) {
+                          setOsFormErrors({
+                            ...osFormErrors,
+                            relatorio_arquivo: 'O tamanho máximo do relatório em PDF é de 15 MB.',
+                          })
+                          return
+                        }
+
+                        setOsFormData({
+                          ...osFormData,
+                          relatorio_arquivo: file,
+                          // Se anexou um novo arquivo, sugere limpar a URL antiga para usar a URL gerada pelo upload
+                          relatorio_pdf_url: '',
+                        })
+                        setSelectedRelatorioFileName(file.name)
+                        if (osFormErrors.relatorio_arquivo) {
+                          setOsFormErrors({ ...osFormErrors, relatorio_arquivo: '' })
+                        }
+                      }}
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="relatorio-pdf-upload"
+                      className="cursor-pointer block text-xs text-slate-200 hover:text-white truncate font-medium"
+                    >
+                      {osFormData.relatorio_arquivo
+                        ? `Novo arquivo selecionado: ${osFormData.relatorio_arquivo.name}`
+                        : selectedRelatorioFileName ||
+                          'Clique para anexar ou substituir o Relatório de Atividades (.pdf)'}
+                    </label>
+                    <p className="text-[10px] text-slate-400">
+                      {osFormData.relatorio_arquivo ? (
+                        <span className="text-[#8CC63F] font-mono">
+                          {(osFormData.relatorio_arquivo.size / (1024 * 1024)).toFixed(2)} MB •
+                          Pronto para salvar e substituir
+                        </span>
+                      ) : editingOS?.relatorio_arquivo || editingOS?.relatorio_pdf_url ? (
+                        'Selecione um novo PDF caso queira substituir o relatório atual'
+                      ) : (
+                        'Apenas arquivos .pdf (salvo diretamente no armazenamento Skip Cloud, máx. 15 MB)'
+                      )}
+                    </p>
+                  </div>
+
+                  {osFormData.relatorio_arquivo && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setOsFormData({
+                          ...osFormData,
+                          relatorio_arquivo: null,
+                          relatorio_pdf_url: editingOS?.relatorio_pdf_url || '',
+                        })
+                        setSelectedRelatorioFileName(
+                          editingOS?.relatorio_arquivo
+                            ? 'Relatório PDF já anexado no sistema'
+                            : editingOS?.relatorio_pdf_url?.trim()
+                              ? 'Relatório configurado via link externo'
+                              : '',
+                        )
+                      }}
+                      className="h-7 w-7 p-0 text-slate-400 hover:text-red-400 shrink-0"
+                      title="Cancelar substituição do arquivo"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {osFormErrors.relatorio_arquivo && (
+                <p className="text-[11px] text-red-400">{osFormErrors.relatorio_arquivo}</p>
+              )}
+
+              {/* Opção complementar: Link/URL manual (caso o admin queira informar link externo) */}
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowManualUrlInput(!showManualUrlInput)}
+                  className="text-[10.5px] text-slate-400 hover:text-[#8CC63F] underline underline-offset-2 transition cursor-pointer"
+                >
+                  {showManualUrlInput
+                    ? '▲ Ocultar campo de link manual'
+                    : '▼ Inserir ou editar URL manual do relatório (opcional)'}
+                </button>
+
+                {showManualUrlInput && (
+                  <div className="mt-2 space-y-1 animate-in fade-in duration-150">
+                    <Input
+                      placeholder="Ex: https://storage.exemplo.com/relatorios/relatorio-os.pdf"
+                      value={osFormData.relatorio_pdf_url || ''}
+                      onChange={(e) =>
+                        setOsFormData({ ...osFormData, relatorio_pdf_url: e.target.value })
+                      }
+                      className="bg-slate-950 border-slate-800 text-white text-xs h-8 rounded-lg font-mono"
+                    />
+                    <p className="text-[9.5px] text-slate-500">
+                      Caso o arquivo seja enviado acima, a URL do storage será vinculada
+                      automaticamente.
+                    </p>
+                  </div>
                 )}
-              </label>
-              <Input
-                placeholder="Ex: https://storage.exemplo.com/relatorios/relatorio-os-8841.pdf (opcional)"
-                value={osFormData.relatorio_pdf_url || ''}
-                onChange={(e) =>
-                  setOsFormData({ ...osFormData, relatorio_pdf_url: e.target.value })
-                }
-                className="bg-slate-950 border-slate-800 text-white text-xs h-9 rounded-xl font-mono"
-              />
-              <p className="text-[10px] text-slate-500">
-                Opcional. Se vazio, o cliente verá &quot;Relatório ainda não disponível&quot;.
-                Quando preenchido com a URL do PDF, o cliente poderá abrir/baixar o relatório na
-                Área do Cliente.
-              </p>
+              </div>
             </div>
 
             {/* Observações */}
@@ -2293,19 +2465,23 @@ export default function ContractsPage() {
                             <span className="text-[11px] text-slate-500 italic px-2">Sem PDF</span>
                           )}
 
-                          {os.relatorio_pdf_url?.trim() ? (
-                            <a
-                              href={os.relatorio_pdf_url.trim()}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-sky-400 hover:bg-sky-500/15 hover:border-sky-500/40 transition font-medium"
-                              title="Abrir PDF do relatório de atividades"
-                            >
-                              <FileText className="w-3.5 h-3.5" />
-                              <span>Relatório</span>
-                              <ExternalLink className="w-2.5 h-2.5 opacity-60" />
-                            </a>
-                          ) : null}
+                          {(() => {
+                            const relUrl = getOrdemServicoRelatorioUrl(os)
+                            if (!relUrl) return null
+                            return (
+                              <a
+                                href={relUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-sky-400 hover:bg-sky-500/15 hover:border-sky-500/40 transition font-medium"
+                                title="Abrir PDF do relatório de atividades"
+                              >
+                                <FileText className="w-3.5 h-3.5" />
+                                <span>Relatório</span>
+                                <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                              </a>
+                            )
+                          })()}
 
                           {/* Botão para visualizar respostas do questionário da OS */}
                           {(() => {

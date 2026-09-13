@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-13T12:28:46.884Z",
+  "generatedAt": "2026-09-13T12:33:13.377Z",
   "collections": [
     {
       "name": "users",
@@ -545,6 +545,12 @@
         {
           "name": "relatorio_pdf_url",
           "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "relatorio_arquivo",
+          "type": "file",
           "required": false,
           "system": false
         }

@@ -140,6 +140,7 @@ export interface OrdemServicoRecord {
   data?: string
   status?: StatusOrdemServico
   arquivo?: string
+  relatorio_arquivo?: string
   observacoes?: string
   avaliacao_realizada?: boolean
   descricao_servico?: string
@@ -157,6 +158,7 @@ export interface OrdemServicoFormData {
   status?: StatusOrdemServico
   observacoes?: string
   arquivo?: File | null
+  relatorio_arquivo?: File | null
   descricao_servico?: string
   tecnico_responsavel?: string
   relatorio_pdf_url?: string
