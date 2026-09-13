@@ -82,6 +82,7 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { AuthGate } from '@/components/AuthGate'
 import { CSATEvaluationsPanel } from '@/components/csat/CSATEvaluationsPanel'
+import { OSCSATEvaluationModal } from '@/components/csat/OSCSATEvaluationModal'
 
 export default function ContractsPage() {
   const { user, isAuthenticated, logout } = useAuth()
@@ -129,6 +130,9 @@ export default function ContractsPage() {
   // Modal de exclusão de OS
   const [osToDelete, setOsToDelete] = useState<OrdemServicoRecord | null>(null)
   const [isDeletingOS, setIsDeletingOS] = useState(false)
+
+  // Modal para detalhar as respostas da avaliação CSAT da OS
+  const [viewingEvaluationOS, setViewingEvaluationOS] = useState<OrdemServicoRecord | null>(null)
 
   // CSAT responses data state
   const [csatResponses, setCsatResponses] = useState<CSATResponseRecord[]>([])
@@ -267,6 +271,26 @@ export default function ContractsPage() {
     }
     return map
   }, [ordensServico])
+
+  // Mapa de resposta CSAT por número da OS (para consulta rápida)
+  const csatPorOS = useMemo(() => {
+    const map = new Map<string, CSATResponseRecord>()
+    for (const r of csatResponses) {
+      if (r.service_order_number) {
+        const clean = r.service_order_number.trim().toLowerCase()
+        if (!map.has(clean)) {
+          map.set(clean, r)
+        }
+      }
+    }
+    return map
+  }, [csatResponses])
+
+  // Obter a resposta CSAT correspondente a uma OS
+  const getCSATDaOS = (osNumero?: string): CSATResponseRecord | null => {
+    if (!osNumero) return null
+    return csatPorOS.get(osNumero.trim().toLowerCase()) || null
+  }
 
   // Obter todas as OS vinculadas a um ContractRecord específico
   const getOSDoContrato = (c: ContractRecord): OrdemServicoRecord[] => {
@@ -1156,27 +1180,40 @@ export default function ContractsPage() {
                                   return (
                                     <>
                                       <div className="flex flex-wrap gap-1">
-                                        {osList.slice(0, 3).map((os) => (
-                                          <button
-                                            key={os.id}
-                                            type="button"
-                                            onClick={(e) => {
-                                              e.stopPropagation()
-                                              handleOpenEditOSModal(os)
-                                            }}
-                                            title={`OS ${os.numero_os} (${os.status || 'aberta'}) - Clique para editar`}
-                                            className={`inline-flex items-center gap-1 font-mono text-[10px] px-2 py-0.5 rounded-md border font-semibold transition hover:scale-105 ${
-                                              os.status === 'executada'
-                                                ? 'bg-emerald-950/70 border-emerald-700/60 text-emerald-300'
-                                                : 'bg-amber-950/70 border-amber-700/60 text-amber-300'
-                                            }`}
-                                          >
-                                            <span>{os.numero_os}</span>
-                                            {os.arquivo && (
-                                              <FileText className="w-2.5 h-2.5 opacity-80" />
-                                            )}
-                                          </button>
-                                        ))}
+                                        {osList.slice(0, 3).map((os) => {
+                                          const csatResp = getCSATDaOS(os.numero_os)
+                                          const isAvaliada = Boolean(
+                                            os.avaliacao_realizada || csatResp,
+                                          )
+                                          return (
+                                            <button
+                                              key={os.id}
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation()
+                                                setViewingEvaluationOS(os)
+                                              }}
+                                              title={`OS ${os.numero_os} - Avaliação: ${
+                                                isAvaliada ? 'Respondida' : 'Não respondida'
+                                              }. Clique para ver detalhes.`}
+                                              className={`inline-flex items-center gap-1 font-mono text-[10px] px-2 py-0.5 rounded-md border font-semibold transition hover:scale-105 ${
+                                                isAvaliada
+                                                  ? 'bg-emerald-950/70 border-emerald-600/70 text-emerald-300'
+                                                  : 'bg-slate-900 border-slate-700 text-slate-300'
+                                              }`}
+                                            >
+                                              <span
+                                                className={`w-1.5 h-1.5 rounded-full ${
+                                                  isAvaliada ? 'bg-emerald-400' : 'bg-slate-500'
+                                                }`}
+                                              />
+                                              <span>{os.numero_os}</span>
+                                              {os.arquivo && (
+                                                <FileText className="w-2.5 h-2.5 opacity-70" />
+                                              )}
+                                            </button>
+                                          )
+                                        })}
                                         {osList.length > 3 && (
                                           <span className="text-[10px] text-slate-400 font-mono self-center">
                                             +{osList.length - 3}
@@ -1190,7 +1227,7 @@ export default function ContractsPage() {
                                           setContractForOSModal(item)
                                         }}
                                         className="text-[10px] text-[#8CC63F] hover:underline font-mono ml-1 inline-flex items-center gap-0.5"
-                                        title="Ver todas as Ordens de Serviço deste contrato"
+                                        title="Ver todas as Ordens de Serviço deste contrato e respostas de avaliação"
                                       >
                                         <span>({osList.length} OS)</span>
                                       </button>
@@ -1374,23 +1411,66 @@ export default function ContractsPage() {
                       </div>
 
                       <div className="space-y-1.5 text-xs text-slate-300 pt-1 border-t border-slate-800/80">
-                        <div className="flex items-center justify-between text-slate-400">
-                          <span>Ordens de Serviço:</span>
+                        <div className="space-y-1 text-slate-400">
+                          <div className="flex items-center justify-between">
+                            <span>Ordens de Serviço:</span>
+                            {(() => {
+                              const osList = getOSDoContrato(item)
+                              return (
+                                <button
+                                  type="button"
+                                  onClick={() => setContractForOSModal(item)}
+                                  className="font-mono font-bold text-[#8CC63F] hover:underline flex items-center gap-1"
+                                >
+                                  <span>
+                                    {osList.length > 0
+                                      ? `${osList.length} OS cadastradas`
+                                      : item.service_order_number}
+                                  </span>
+                                  <ChevronRight className="w-3 h-3" />
+                                </button>
+                              )
+                            })()}
+                          </div>
+
+                          {/* Chips de OS com indicador visual de avaliação */}
                           {(() => {
                             const osList = getOSDoContrato(item)
+                            if (osList.length === 0) return null
                             return (
-                              <button
-                                type="button"
-                                onClick={() => setContractForOSModal(item)}
-                                className="font-mono font-bold text-[#8CC63F] hover:underline flex items-center gap-1"
-                              >
-                                <span>
-                                  {osList.length > 0
-                                    ? `${osList.length} OS cadastradas`
-                                    : item.service_order_number}
-                                </span>
-                                <ChevronRight className="w-3 h-3" />
-                              </button>
+                              <div className="flex flex-wrap gap-1 pt-1">
+                                {osList.slice(0, 3).map((os) => {
+                                  const csatResp = getCSATDaOS(os.numero_os)
+                                  const isAvaliada = Boolean(os.avaliacao_realizada || csatResp)
+                                  return (
+                                    <button
+                                      key={os.id}
+                                      type="button"
+                                      onClick={() => setViewingEvaluationOS(os)}
+                                      title={`OS ${os.numero_os} - Avaliação: ${
+                                        isAvaliada ? 'Respondida' : 'Não respondida'
+                                      }`}
+                                      className={`inline-flex items-center gap-1 font-mono text-[9px] px-1.5 py-0.5 rounded border transition ${
+                                        isAvaliada
+                                          ? 'bg-emerald-950/70 border-emerald-600/60 text-emerald-300'
+                                          : 'bg-slate-900 border-slate-700 text-slate-400'
+                                      }`}
+                                    >
+                                      <span
+                                        className={`w-1.5 h-1.5 rounded-full ${
+                                          isAvaliada ? 'bg-emerald-400' : 'bg-slate-500'
+                                        }`}
+                                      />
+                                      <span>{os.numero_os}</span>
+                                    </button>
+                                  )
+                                })}
+                                {osList.length > 3 && (
+                                  <span className="text-[9px] text-slate-500 font-mono self-center">
+                                    +{osList.length - 3}
+                                  </span>
+                                )}
+                              </div>
                             )
                           })()}
                         </div>
@@ -1901,6 +1981,53 @@ export default function ContractsPage() {
               />
             </div>
 
+            {/* Se estiver editando uma OS existente, exibir o status da avaliação e atalho para ver as respostas */}
+            {editingOS && (
+              <div className="bg-slate-950/80 border border-slate-800 p-3 rounded-xl flex items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
+                    Avaliação do Questionário desta OS
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {editingOS.avaliacao_realizada || getCSATDaOS(editingOS.numero_os) ? (
+                      <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-semibold py-0.5 px-2 gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        Respondida
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-slate-800 text-slate-400 border border-slate-700 text-xs py-0.5 px-2 gap-1">
+                        <Clock className="w-3.5 h-3.5" />
+                        Não respondida
+                      </Badge>
+                    )}
+                    {getCSATDaOS(editingOS.numero_os)?.nps_score !== undefined && (
+                      <span className="text-xs text-slate-300 font-mono">
+                        Nota NPS:{' '}
+                        <strong className="text-[#8CC63F]">
+                          {getCSATDaOS(editingOS.numero_os)?.nps_score}/10
+                        </strong>
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setViewingEvaluationOS(editingOS)}
+                  className="bg-slate-900 border-slate-700 text-slate-200 hover:text-white hover:bg-slate-800 text-xs font-semibold gap-1.5"
+                >
+                  <FileCheck2 className="w-3.5 h-3.5 text-[#8CC63F]" />
+                  <span>
+                    {editingOS.avaliacao_realizada || getCSATDaOS(editingOS.numero_os)
+                      ? 'Ver Respostas'
+                      : 'Ver Detalhes'}
+                  </span>
+                </Button>
+              </div>
+            )}
+
             <DialogFooter className="pt-2 gap-2">
               <Button
                 type="button"
@@ -2045,25 +2172,42 @@ export default function ContractsPage() {
                               </Badge>
                             )}
 
-                            {/* Badge Avaliação CSAT com atalho para a aba de CSAT */}
-                            {os.avaliacao_realizada ? (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActiveTab('avaliacoes')
-                                  setContractForOSModal(null)
-                                }}
-                                title="Visualizar a avaliação CSAT desta OS na aba Avaliações CSAT"
-                                className="inline-flex items-center gap-1 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-semibold py-0.5 px-2 rounded-full hover:bg-emerald-500/25 transition cursor-pointer"
-                              >
-                                <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
-                                <span>CSAT Avaliado</span>
-                              </button>
-                            ) : (
-                              <Badge className="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] py-0.5 px-2">
-                                Aguardando CSAT
-                              </Badge>
-                            )}
+                            {/* Indicador visual e Status da Avaliação CSAT */}
+                            {(() => {
+                              const csatResp = getCSATDaOS(os.numero_os)
+                              const isAvaliada = Boolean(os.avaliacao_realizada || csatResp)
+
+                              if (isAvaliada) {
+                                return (
+                                  <button
+                                    type="button"
+                                    onClick={() => setViewingEvaluationOS(os)}
+                                    title="Visualizar as respostas completas do questionário desta OS"
+                                    className="inline-flex items-center gap-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 text-[10px] font-semibold py-0.5 px-2.5 rounded-full transition cursor-pointer group"
+                                  >
+                                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                                    <span>Respondida</span>
+                                    {csatResp && (
+                                      <span className="text-[9px] font-mono opacity-80 pl-0.5 border-l border-emerald-500/30 ml-0.5">
+                                        NPS {csatResp.nps_score}
+                                      </span>
+                                    )}
+                                  </button>
+                                )
+                              }
+
+                              return (
+                                <button
+                                  type="button"
+                                  onClick={() => setViewingEvaluationOS(os)}
+                                  title="OS aguardando avaliação do cliente — clique para verificar status"
+                                  className="inline-flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700/80 text-[10px] py-0.5 px-2.5 rounded-full transition cursor-pointer"
+                                >
+                                  <Clock className="w-3 h-3 text-slate-400" />
+                                  <span>Não respondida</span>
+                                </button>
+                              )
+                            })()}
 
                             {/* Data */}
                             {os.data && (
@@ -2115,6 +2259,32 @@ export default function ContractsPage() {
                           ) : (
                             <span className="text-[11px] text-slate-500 italic px-2">Sem PDF</span>
                           )}
+
+                          {/* Botão para visualizar respostas do questionário da OS */}
+                          {(() => {
+                            const csatResp = getCSATDaOS(os.numero_os)
+                            const isAvaliada = Boolean(os.avaliacao_realizada || csatResp)
+                            return (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setViewingEvaluationOS(os)}
+                                className={`h-8 px-2.5 text-xs font-semibold gap-1 transition ${
+                                  isAvaliada
+                                    ? 'bg-emerald-950/40 border-emerald-700/50 text-emerald-300 hover:bg-emerald-900/50 hover:text-emerald-200'
+                                    : 'bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
+                                }`}
+                                title={
+                                  isAvaliada
+                                    ? 'Ver respostas completas da avaliação'
+                                    : 'Ver status da avaliação da OS'
+                                }
+                              >
+                                <FileCheck2 className="w-3.5 h-3.5" />
+                                <span>{isAvaliada ? 'Ver Respostas' : 'Avaliação'}</span>
+                              </Button>
+                            )
+                          })()}
 
                           <Button
                             variant="ghost"
@@ -2207,6 +2377,38 @@ export default function ContractsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* ================= MODAL: DETALHES DAS RESPOSTAS DO QUESTIONÁRIO DA OS ================= */}
+      {viewingEvaluationOS && (
+        <OSCSATEvaluationModal
+          open={!!viewingEvaluationOS}
+          onOpenChange={(open) => {
+            if (!open) setViewingEvaluationOS(null)
+          }}
+          os={viewingEvaluationOS}
+          response={getCSATDaOS(viewingEvaluationOS.numero_os)}
+          contractNumber={
+            (contractForOSModal
+              ? 'contract_number' in contractForOSModal
+                ? contractForOSModal.contract_number
+                : contractForOSModal.numero_contrato
+              : undefined) || viewingEvaluationOS.expand?.contrato_id?.numero_contrato
+          }
+          clientName={
+            (contractForOSModal
+              ? 'client_name' in contractForOSModal
+                ? contractForOSModal.client_name
+                : contractForOSModal.nome_cliente
+              : undefined) || viewingEvaluationOS.expand?.contrato_id?.nome_cliente
+          }
+          onGoToCSATTab={() => {
+            setViewingEvaluationOS(null)
+            setContractForOSModal(null)
+            setIsOSModalOpen(false)
+            setActiveTab('avaliacoes')
+          }}
+        />
+      )}
     </div>
   )
 }
