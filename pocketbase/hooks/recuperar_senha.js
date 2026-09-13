@@ -142,13 +142,11 @@ routerAdd('POST', '/backend/v1/recuperar-senha', (e) => {
       return e.json(200, { ok: false })
     }
 
-    // 5. Atualizar hash da senha na base SOMENTE após envio bem-sucedido
-    // Hash idêntico: SHA-256(senha + ':condutiva_client_salt_2026')
-    const salted = senhaProvisoria + ':condutiva_client_salt_2026'
-    const hashSenha = $security.sha256(salted)
+    // 5. Atualizar senha na base SOMENTE após envio bem-sucedido
+    // Conforme especificação, a senha é gravada em texto puro legível para o administrador
     const agora = new Date().toISOString()
 
-    clienteRecord.set('senha', hashSenha)
+    clienteRecord.set('senha', senhaProvisoria.trim())
     clienteRecord.set('senha_alterada_em', agora)
     $app.save(clienteRecord)
 

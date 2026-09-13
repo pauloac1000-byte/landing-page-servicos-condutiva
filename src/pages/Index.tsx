@@ -25,28 +25,16 @@ import { useClienteAuth } from '@/contexts/ClienteAuthContext'
 export default function Index() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedTopic, setSelectedTopic] = useState<string | undefined>(undefined)
-  const [isDashboardOpen, setIsDashboardOpen] = useState(false)
-  const { isAuthenticated, openModal } = useClienteAuth()
+  const { isDashboardOpen, closeDashboard, openClienteArea } = useClienteAuth()
 
   const handleOpenModal = (topic?: string) => {
     setSelectedTopic(topic)
     setIsModalOpen(true)
   }
 
-  const handleOpenClienteArea = () => {
-    if (isAuthenticated) {
-      setIsDashboardOpen(true)
-    } else {
-      openModal('login')
-    }
-  }
-
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-[#8CC63F] selection:text-white">
-      <Header
-        onOpenDiagnosticModal={() => handleOpenModal()}
-        onOpenClienteArea={handleOpenClienteArea}
-      />
+      <Header onOpenDiagnosticModal={() => handleOpenModal()} onOpenClienteArea={openClienteArea} />
 
       <main className="flex-grow">
         <HeroSection onOpenDiagnosticModal={() => handleOpenModal('Diagnóstico Hero')} />
@@ -63,7 +51,7 @@ export default function Index() {
         <AspirationalSection
           onOpenDiagnosticModal={() => handleOpenModal('Diagnóstico Banner Parallax')}
         />
-        <TestimonialsSection onOpenClienteArea={handleOpenClienteArea} />
+        <TestimonialsSection onOpenClienteArea={openClienteArea} />
         <RiskReversalBanner
           onOpenDiagnosticModal={() => handleOpenModal('Diagnóstico Banner Risco Zero')}
         />
@@ -71,7 +59,7 @@ export default function Index() {
         <DiagnosticFormSection initialService={selectedTopic} />
       </main>
 
-      <Footer onOpenClienteArea={handleOpenClienteArea} />
+      <Footer onOpenClienteArea={openClienteArea} />
 
       <DiagnosticModal
         isOpen={isModalOpen}
@@ -81,7 +69,7 @@ export default function Index() {
 
       {/* Modais da Área do Cliente */}
       <ClienteLoginModal />
-      <ClienteDashboardModal isOpen={isDashboardOpen} onClose={() => setIsDashboardOpen(false)} />
+      <ClienteDashboardModal isOpen={isDashboardOpen} onClose={closeDashboard} />
     </div>
   )
 }

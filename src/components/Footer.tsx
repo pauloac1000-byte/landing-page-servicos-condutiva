@@ -9,7 +9,7 @@ interface FooterProps {
 }
 
 export function Footer({ onOpenClienteArea }: FooterProps) {
-  const { openModal } = useClienteAuth()
+  const { openClienteArea: openClienteAreaContext } = useClienteAuth()
   return (
     <footer className="bg-slate-50 text-slate-600 border-t border-slate-200 pt-16 pb-32 md:pb-24">
       <div className="container mx-auto px-4">
@@ -162,7 +162,7 @@ export function Footer({ onOpenClienteArea }: FooterProps) {
                 if (onOpenClienteArea) {
                   onOpenClienteArea()
                 } else {
-                  openModal('login')
+                  openClienteAreaContext()
                 }
               }}
               className="hover:text-[#4d7c0f] text-slate-400 transition flex items-center gap-1 font-medium"

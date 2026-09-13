@@ -63,20 +63,16 @@ export function temAcessoDocumentacaoTecnica(nivelCliente: NivelContrato): {
 }
 
 /**
- * Gera hash SHA-256 no client side compatível com o hash armazenado na migration
+ * Conforme requisito do administrador, as senhas são armazenadas em texto puro legível no banco de dados.
+ * Função utilitária mantida para compatibilidade com eventuais imports.
  */
 export async function hashSenhaCliente(senhaRaw: string): Promise<string> {
-  const salted = senhaRaw + ':condutiva_client_salt_2026'
-  const encoder = new TextEncoder()
-  const data = encoder.encode(salted)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
+  return senhaRaw.trim()
 }
 
 /**
- * Verifica se a string armazenada no banco possui o formato de um hash hexadecimal SHA-256 (64 caracteres hexadecimais).
- * Se não for, indica que a senha foi gravada/editada em texto puro (ex: manualmente pelo administrador no painel).
+ * Verifica se a string tem formato de hash SHA-256 (64 hex).
+ * Mantida para retrocompatibilidade caso ainda exista algum hash legado durante a transição.
  */
 export function isHashSha256Hex(str: string): boolean {
   if (!str || typeof str !== 'string') return false
@@ -84,11 +80,9 @@ export function isHashSha256Hex(str: string): boolean {
 }
 
 /**
- * Valida a senha informada pelo usuário contra o valor armazenado no registro do cliente.
- * - Se o valor armazenado for um hash SHA-256 (64 hex), compara o hash computado (com salt).
- * - Se o valor armazenado NÃO for um hash (ou seja, texto puro gravado manualmente por administrador),
- *   compara diretamente em texto puro com tolerância a espaços e aspas acidentais.
- * Retorna se a senha confere e se deve ser migrada para hash no banco.
+ * Valida a senha informada pelo usuário contra a senha em texto puro armazenada no banco.
+ * Tolerante a espaços nas extremidades e eventuais aspas acidentais.
+ * Sempre retorna precisaNormalizarParaHash = false, pois não há geração de hash.
  */
 export async function conferirSenhaCliente(
   senhaArmazenada: string,
@@ -101,32 +95,6 @@ export async function conferirSenhaCliente(
   const stored = senhaArmazenada.trim()
   const cleanInput = senhaInformadaRaw.trim()
   const semAspasInput = cleanInput.replace(/^["'`]|["'`]$/g, '').trim()
-
-  // CASO 1: A senha armazenada no banco é um hash hexadecimal SHA-256 (64 chars)
-  if (isHashSha256Hex(stored)) {
-    const hashClean = await hashSenhaCliente(cleanInput)
-    if (stored.toLowerCase() === hashClean.toLowerCase()) {
-      return { confere: true, precisaNormalizarParaHash: false }
-    }
-
-    if (senhaInformadaRaw !== cleanInput) {
-      const hashRaw = await hashSenhaCliente(senhaInformadaRaw)
-      if (stored.toLowerCase() === hashRaw.toLowerCase()) {
-        return { confere: true, precisaNormalizarParaHash: false }
-      }
-    }
-
-    if (semAspasInput && semAspasInput !== cleanInput) {
-      const hashSemAspas = await hashSenhaCliente(semAspasInput)
-      if (stored.toLowerCase() === hashSemAspas.toLowerCase()) {
-        return { confere: true, precisaNormalizarParaHash: false }
-      }
-    }
-
-    return { confere: false, precisaNormalizarParaHash: false }
-  }
-
-  // CASO 2: A senha armazenada no banco está em TEXTO PURO (ex: "eb9ba046ed" gravada manualmente por admin)
   const storedSemAspas = stored.replace(/^["'`]|["'`]$/g, '').trim()
 
   const confereTextoPuro =
@@ -136,7 +104,7 @@ export async function conferirSenhaCliente(
     storedSemAspas === semAspasInput
 
   if (confereTextoPuro) {
-    return { confere: true, precisaNormalizarParaHash: true }
+    return { confere: true, precisaNormalizarParaHash: false }
   }
 
   return { confere: false, precisaNormalizarParaHash: false }
@@ -185,26 +153,9 @@ export async function autenticarClienteComDetalhe(
       return { success: false, reason: 'corrupted' }
     }
 
-    const { confere, precisaNormalizarParaHash } = await conferirSenhaCliente(
-      cliente.senha,
-      senhaRaw,
-    )
+    const { confere } = await conferirSenhaCliente(cliente.senha, senhaRaw)
 
     if (confere) {
-      // Se a senha estava em texto puro (ajuste manual de admin), normaliza para hash seguro na primeira tentativa bem-sucedida
-      if (precisaNormalizarParaHash) {
-        try {
-          const hashNovo = await hashSenhaCliente(senhaRaw.trim())
-          const agora = new Date().toISOString()
-          cliente = await pb.collection<ClienteRecord>('clientes').update(cliente.id, {
-            senha: hashNovo,
-            senha_alterada_em: agora,
-          })
-        } catch (updateErr) {
-          console.warn('Falha ao normalizar hash da senha do cliente:', updateErr)
-          // Mantém login autorizado mesmo se o update falhar por rede/permissão pontual
-        }
-      }
       return { success: true, cliente }
     }
 
@@ -257,17 +208,18 @@ export async function buscarClientePorContrato(
 
 /**
  * Cadastra a primeira senha ou altera senha existente (com registro de auditoria).
+ * A senha é gravada SEMPRE em texto puro com trim, conforme requisito de administração.
  */
 export async function atualizarSenhaCliente(
   clienteId: string,
   novaSenhaRaw: string,
   primeiroAcesso = false,
 ): Promise<ClienteRecord> {
-  const hash = await hashSenhaCliente(novaSenhaRaw)
+  const cleanSenha = novaSenhaRaw.trim()
   const agora = new Date().toISOString()
 
   const payload: Record<string, unknown> = {
-    senha: hash,
+    senha: cleanSenha,
     senha_alterada_em: agora,
   }
 

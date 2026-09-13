@@ -7,7 +7,7 @@ interface TestimonialsSectionProps {
 }
 
 export function TestimonialsSection({ onOpenClienteArea }: TestimonialsSectionProps) {
-  const { openModal } = useClienteAuth()
+  const { openClienteArea: openClienteAreaContext } = useClienteAuth()
   return (
     <section className="py-20 bg-white text-slate-900">
       <div className="container mx-auto px-4">
@@ -70,7 +70,7 @@ export function TestimonialsSection({ onOpenClienteArea }: TestimonialsSectionPr
               if (onOpenClienteArea) {
                 onOpenClienteArea()
               } else {
-                openModal('login')
+                openClienteAreaContext()
               }
             }}
             className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold text-sm transition shadow-sm shrink-0 whitespace-nowrap"

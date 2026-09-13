@@ -23,7 +23,7 @@ export function Header({ onOpenDiagnosticModal, onOpenClienteArea }: HeaderProps
   const [activeLang, setActiveLang] = useState<'PT' | 'EN' | 'ES'>('PT')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { toast } = useToast()
-  const { isAuthenticated, openModal, cliente } = useClienteAuth()
+  const { isAuthenticated, openClienteArea: openClienteAreaContext } = useClienteAuth()
 
   const handleLangChange = (lang: 'PT' | 'EN' | 'ES') => {
     setActiveLang(lang)
@@ -138,7 +138,7 @@ export function Header({ onOpenDiagnosticModal, onOpenClienteArea }: HeaderProps
               if (onOpenClienteArea) {
                 onOpenClienteArea()
               } else {
-                openModal('login')
+                openClienteAreaContext()
               }
             }}
             className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-[#8CC63F] bg-[#8CC63F] hover:bg-[#7cb633] text-slate-950 font-bold transition-all shadow-sm hover:shadow-md group"
@@ -243,7 +243,7 @@ export function Header({ onOpenDiagnosticModal, onOpenClienteArea }: HeaderProps
                       if (onOpenClienteArea) {
                         onOpenClienteArea()
                       } else {
-                        openModal('login')
+                        openClienteAreaContext()
                       }
                     }}
                     className="text-left py-2.5 px-3 bg-[#8CC63F] text-slate-950 rounded-lg font-black text-sm flex items-center justify-between transition-colors mt-2 shadow-sm"

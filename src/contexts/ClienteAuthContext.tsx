@@ -11,6 +11,10 @@ interface ClienteAuthContextType {
   isLoading: boolean
   openModal: (defaultTab?: 'login' | 'primeiro_acesso' | 'esqueci_senha') => void
   closeModal: () => void
+  isDashboardOpen: boolean
+  openDashboard: () => void
+  closeDashboard: () => void
+  openClienteArea: () => void
   setSession: (cliente: ClienteRecord) => void
   clearSession: () => void
   refreshCliente: () => Promise<void>
@@ -24,6 +28,7 @@ export function ClienteAuthProvider({ children }: { children: React.ReactNode })
   const [cliente, setCliente] = useState<ClienteRecord | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false)
   const [activeModalTab, setActiveModalTab] = useState<
     'login' | 'primeiro_acesso' | 'esqueci_senha'
   >('login')
@@ -67,6 +72,7 @@ export function ClienteAuthProvider({ children }: { children: React.ReactNode })
 
   const clearSession = () => {
     setCliente(null)
+    setIsDashboardOpen(false)
     try {
       localStorage.removeItem(CLIENTE_SESSION_STORAGE_KEY)
     } catch (e) {
@@ -95,6 +101,24 @@ export function ClienteAuthProvider({ children }: { children: React.ReactNode })
     setIsModalOpen(false)
   }
 
+  const openDashboard = () => {
+    setIsModalOpen(false)
+    setIsDashboardOpen(true)
+  }
+
+  const closeDashboard = () => {
+    setIsDashboardOpen(false)
+  }
+
+  const openClienteArea = () => {
+    if (cliente) {
+      setIsModalOpen(false)
+      setIsDashboardOpen(true)
+    } else {
+      openModal('login')
+    }
+  }
+
   return (
     <ClienteAuthContext.Provider
       value={{
@@ -104,6 +128,10 @@ export function ClienteAuthProvider({ children }: { children: React.ReactNode })
         isLoading,
         openModal,
         closeModal,
+        isDashboardOpen,
+        openDashboard,
+        closeDashboard,
+        openClienteArea,
         setSession,
         clearSession,
         refreshCliente,

@@ -32,7 +32,7 @@ import {
 } from '@/services/clienteArea'
 
 export function ClienteLoginModal() {
-  const { isModalOpen, closeModal, setSession, activeModalTab, setActiveModalTab } =
+  const { isModalOpen, closeModal, openDashboard, setSession, activeModalTab, setActiveModalTab } =
     useClienteAuth()
 
   // Tab 1: Login
@@ -96,7 +96,7 @@ export function ClienteLoginModal() {
 
       if (result.success === true) {
         setSession(result.cliente)
-        closeModal()
+        openDashboard()
         // Limpar campos
         setLoginContrato('')
         setLoginSenha('')
@@ -165,7 +165,7 @@ export function ClienteLoginModal() {
       // Login automático
       setTimeout(() => {
         setSession(atualizado)
-        closeModal()
+        openDashboard()
         setCadastroContrato('')
         setCadastroSenha('')
         setCadastroConfirmSenha('')
