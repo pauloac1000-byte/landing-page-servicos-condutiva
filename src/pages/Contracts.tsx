@@ -46,6 +46,10 @@ import {
   getOrdemServicoFileUrl,
   getOrdemServicoRelatorioUrl,
   findOrdemServicoByNumero,
+  uploadArquivoOS,
+  uploadRelatorioAtividadesOS,
+  removeArquivoOS,
+  removeRelatorioAtividadesOS,
 } from '@/services/ordensServico'
 import { getCSATResponses } from '@/services/csat'
 import { useRealtime } from '@/hooks/use-realtime'
@@ -88,8 +92,8 @@ import { OSCSATEvaluationModal } from '@/components/csat/OSCSATEvaluationModal'
 export default function ContractsPage() {
   const { user, isAuthenticated, logout } = useAuth()
 
-  // Tabs: 'contratos' (Contratos & OS) or 'avaliacoes' (Avaliações CSAT)
-  const [activeTab, setActiveTab] = useState<'contratos' | 'avaliacoes'>('contratos')
+  // Tabs: 'contratos' (Contratos & Clientes), 'ordens' (Ordens de Serviço) or 'avaliacoes' (Avaliações CSAT)
+  const [activeTab, setActiveTab] = useState<'contratos' | 'ordens' | 'avaliacoes'>('contratos')
 
   // Contracts data state
   const [contracts, setContracts] = useState<ContractRecord[]>([])
@@ -131,6 +135,17 @@ export default function ContractsPage() {
   const [contractForOSModal, setContractForOSModal] = useState<
     ContractRecord | ClienteRecord | null
   >(null)
+
+  // Modal dedicado: Gerenciar anexos da OS (PDF da OS e Relatório)
+  const [osForAttachmentsModal, setOsForAttachmentsModal] = useState<OrdemServicoRecord | null>(
+    null,
+  )
+  const [uploadingAttachmentType, setUploadingAttachmentType] = useState<
+    'os' | 'relatorio' | 'both' | null
+  >(null)
+  const [pendingOsPdfFile, setPendingOsPdfFile] = useState<File | null>(null)
+  const [pendingRelatorioPdfFile, setPendingRelatorioPdfFile] = useState<File | null>(null)
+  const [attachmentErrors, setAttachmentErrors] = useState<{ os?: string; relatorio?: string }>({})
 
   // Modal de exclusão de OS
   const [osToDelete, setOsToDelete] = useState<OrdemServicoRecord | null>(null)
@@ -539,7 +554,6 @@ export default function ContractsPage() {
     if (e) e.stopPropagation()
     setEditingOS(os)
     setSelectedFileName(os.arquivo ? 'Arquivo PDF da OS já anexado' : '')
-    const hasRelatorio = Boolean(os.relatorio_arquivo || os.relatorio_pdf_url?.trim())
     setSelectedRelatorioFileName(
       os.relatorio_arquivo
         ? 'Relatório PDF já anexado no sistema'
@@ -562,6 +576,95 @@ export default function ContractsPage() {
     })
     setOsFormErrors({})
     setIsOSModalOpen(true)
+  }
+
+  // Abrir o modal dedicado "Gerenciar anexos"
+  const handleOpenAttachmentsModal = (os: OrdemServicoRecord, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation()
+    setOsForAttachmentsModal(os)
+    setPendingOsPdfFile(null)
+    setPendingRelatorioPdfFile(null)
+    setAttachmentErrors({})
+  }
+
+  // Salvar anexos selecionados no modal "Gerenciar anexos"
+  const handleSaveAttachmentsFromModal = async () => {
+    if (!osForAttachmentsModal) return
+    if (!pendingOsPdfFile && !pendingRelatorioPdfFile) {
+      toast({
+        title: 'Nenhum novo anexo selecionado',
+        description: 'Selecione um arquivo PDF para OS ou Relatório antes de salvar.',
+      })
+      return
+    }
+
+    setUploadingAttachmentType('both')
+    try {
+      let currentOS = osForAttachmentsModal
+
+      // Upload do arquivo da OS
+      if (pendingOsPdfFile) {
+        const res = await uploadArquivoOS(currentOS.id, pendingOsPdfFile)
+        currentOS = res.record
+      }
+
+      // Upload do relatório de atividades
+      if (pendingRelatorioPdfFile) {
+        const res = await uploadRelatorioAtividadesOS(currentOS.id, pendingRelatorioPdfFile)
+        currentOS = res.record
+      }
+
+      // Atualiza a lista local
+      setOrdensServico((prev) => prev.map((o) => (o.id === currentOS.id ? currentOS : o)))
+      setOsForAttachmentsModal(currentOS)
+      setPendingOsPdfFile(null)
+      setPendingRelatorioPdfFile(null)
+
+      toast({
+        title: 'Anexos atualizados com sucesso',
+        description: `Os arquivos PDF da OS ${currentOS.numero_os} foram salvos no Skip Cloud.`,
+      })
+    } catch (err: unknown) {
+      console.error('Error uploading attachments:', err)
+      toast({
+        title: 'Erro ao salvar anexos',
+        description: 'Não foi possível salvar os arquivos PDF no Skip Cloud. Tente novamente.',
+        variant: 'destructive',
+      })
+    } finally {
+      setUploadingAttachmentType(null)
+    }
+  }
+
+  // Remover anexo específico no modal Gerenciar anexos
+  const handleRemoveAttachment = async (type: 'os' | 'relatorio') => {
+    if (!osForAttachmentsModal) return
+    const isOs = type === 'os'
+    setUploadingAttachmentType(isOs ? 'os' : 'relatorio')
+    try {
+      const updated = isOs
+        ? await removeArquivoOS(osForAttachmentsModal.id)
+        : await removeRelatorioAtividadesOS(osForAttachmentsModal.id)
+
+      setOrdensServico((prev) => prev.map((o) => (o.id === updated.id ? updated : o)))
+      setOsForAttachmentsModal(updated)
+      if (isOs) setPendingOsPdfFile(null)
+      else setPendingRelatorioPdfFile(null)
+
+      toast({
+        title: isOs ? 'Documento da OS removido' : 'Relatório removido',
+        description: `O arquivo PDF foi desvinculado da OS ${updated.numero_os}.`,
+      })
+    } catch (err: unknown) {
+      console.error('Error removing attachment:', err)
+      toast({
+        title: 'Erro ao remover anexo',
+        description: 'Não foi possível excluir o arquivo no Skip Cloud.',
+        variant: 'destructive',
+      })
+    } finally {
+      setUploadingAttachmentType(null)
+    }
   }
 
   const validateOSForm = async (): Promise<boolean> => {
@@ -849,6 +952,17 @@ export default function ContractsPage() {
               </Button>
             )}
 
+            {activeTab === 'ordens' && (
+              <Button
+                size="sm"
+                onClick={() => handleOpenCreateOSModal()}
+                className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1.5" />
+                Nova OS
+              </Button>
+            )}
+
             <Button
               variant="outline"
               size="sm"
@@ -862,7 +976,7 @@ export default function ContractsPage() {
           </div>
         </div>
 
-        {/* Primary Page Navigation Tabs: Contratos & OS vs Avaliações CSAT */}
+        {/* Primary Page Navigation Tabs: Contratos & Clientes | Ordens de Serviço & Anexos | Avaliações CSAT */}
         <div className="border-t border-slate-800/90 bg-slate-950/90 px-4">
           <div className="container mx-auto flex items-center gap-2 overflow-x-auto py-2">
             <button
@@ -875,7 +989,7 @@ export default function ContractsPage() {
               }`}
             >
               <FileText className="w-4 h-4" />
-              <span>Contratos & Ordens de Serviço</span>
+              <span>Contratos & Clientes</span>
               <span
                 className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                   activeTab === 'contratos'
@@ -884,6 +998,28 @@ export default function ContractsPage() {
                 }`}
               >
                 {contracts.length}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('ordens')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                activeTab === 'ordens'
+                  ? 'bg-[#8CC63F] text-slate-950 shadow-md shadow-[#8CC63F]/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent hover:border-slate-800'
+              }`}
+            >
+              <Layers className="w-4 h-4" />
+              <span>Ordens de Serviço (OS)</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                  activeTab === 'ordens'
+                    ? 'bg-slate-950 text-[#8CC63F]'
+                    : 'bg-slate-800 text-slate-400'
+                }`}
+              >
+                {ordensServico.length}
               </span>
             </button>
 
@@ -951,6 +1087,279 @@ export default function ContractsPage() {
               loading={loadingCSAT}
               onRefresh={() => loadCSATData()}
             />
+          </div>
+        ) : activeTab === 'ordens' ? (
+          /* ABA DEDICADA: Ordens de Serviço & Gerenciamento de Anexos */
+          <div>
+            {/* Cabeçalho da Aba de Ordens de Serviço */}
+            <div className="mb-8">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1 text-xs font-mono text-[#8CC63F] uppercase tracking-wider">
+                    <Layers className="w-4 h-4" />
+                    <span>Gestão Operacional de Ordens de Serviço & Anexos</span>
+                  </div>
+                  <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+                    Ordens de Serviço (OS) & Anexos
+                  </h1>
+                  <p className="text-sm text-slate-400 mt-1 max-w-3xl">
+                    Envie, visualize e substitua o documento da <strong>OS (PDF)</strong> e o{' '}
+                    <strong>Relatório da atividade (PDF)</strong> com armazenamento no Skip Cloud.
+                    Cada arquivo enviado fica disponível para o cliente correspondente na Área do
+                    Cliente.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="bg-slate-950 border border-slate-800 px-4 py-2.5 rounded-xl flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-[#8CC63F]/10 border border-[#8CC63F]/20 flex items-center justify-center text-[#8CC63F]">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-400 font-medium">OS com PDF</div>
+                      <div className="text-xl font-black text-white">
+                        {ordensServico.filter((o) => Boolean(o.arquivo)).length}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-950 border border-slate-800 px-4 py-2.5 rounded-xl flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+                      <FileCheck2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-400 font-medium">Com Relatório</div>
+                      <div className="text-xl font-black text-white">
+                        {
+                          ordensServico.filter((o) =>
+                            Boolean(o.relatorio_arquivo || o.relatorio_pdf_url?.trim()),
+                          ).length
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    size="sm"
+                    onClick={() => handleOpenCreateOSModal()}
+                    className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs h-12 px-4 rounded-xl shadow-lg shadow-[#8CC63F]/20 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Nova OS
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Tabela de Ordens de Serviço com coluna de Anexos e CTA Gerenciar anexos */}
+            <div className="bg-slate-950/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+              <div className="px-4 py-3 border-b border-slate-800 bg-slate-950/90 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-[#8CC63F] font-bold uppercase tracking-wider">
+                    Listagem de Ordens de Serviço
+                  </span>
+                  <Badge className="bg-slate-900 text-slate-300 border border-slate-800 text-[10px]">
+                    {ordensServico.length} registradas
+                  </Badge>
+                </div>
+                <span className="text-xs text-slate-400">
+                  Gerencie ambos os PDFs (OS e Relatório) por aqui sem depender do painel externo.
+                </span>
+              </div>
+
+              {ordensServico.length === 0 ? (
+                <div className="p-16 text-center">
+                  <Layers className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                  <h3 className="text-base font-semibold text-white">Nenhuma OS encontrada</h3>
+                  <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+                    Ainda não existem Ordens de Serviço cadastradas. Clique em Nova OS para começar.
+                  </p>
+                  <Button
+                    size="sm"
+                    onClick={() => handleOpenCreateOSModal()}
+                    className="mt-4 bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    Cadastrar Primeira OS
+                  </Button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-800 bg-slate-950 text-slate-400 uppercase tracking-wider font-mono text-[11px]">
+                        <th className="py-3.5 px-4 font-semibold">Ordem de Serviço (OS)</th>
+                        <th className="py-3.5 px-4 font-semibold">Contrato / Cliente</th>
+                        <th className="py-3.5 px-4 font-semibold">Técnico / Data</th>
+                        <th className="py-3.5 px-4 font-semibold">Status</th>
+                        <th className="py-3.5 px-4 font-semibold">Anexos</th>
+                        <th className="py-3.5 px-4 font-semibold text-right">Gerenciar anexos</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {ordensServico.map((os) => {
+                        const fileUrl = getOrdemServicoFileUrl(os)
+                        const relUrl = getOrdemServicoRelatorioUrl(os)
+                        const csatResp = getCSATDaOS(os.numero_os)
+                        const isAvaliada = Boolean(os.avaliacao_realizada || csatResp)
+
+                        return (
+                          <tr key={os.id} className="hover:bg-slate-800/30 transition-colors">
+                            {/* Número da OS */}
+                            <td className="py-3.5 px-4">
+                              <div className="flex flex-col gap-0.5">
+                                <span className="font-mono font-bold text-white text-sm">
+                                  {os.numero_os}
+                                </span>
+                                {os.descricao_servico && (
+                                  <span className="text-slate-400 text-[11px] truncate max-w-[240px]">
+                                    {os.descricao_servico}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+
+                            {/* Contrato / Cliente */}
+                            <td className="py-3.5 px-4">
+                              <div className="flex flex-col gap-0.5">
+                                <span className="font-mono text-xs text-[#8CC63F] font-semibold">
+                                  {os.expand?.contrato_id?.numero_contrato || '—'}
+                                </span>
+                                <span className="text-slate-300 font-medium text-xs truncate max-w-[200px]">
+                                  {os.expand?.contrato_id?.nome_cliente || '—'}
+                                </span>
+                              </div>
+                            </td>
+
+                            {/* Técnico e Data */}
+                            <td className="py-3.5 px-4">
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-slate-200 font-medium">
+                                  {os.tecnico_responsavel || '—'}
+                                </span>
+                                <span className="text-slate-400 font-mono text-[11px]">
+                                  {os.data ? new Date(os.data).toLocaleDateString('pt-BR') : '—'}
+                                </span>
+                              </div>
+                            </td>
+
+                            {/* Status e Avaliação */}
+                            <td className="py-3.5 px-4">
+                              <div className="flex flex-col gap-1 items-start">
+                                {os.status === 'executada' ? (
+                                  <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] py-0.5 px-2">
+                                    Executada
+                                  </Badge>
+                                ) : (
+                                  <Badge className="bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px] py-0.5 px-2">
+                                    Aberta
+                                  </Badge>
+                                )}
+
+                                {isAvaliada ? (
+                                  <span className="text-[10px] text-emerald-400 font-mono inline-flex items-center gap-1">
+                                    <CheckCircle2 className="w-2.5 h-2.5" />
+                                    CSAT Respondido
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] text-slate-500 font-mono inline-flex items-center gap-1">
+                                    <Clock className="w-2.5 h-2.5" />
+                                    CSAT Pendente
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+
+                            {/* Coluna Anexos: badges com link de download/visualização e status de cada PDF */}
+                            <td className="py-3.5 px-4">
+                              <div className="flex flex-col gap-1.5">
+                                {/* Anexo 1: OS (PDF) */}
+                                <div className="flex items-center gap-1.5">
+                                  {fileUrl ? (
+                                    <a
+                                      href={fileUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-[#8CC63F]/15 border border-[#8CC63F]/40 text-[#8CC63F] hover:bg-[#8CC63F]/25 font-medium transition"
+                                      title="Abrir/Visualizar documento da OS (PDF)"
+                                    >
+                                      <FileText className="w-3 h-3" />
+                                      <span>OS (PDF)</span>
+                                      <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                                    </a>
+                                  ) : (
+                                    <Badge className="bg-slate-900 border border-slate-800 text-slate-500 text-[10px] py-0.5 px-1.5 font-mono">
+                                      Sem OS (PDF)
+                                    </Badge>
+                                  )}
+                                </div>
+
+                                {/* Anexo 2: Relatório da atividade (PDF) */}
+                                <div className="flex items-center gap-1.5">
+                                  {relUrl ? (
+                                    <a
+                                      href={relUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-sky-500/15 border border-sky-500/40 text-sky-400 hover:bg-sky-500/25 font-medium transition"
+                                      title="Abrir/Visualizar Relatório da atividade (PDF)"
+                                    >
+                                      <FileText className="w-3 h-3" />
+                                      <span>Relatório (PDF)</span>
+                                      <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                                    </a>
+                                  ) : (
+                                    <Badge className="bg-slate-900 border border-slate-800 text-slate-500 text-[10px] py-0.5 px-1.5 font-mono">
+                                      Sem Relatório
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+
+                            {/* Coluna Ações / Gerenciar anexos */}
+                            <td className="py-3.5 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={(e) => handleOpenAttachmentsModal(os, e)}
+                                  className="h-8 px-2.5 text-xs font-semibold gap-1.5 bg-[#8CC63F]/10 border-[#8CC63F]/30 text-[#8CC63F] hover:bg-[#8CC63F]/20 cursor-pointer"
+                                  title="Enviar, visualizar ou substituir arquivos PDF da OS"
+                                >
+                                  <FileUp className="w-3.5 h-3.5" />
+                                  <span>Gerenciar anexos</span>
+                                </Button>
+
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleOpenEditOSModal(os)}
+                                  className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-800"
+                                  title="Editar OS"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </Button>
+
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => handleDeleteOSClick(os, e)}
+                                  className="h-8 w-8 p-0 text-slate-400 hover:text-red-400 hover:bg-red-950/30"
+                                  title="Excluir OS"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           /* ABA: Contratos & OS */
@@ -1940,237 +2349,299 @@ export default function ContractsPage() {
               />
             </div>
 
-            {/* Upload do Arquivo PDF da OS */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-300 flex items-center justify-between">
-                <span>Arquivo da OS (PDF)</span>
-                {editingOS?.arquivo && !osFormData.arquivo && (
-                  <a
-                    href={getOrdemServicoFileUrl(editingOS) || '#'}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[11px] text-[#8CC63F] hover:underline inline-flex items-center gap-1"
-                  >
-                    <Download className="w-3 h-3" />
-                    Baixar PDF Atual
-                  </a>
-                )}
-              </label>
-
-              <div className="border border-dashed border-slate-700 hover:border-[#8CC63F]/60 rounded-xl p-3 bg-slate-950/60 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-[#8CC63F]/10 border border-[#8CC63F]/20 flex items-center justify-center text-[#8CC63F] shrink-0">
-                    <FileUp className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <input
-                      type="file"
-                      id="os-pdf-upload"
-                      accept=".pdf,application/pdf"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0] || null
-                        setOsFormData({ ...osFormData, arquivo: file })
-                        setSelectedFileName(file ? file.name : '')
-                        if (osFormErrors.arquivo) {
-                          setOsFormErrors({ ...osFormErrors, arquivo: '' })
-                        }
-                      }}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="os-pdf-upload"
-                      className="cursor-pointer block text-xs text-slate-300 hover:text-white truncate font-medium"
-                    >
-                      {selectedFileName || 'Clique para selecionar o PDF da Ordem de Serviço'}
-                    </label>
-                    <p className="text-[10px] text-slate-500">Formato PDF aceito (máximo 10 MB)</p>
-                  </div>
-                  {osFormData.arquivo && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setOsFormData({ ...osFormData, arquivo: null })
-                        setSelectedFileName(editingOS?.arquivo ? 'Arquivo PDF já anexado' : '')
-                      }}
-                      className="h-7 w-7 p-0 text-slate-400 hover:text-red-400"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-              {osFormErrors.arquivo && (
-                <p className="text-[11px] text-red-400">{osFormErrors.arquivo}</p>
-              )}
-            </div>
-
-            {/* Campo de Upload do Relatório de Atividades (PDF) */}
-            <div className="space-y-1.5 p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-              <div className="flex items-center justify-between gap-2">
-                <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+            {/* Anexos da OS: OS (PDF) e Relatório da atividade (PDF) lado a lado com ícones e indicador */}
+            <div className="space-y-2 pt-1 border-t border-slate-800">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-white flex items-center gap-1.5 uppercase font-mono tracking-wider">
                   <FileText className="w-3.5 h-3.5 text-[#8CC63F]" />
-                  <span>Relatório de Atividades (PDF)</span>
-                </label>
-                {/* Visualizar / Abrir relatório atual, se houver */}
-                {(() => {
-                  const currentRelatorioUrl =
-                    (editingOS && getOrdemServicoRelatorioUrl(editingOS)) ||
-                    (osFormData.relatorio_pdf_url?.trim()
-                      ? osFormData.relatorio_pdf_url.trim()
-                      : null)
-
-                  if (currentRelatorioUrl) {
-                    return (
-                      <a
-                        href={currentRelatorioUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[11px] text-[#8CC63F] hover:underline inline-flex items-center gap-1 font-medium bg-[#8CC63F]/10 hover:bg-[#8CC63F]/20 px-2 py-0.5 rounded-md transition"
-                        title="Abrir o relatório de atividades atualmente anexado em nova aba"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        Ver Relatório Atual
-                      </a>
-                    )
-                  }
-                  return null
-                })()}
+                  <span>Anexos em PDF (Armazenamento Skip Cloud)</span>
+                </span>
+                <span className="text-[10px] text-slate-500">Apenas arquivos .pdf</span>
               </div>
 
-              {/* Box de Upload */}
-              <div className="border border-dashed border-slate-700 hover:border-[#8CC63F]/60 rounded-xl p-3 bg-slate-900/60 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-[#8CC63F]/15 border border-[#8CC63F]/30 flex items-center justify-center text-[#8CC63F] shrink-0">
-                    <FileUp className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <input
-                      type="file"
-                      id="relatorio-pdf-upload"
-                      accept=".pdf,application/pdf"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0] || null
-                        if (!file) return
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* 1. OS (PDF) */}
+                <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-1">
+                      <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-[#8CC63F]" />
+                        <span>OS (PDF)</span>
+                      </label>
 
-                        const isPdf =
-                          file.type === 'application/pdf' ||
-                          file.name.toLowerCase().endsWith('.pdf')
-
-                        if (!isPdf) {
-                          setOsFormErrors({
-                            ...osFormErrors,
-                            relatorio_arquivo:
-                              'Arquivo inválido. Por favor, envie apenas documentos com extensão .pdf.',
-                          })
-                          return
-                        }
-
-                        if (file.size > 15 * 1024 * 1024) {
-                          setOsFormErrors({
-                            ...osFormErrors,
-                            relatorio_arquivo: 'O tamanho máximo do relatório em PDF é de 15 MB.',
-                          })
-                          return
-                        }
-
-                        setOsFormData({
-                          ...osFormData,
-                          relatorio_arquivo: file,
-                          // Se anexou um novo arquivo, sugere limpar a URL antiga para usar a URL gerada pelo upload
-                          relatorio_pdf_url: '',
-                        })
-                        setSelectedRelatorioFileName(file.name)
-                        if (osFormErrors.relatorio_arquivo) {
-                          setOsFormErrors({ ...osFormErrors, relatorio_arquivo: '' })
-                        }
-                      }}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="relatorio-pdf-upload"
-                      className="cursor-pointer block text-xs text-slate-200 hover:text-white truncate font-medium"
-                    >
-                      {osFormData.relatorio_arquivo
-                        ? `Novo arquivo selecionado: ${osFormData.relatorio_arquivo.name}`
-                        : selectedRelatorioFileName ||
-                          'Clique para anexar ou substituir o Relatório de Atividades (.pdf)'}
-                    </label>
-                    <p className="text-[10px] text-slate-400">
-                      {osFormData.relatorio_arquivo ? (
-                        <span className="text-[#8CC63F] font-mono">
-                          {(osFormData.relatorio_arquivo.size / (1024 * 1024)).toFixed(2)} MB •
-                          Pronto para salvar e substituir
-                        </span>
-                      ) : editingOS?.relatorio_arquivo || editingOS?.relatorio_pdf_url ? (
-                        'Selecione um novo PDF caso queira substituir o relatório atual'
-                      ) : (
-                        'Apenas arquivos .pdf (salvo diretamente no armazenamento Skip Cloud, máx. 15 MB)'
+                      {editingOS?.arquivo && (
+                        <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[9px] py-0 px-1.5 gap-0.5 font-mono">
+                          <CheckCircle2 className="w-2.5 h-2.5" />
+                          Carregado
+                        </Badge>
                       )}
-                    </p>
+                    </div>
+
+                    {/* Botão / Link para visualizar arquivo já enviado */}
+                    {editingOS?.arquivo && !osFormData.arquivo && (
+                      <div className="pt-0.5">
+                        <a
+                          href={getOrdemServicoFileUrl(editingOS) || '#'}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[11px] text-[#8CC63F] hover:underline inline-flex items-center gap-1 font-medium bg-[#8CC63F]/10 px-2 py-0.5 rounded transition"
+                          title="Abrir o PDF atual da OS"
+                        >
+                          <Download className="w-3 h-3" />
+                          Visualizar PDF atual
+                          <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Input file */}
+                    <div className="border border-dashed border-slate-700 hover:border-[#8CC63F]/60 rounded-lg p-2.5 bg-slate-900/60 transition mt-1.5">
+                      <input
+                        type="file"
+                        id="os-pdf-upload"
+                        accept=".pdf,application/pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null
+                          if (!file) return
+
+                          const isPdf =
+                            file.type === 'application/pdf' ||
+                            file.name.toLowerCase().endsWith('.pdf')
+
+                          if (!isPdf) {
+                            setOsFormErrors({
+                              ...osFormErrors,
+                              arquivo:
+                                'O arquivo da OS deve ser obrigatoriamente um documento PDF (.pdf).',
+                            })
+                            return
+                          }
+
+                          if (file.size > 10 * 1024 * 1024) {
+                            setOsFormErrors({
+                              ...osFormErrors,
+                              arquivo: 'O tamanho máximo do PDF da OS é 10 MB.',
+                            })
+                            return
+                          }
+
+                          setOsFormData({ ...osFormData, arquivo: file })
+                          setSelectedFileName(file.name)
+                          if (osFormErrors.arquivo) {
+                            setOsFormErrors({ ...osFormErrors, arquivo: '' })
+                          }
+                        }}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="os-pdf-upload"
+                        className="cursor-pointer block text-xs text-slate-300 hover:text-white truncate font-medium"
+                      >
+                        {osFormData.arquivo ? (
+                          <span className="text-[#8CC63F] font-mono flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 shrink-0" />
+                            {osFormData.arquivo.name}
+                          </span>
+                        ) : editingOS?.arquivo ? (
+                          'Substituir PDF da OS...'
+                        ) : (
+                          'Selecionar OS (PDF)...'
+                        )}
+                      </label>
+                      <p className="text-[10px] text-slate-500 mt-0.5">
+                        {osFormData.arquivo
+                          ? `${(osFormData.arquivo.size / (1024 * 1024)).toFixed(2)} MB • Pronto para salvar`
+                          : 'Máx. 10 MB (.pdf)'}
+                      </p>
+                    </div>
+
+                    {osFormData.arquivo && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setOsFormData({ ...osFormData, arquivo: null })
+                          setSelectedFileName(
+                            editingOS?.arquivo ? 'Arquivo PDF da OS já anexado' : '',
+                          )
+                        }}
+                        className="text-[10px] text-red-400 hover:text-red-300 flex items-center gap-1"
+                      >
+                        <X className="w-3 h-3" />
+                        Desfazer seleção
+                      </button>
+                    )}
                   </div>
 
-                  {osFormData.relatorio_arquivo && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setOsFormData({
-                          ...osFormData,
-                          relatorio_arquivo: null,
-                          relatorio_pdf_url: editingOS?.relatorio_pdf_url || '',
-                        })
-                        setSelectedRelatorioFileName(
-                          editingOS?.relatorio_arquivo
-                            ? 'Relatório PDF já anexado no sistema'
-                            : editingOS?.relatorio_pdf_url?.trim()
-                              ? 'Relatório configurado via link externo'
-                              : '',
-                        )
-                      }}
-                      className="h-7 w-7 p-0 text-slate-400 hover:text-red-400 shrink-0"
-                      title="Cancelar substituição do arquivo"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </Button>
+                  {osFormErrors.arquivo && (
+                    <p className="text-[11px] text-red-400 mt-1">{osFormErrors.arquivo}</p>
                   )}
                 </div>
-              </div>
 
-              {osFormErrors.relatorio_arquivo && (
-                <p className="text-[11px] text-red-400">{osFormErrors.relatorio_arquivo}</p>
-              )}
+                {/* 2. Relatório da atividade (PDF) */}
+                <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-1">
+                      <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-sky-400" />
+                        <span>Relatório da atividade (PDF)</span>
+                      </label>
 
-              {/* Opção complementar: Link/URL manual (caso o admin queira informar link externo) */}
-              <div className="pt-1">
-                <button
-                  type="button"
-                  onClick={() => setShowManualUrlInput(!showManualUrlInput)}
-                  className="text-[10.5px] text-slate-400 hover:text-[#8CC63F] underline underline-offset-2 transition cursor-pointer"
-                >
-                  {showManualUrlInput
-                    ? '▲ Ocultar campo de link manual'
-                    : '▼ Inserir ou editar URL manual do relatório (opcional)'}
-                </button>
+                      {(editingOS?.relatorio_arquivo || editingOS?.relatorio_pdf_url?.trim()) && (
+                        <Badge className="bg-sky-500/15 text-sky-400 border border-sky-500/30 text-[9px] py-0 px-1.5 gap-0.5 font-mono">
+                          <CheckCircle2 className="w-2.5 h-2.5" />
+                          Carregado
+                        </Badge>
+                      )}
+                    </div>
 
-                {showManualUrlInput && (
-                  <div className="mt-2 space-y-1 animate-in fade-in duration-150">
-                    <Input
-                      placeholder="Ex: https://storage.exemplo.com/relatorios/relatorio-os.pdf"
-                      value={osFormData.relatorio_pdf_url || ''}
-                      onChange={(e) =>
-                        setOsFormData({ ...osFormData, relatorio_pdf_url: e.target.value })
+                    {/* Visualizar relatório atual */}
+                    {(() => {
+                      const currentRelatorioUrl =
+                        (editingOS && getOrdemServicoRelatorioUrl(editingOS)) ||
+                        (osFormData.relatorio_pdf_url?.trim()
+                          ? osFormData.relatorio_pdf_url.trim()
+                          : null)
+
+                      if (currentRelatorioUrl && !osFormData.relatorio_arquivo) {
+                        return (
+                          <div className="pt-0.5">
+                            <a
+                              href={currentRelatorioUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[11px] text-sky-400 hover:underline inline-flex items-center gap-1 font-medium bg-sky-500/10 px-2 py-0.5 rounded transition"
+                              title="Abrir o relatório de atividades em nova aba"
+                            >
+                              <Download className="w-3 h-3" />
+                              Visualizar relatório atual
+                              <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                            </a>
+                          </div>
+                        )
                       }
-                      className="bg-slate-950 border-slate-800 text-white text-xs h-8 rounded-lg font-mono"
-                    />
-                    <p className="text-[9.5px] text-slate-500">
-                      Caso o arquivo seja enviado acima, a URL do storage será vinculada
-                      automaticamente.
-                    </p>
+                      return null
+                    })()}
+
+                    {/* Input file */}
+                    <div className="border border-dashed border-slate-700 hover:border-sky-500/60 rounded-lg p-2.5 bg-slate-900/60 transition mt-1.5">
+                      <input
+                        type="file"
+                        id="relatorio-pdf-upload"
+                        accept=".pdf,application/pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null
+                          if (!file) return
+
+                          const isPdf =
+                            file.type === 'application/pdf' ||
+                            file.name.toLowerCase().endsWith('.pdf')
+
+                          if (!isPdf) {
+                            setOsFormErrors({
+                              ...osFormErrors,
+                              relatorio_arquivo:
+                                'O Relatório de Atividades deve ser obrigatoriamente um documento PDF (.pdf).',
+                            })
+                            return
+                          }
+
+                          if (file.size > 15 * 1024 * 1024) {
+                            setOsFormErrors({
+                              ...osFormErrors,
+                              relatorio_arquivo: 'O tamanho máximo do relatório em PDF é de 15 MB.',
+                            })
+                            return
+                          }
+
+                          setOsFormData({
+                            ...osFormData,
+                            relatorio_arquivo: file,
+                            relatorio_pdf_url: '',
+                          })
+                          setSelectedRelatorioFileName(file.name)
+                          if (osFormErrors.relatorio_arquivo) {
+                            setOsFormErrors({ ...osFormErrors, relatorio_arquivo: '' })
+                          }
+                        }}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="relatorio-pdf-upload"
+                        className="cursor-pointer block text-xs text-slate-300 hover:text-white truncate font-medium"
+                      >
+                        {osFormData.relatorio_arquivo ? (
+                          <span className="text-sky-400 font-mono flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 shrink-0" />
+                            {osFormData.relatorio_arquivo.name}
+                          </span>
+                        ) : editingOS?.relatorio_arquivo || editingOS?.relatorio_pdf_url ? (
+                          'Substituir Relatório (PDF)...'
+                        ) : (
+                          'Selecionar Relatório da atividade (PDF)...'
+                        )}
+                      </label>
+                      <p className="text-[10px] text-slate-500 mt-0.5">
+                        {osFormData.relatorio_arquivo
+                          ? `${(osFormData.relatorio_arquivo.size / (1024 * 1024)).toFixed(2)} MB • Pronto para salvar`
+                          : 'Máx. 15 MB (.pdf)'}
+                      </p>
+                    </div>
+
+                    {osFormData.relatorio_arquivo && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setOsFormData({
+                            ...osFormData,
+                            relatorio_arquivo: null,
+                            relatorio_pdf_url: editingOS?.relatorio_pdf_url || '',
+                          })
+                          setSelectedRelatorioFileName(
+                            editingOS?.relatorio_arquivo
+                              ? 'Relatório PDF já anexado no sistema'
+                              : editingOS?.relatorio_pdf_url?.trim()
+                                ? 'Relatório configurado via link externo'
+                                : '',
+                          )
+                        }}
+                        className="text-[10px] text-red-400 hover:text-red-300 flex items-center gap-1"
+                      >
+                        <X className="w-3 h-3" />
+                        Desfazer seleção
+                      </button>
+                    )}
                   </div>
-                )}
+
+                  {osFormErrors.relatorio_arquivo && (
+                    <p className="text-[11px] text-red-400 mt-1">
+                      {osFormErrors.relatorio_arquivo}
+                    </p>
+                  )}
+
+                  {/* Opção manual para link externo */}
+                  <div className="pt-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setShowManualUrlInput(!showManualUrlInput)}
+                      className="text-[10px] text-slate-400 hover:text-sky-400 underline underline-offset-2 transition"
+                    >
+                      {showManualUrlInput ? '▲ Ocultar link manual' : '▼ Link manual (opcional)'}
+                    </button>
+
+                    {showManualUrlInput && (
+                      <div className="mt-1.5 space-y-1">
+                        <Input
+                          placeholder="https://exemplo.com/relatorio.pdf"
+                          value={osFormData.relatorio_pdf_url || ''}
+                          onChange={(e) =>
+                            setOsFormData({ ...osFormData, relatorio_pdf_url: e.target.value })
+                          }
+                          className="bg-slate-900 border-slate-800 text-white text-xs h-7 rounded-lg font-mono"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -2246,17 +2717,15 @@ export default function ContractsPage() {
               <Button
                 type="submit"
                 disabled={isSubmittingOS}
-                className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs"
+                className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs cursor-pointer shadow-md shadow-[#8CC63F]/20"
               >
                 {isSubmittingOS ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                    Salvando OS...
+                    Salvando anexos da OS...
                   </>
-                ) : editingOS ? (
-                  'Salvar Alterações da OS'
                 ) : (
-                  'Cadastrar Ordem de Serviço'
+                  'Salvar anexos da OS'
                 )}
               </Button>
             </DialogFooter>
@@ -2447,41 +2916,68 @@ export default function ContractsPage() {
                           )}
                         </div>
 
-                        {/* Ações da OS */}
-                        <div className="flex items-center gap-1.5 shrink-0 self-end md:self-center">
-                          {fileUrl ? (
-                            <a
-                              href={fileUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-[#8CC63F] hover:bg-[#8CC63F]/15 hover:border-[#8CC63F]/40 transition font-medium"
-                              title="Abrir arquivo PDF da Ordem de Serviço"
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                              <span>PDF</span>
-                              <ExternalLink className="w-2.5 h-2.5 opacity-60" />
-                            </a>
-                          ) : (
-                            <span className="text-[11px] text-slate-500 italic px-2">Sem PDF</span>
-                          )}
-
-                          {(() => {
-                            const relUrl = getOrdemServicoRelatorioUrl(os)
-                            if (!relUrl) return null
-                            return (
+                        {/* Indicadores de Anexos da OS (PDF OS e Relatório) */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {/* Badge OS PDF */}
+                            {fileUrl ? (
                               <a
-                                href={relUrl}
+                                href={fileUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-sky-400 hover:bg-sky-500/15 hover:border-sky-500/40 transition font-medium"
-                                title="Abrir PDF do relatório de atividades"
+                                className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-md bg-[#8CC63F]/10 border border-[#8CC63F]/30 text-[#8CC63F] hover:bg-[#8CC63F]/20 transition font-medium"
+                                title="Visualizar documento da OS (PDF) em nova aba"
                               >
-                                <FileText className="w-3.5 h-3.5" />
-                                <span>Relatório</span>
-                                <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                                <FileText className="w-3 h-3" />
+                                <span>OS (PDF)</span>
+                                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
                               </a>
-                            )
-                          })()}
+                            ) : (
+                              <Badge className="bg-slate-900 border border-slate-800 text-slate-500 text-[10px] py-0.5 px-2 font-normal">
+                                Sem PDF da OS
+                              </Badge>
+                            )}
+
+                            {/* Badge Relatório PDF */}
+                            {(() => {
+                              const relUrl = getOrdemServicoRelatorioUrl(os)
+                              if (relUrl) {
+                                return (
+                                  <a
+                                    href={relUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-md bg-sky-500/10 border border-sky-500/30 text-sky-400 hover:bg-sky-500/20 transition font-medium"
+                                    title="Visualizar relatório da atividade (PDF) em nova aba"
+                                  >
+                                    <FileText className="w-3 h-3" />
+                                    <span>Relatório (PDF)</span>
+                                    <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                                  </a>
+                                )
+                              }
+                              return (
+                                <Badge className="bg-slate-900 border border-slate-800 text-slate-500 text-[10px] py-0.5 px-2 font-normal">
+                                  Sem Relatório
+                                </Badge>
+                              )
+                            })()}
+                          </div>
+                        </div>
+
+                        {/* Ações da OS */}
+                        <div className="flex items-center gap-1.5 shrink-0 self-end md:self-center">
+                          {/* CTA dedicado: Gerenciar anexos */}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => handleOpenAttachmentsModal(os, e)}
+                            className="h-8 px-2.5 text-xs font-semibold gap-1.5 bg-[#8CC63F]/10 border-[#8CC63F]/30 text-[#8CC63F] hover:bg-[#8CC63F]/20 transition"
+                            title="Gerenciar anexos: enviar, visualizar e substituir PDFs no Skip Cloud"
+                          >
+                            <FileUp className="w-3.5 h-3.5" />
+                            <span>Gerenciar anexos</span>
+                          </Button>
 
                           {/* Botão para visualizar respostas do questionário da OS */}
                           {(() => {
@@ -2595,6 +3091,405 @@ export default function ContractsPage() {
                 </>
               ) : (
                 'Confirmar Exclusão'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ================= MODAL DEDICADO: GERENCIAR ANEXOS ================= */}
+      <Dialog
+        open={!!osForAttachmentsModal}
+        onOpenChange={(open) => {
+          if (!open) {
+            setOsForAttachmentsModal(null)
+            setPendingOsPdfFile(null)
+            setPendingRelatorioPdfFile(null)
+            setAttachmentErrors({})
+          }
+        }}
+      >
+        <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-2xl rounded-2xl shadow-2xl">
+          <DialogHeader className="pb-3 border-b border-slate-800">
+            <div className="flex items-center gap-2 text-xs font-mono text-[#8CC63F] uppercase tracking-wider">
+              <FileUp className="w-4 h-4" />
+              <span>Armazenamento Skip Cloud</span>
+            </div>
+            <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
+              <span>Gerenciar anexos</span>
+              <Badge className="bg-[#8CC63F]/20 text-[#8CC63F] border border-[#8CC63F]/30 font-mono text-xs">
+                {osForAttachmentsModal?.numero_os}
+              </Badge>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Contrato:{' '}
+              <strong className="text-slate-200">
+                {osForAttachmentsModal?.expand?.contrato_id?.numero_contrato || '—'}
+              </strong>{' '}
+              • Cliente:{' '}
+              <strong className="text-slate-200">
+                {osForAttachmentsModal?.expand?.contrato_id?.nome_cliente || '—'}
+              </strong>
+              . Envie, visualize ou substitua os arquivos PDF desta Ordem de Serviço.
+            </DialogDescription>
+          </DialogHeader>
+
+          {osForAttachmentsModal && (
+            <div className="py-3 space-y-4">
+              {/* Grid com os dois arquivos lado a lado */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* 1. OS (PDF) */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span className="text-xs font-bold text-white flex items-center gap-1.5 uppercase font-mono">
+                        <FileText className="w-4 h-4 text-[#8CC63F]" />
+                        <span>OS (PDF)</span>
+                      </span>
+
+                      {osForAttachmentsModal.arquivo ? (
+                        <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] py-0.5 px-2 gap-1 font-mono">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Carregado
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] py-0.5 px-2">
+                          Pendente
+                        </Badge>
+                      )}
+                    </div>
+
+                    <p className="text-[11px] text-slate-400 mb-3">
+                      Documento da Ordem de Serviço emitida para a atividade técnica (máx. 10 MB,
+                      apenas PDF).
+                    </p>
+
+                    {/* Arquivo atual */}
+                    {osForAttachmentsModal.arquivo ? (
+                      <div className="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 mb-3 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-7 h-7 rounded bg-[#8CC63F]/15 text-[#8CC63F] flex items-center justify-center shrink-0">
+                            <FileText className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs text-white font-medium truncate">
+                              Documento da OS anexado
+                            </p>
+                            <p className="text-[10px] text-slate-400 truncate font-mono">
+                              {osForAttachmentsModal.arquivo}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <a
+                            href={getOrdemServicoFileUrl(osForAttachmentsModal) || '#'}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="p-1.5 text-[#8CC63F] hover:bg-[#8CC63F]/15 rounded transition"
+                            title="Visualizar OS (PDF)"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveAttachment('os')}
+                            disabled={uploadingAttachmentType === 'os'}
+                            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-950/30 rounded transition"
+                            title="Remover arquivo do Skip Cloud"
+                          >
+                            {uploadingAttachmentType === 'os' ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-slate-900/40 border border-dashed border-slate-800 rounded-lg p-2.5 mb-3 text-center">
+                        <p className="text-[11px] text-slate-500 italic">
+                          Nenhum documento de OS enviado até o momento.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Seleção de novo arquivo / substituição */}
+                    <div className="border border-dashed border-slate-700 hover:border-[#8CC63F]/60 rounded-xl p-3 bg-slate-900/50 transition">
+                      <input
+                        type="file"
+                        id="modal-os-pdf-input"
+                        accept=".pdf,application/pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null
+                          if (!file) return
+
+                          const isPdf =
+                            file.type === 'application/pdf' ||
+                            file.name.toLowerCase().endsWith('.pdf')
+
+                          if (!isPdf) {
+                            setAttachmentErrors((prev) => ({
+                              ...prev,
+                              os: 'O arquivo selecionado deve ser um documento PDF (.pdf).',
+                            }))
+                            return
+                          }
+
+                          if (file.size > 10 * 1024 * 1024) {
+                            setAttachmentErrors((prev) => ({
+                              ...prev,
+                              os: 'O tamanho máximo da OS em PDF é 10 MB.',
+                            }))
+                            return
+                          }
+
+                          setPendingOsPdfFile(file)
+                          setAttachmentErrors((prev) => ({ ...prev, os: undefined }))
+                        }}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="modal-os-pdf-input"
+                        className="cursor-pointer flex flex-col items-center justify-center text-center gap-1"
+                      >
+                        <FileUp className="w-5 h-5 text-[#8CC63F]" />
+                        <span className="text-xs font-semibold text-slate-200 hover:text-white">
+                          {pendingOsPdfFile
+                            ? pendingOsPdfFile.name
+                            : osForAttachmentsModal.arquivo
+                              ? 'Selecionar novo PDF para substituir'
+                              : 'Selecionar PDF da OS'}
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-mono">
+                          {pendingOsPdfFile
+                            ? `${(pendingOsPdfFile.size / (1024 * 1024)).toFixed(2)} MB • Pronto para salvar`
+                            : 'Máx. 10 MB (.pdf)'}
+                        </span>
+                      </label>
+
+                      {pendingOsPdfFile && (
+                        <div className="mt-2 text-center">
+                          <button
+                            type="button"
+                            onClick={() => setPendingOsPdfFile(null)}
+                            className="text-[10px] text-red-400 hover:text-red-300 underline"
+                          >
+                            Cancelar seleção
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {attachmentErrors.os && (
+                      <p className="text-[11px] text-red-400 mt-1">{attachmentErrors.os}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* 2. Relatório da atividade (PDF) */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span className="text-xs font-bold text-white flex items-center gap-1.5 uppercase font-mono">
+                        <FileText className="w-4 h-4 text-sky-400" />
+                        <span>Relatório da atividade (PDF)</span>
+                      </span>
+
+                      {osForAttachmentsModal.relatorio_arquivo ||
+                      osForAttachmentsModal.relatorio_pdf_url?.trim() ? (
+                        <Badge className="bg-sky-500/15 text-sky-400 border border-sky-500/30 text-[10px] py-0.5 px-2 gap-1 font-mono">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Carregado
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] py-0.5 px-2">
+                          Pendente
+                        </Badge>
+                      )}
+                    </div>
+
+                    <p className="text-[11px] text-slate-400 mb-3">
+                      Relatório técnico da atividade realizada emitido para o cliente (máx. 15 MB,
+                      apenas PDF).
+                    </p>
+
+                    {/* Arquivo atual */}
+                    {osForAttachmentsModal.relatorio_arquivo ||
+                    osForAttachmentsModal.relatorio_pdf_url?.trim() ? (
+                      <div className="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 mb-3 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-7 h-7 rounded bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0">
+                            <FileText className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs text-white font-medium truncate">
+                              Relatório de atividades anexado
+                            </p>
+                            <p className="text-[10px] text-slate-400 truncate font-mono">
+                              {osForAttachmentsModal.relatorio_arquivo ||
+                                osForAttachmentsModal.relatorio_pdf_url}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          {(() => {
+                            const relUrl = getOrdemServicoRelatorioUrl(osForAttachmentsModal)
+                            if (!relUrl) return null
+                            return (
+                              <a
+                                href={relUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="p-1.5 text-sky-400 hover:bg-sky-500/15 rounded transition"
+                                title="Visualizar Relatório da atividade (PDF)"
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </a>
+                            )
+                          })()}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveAttachment('relatorio')}
+                            disabled={uploadingAttachmentType === 'relatorio'}
+                            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-950/30 rounded transition"
+                            title="Remover relatório do Skip Cloud"
+                          >
+                            {uploadingAttachmentType === 'relatorio' ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-slate-900/40 border border-dashed border-slate-800 rounded-lg p-2.5 mb-3 text-center">
+                        <p className="text-[11px] text-slate-500 italic">
+                          Nenhum relatório de atividade enviado até o momento.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Seleção de novo arquivo / substituição */}
+                    <div className="border border-dashed border-slate-700 hover:border-sky-500/60 rounded-xl p-3 bg-slate-900/50 transition">
+                      <input
+                        type="file"
+                        id="modal-relatorio-pdf-input"
+                        accept=".pdf,application/pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null
+                          if (!file) return
+
+                          const isPdf =
+                            file.type === 'application/pdf' ||
+                            file.name.toLowerCase().endsWith('.pdf')
+
+                          if (!isPdf) {
+                            setAttachmentErrors((prev) => ({
+                              ...prev,
+                              relatorio: 'O arquivo selecionado deve ser um documento PDF (.pdf).',
+                            }))
+                            return
+                          }
+
+                          if (file.size > 15 * 1024 * 1024) {
+                            setAttachmentErrors((prev) => ({
+                              ...prev,
+                              relatorio: 'O tamanho máximo do relatório em PDF é 15 MB.',
+                            }))
+                            return
+                          }
+
+                          setPendingRelatorioPdfFile(file)
+                          setAttachmentErrors((prev) => ({ ...prev, relatorio: undefined }))
+                        }}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="modal-relatorio-pdf-input"
+                        className="cursor-pointer flex flex-col items-center justify-center text-center gap-1"
+                      >
+                        <FileUp className="w-5 h-5 text-sky-400" />
+                        <span className="text-xs font-semibold text-slate-200 hover:text-white">
+                          {pendingRelatorioPdfFile
+                            ? pendingRelatorioPdfFile.name
+                            : osForAttachmentsModal.relatorio_arquivo ||
+                                osForAttachmentsModal.relatorio_pdf_url
+                              ? 'Selecionar novo PDF para substituir'
+                              : 'Selecionar Relatório da atividade (PDF)'}
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-mono">
+                          {pendingRelatorioPdfFile
+                            ? `${(pendingRelatorioPdfFile.size / (1024 * 1024)).toFixed(2)} MB • Pronto para salvar`
+                            : 'Máx. 15 MB (.pdf)'}
+                        </span>
+                      </label>
+
+                      {pendingRelatorioPdfFile && (
+                        <div className="mt-2 text-center">
+                          <button
+                            type="button"
+                            onClick={() => setPendingRelatorioPdfFile(null)}
+                            className="text-[10px] text-red-400 hover:text-red-300 underline"
+                          >
+                            Cancelar seleção
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {attachmentErrors.relatorio && (
+                      <p className="text-[11px] text-red-400 mt-1">{attachmentErrors.relatorio}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Informação sobre sincronização com a Área do Cliente */}
+              <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] text-slate-400 flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#8CC63F] shrink-0 mt-0.5" />
+                <span>
+                  Os arquivos enviados ficam salvos no storage seguro do Skip Cloud e são
+                  disponibilizados automaticamente para o cliente correspondente na Área do Cliente
+                  (conforme o plano contratado).
+                </span>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="pt-3 border-t border-slate-800 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setOsForAttachmentsModal(null)
+                setPendingOsPdfFile(null)
+                setPendingRelatorioPdfFile(null)
+              }}
+              className="bg-slate-800 border-slate-700 text-slate-300 hover:text-white text-xs"
+            >
+              Fechar
+            </Button>
+
+            <Button
+              type="button"
+              onClick={handleSaveAttachmentsFromModal}
+              disabled={
+                uploadingAttachmentType === 'both' ||
+                (!pendingOsPdfFile && !pendingRelatorioPdfFile)
+              }
+              className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs cursor-pointer shadow-md shadow-[#8CC63F]/20"
+            >
+              {uploadingAttachmentType === 'both' ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  Salvando anexos no Skip Cloud...
+                </>
+              ) : (
+                'Salvar anexos da OS'
               )}
             </Button>
           </DialogFooter>

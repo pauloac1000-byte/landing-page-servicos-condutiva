@@ -257,6 +257,38 @@ export async function uploadRelatorioAtividadesOS(
 }
 
 /**
+ * Faz upload avulso do arquivo PDF da OS para uma OS existente,
+ * atualizando o campo `arquivo` no storage do Skip Cloud.
+ */
+export async function uploadArquivoOS(
+  osId: string,
+  arquivo: File,
+): Promise<{ record: OrdemServicoRecord; fileUrl: string }> {
+  const formData = new FormData()
+  formData.append('arquivo', arquivo)
+
+  const updated = await pb
+    .collection<OrdemServicoRecord>('ordens_servico')
+    .update(osId, formData, { expand: 'contrato_id' })
+
+  const fileUrl = pb.files.getURL(updated, updated.arquivo!)
+  return { record: updated, fileUrl }
+}
+
+/**
+ * Remove o arquivo PDF da OS (campo `arquivo`).
+ */
+export async function removeArquivoOS(osId: string): Promise<OrdemServicoRecord> {
+  return await pb.collection<OrdemServicoRecord>('ordens_servico').update(
+    osId,
+    {
+      arquivo: null,
+    },
+    { expand: 'contrato_id' },
+  )
+}
+
+/**
  * Remove o relatório de atividades de uma OS (limpa arquivo e URL).
  */
 export async function removeRelatorioAtividadesOS(osId: string): Promise<OrdemServicoRecord> {
