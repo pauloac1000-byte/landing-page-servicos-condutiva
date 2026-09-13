@@ -2,7 +2,10 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 import type { ClienteRecord } from '@/types'
 import { buscarClientePorContrato } from '@/services/clienteArea'
 
-const CLIENTE_SESSION_STORAGE_KEY = 'condutiva_cliente_session'
+// Medida de segurança: a sessão da Área do Cliente NUNCA é persistida no disco/storage/cookie.
+// Vive exclusivamente em memória durante o ciclo de vida do painel aberto.
+// Caso a chave legada ainda exista no navegador de sessões antigas, ela é expurgada na inicialização.
+const LEGACY_CLIENTE_SESSION_STORAGE_KEY = 'condutiva_cliente_session'
 
 interface ClienteAuthContextType {
   cliente: ClienteRecord | null
@@ -26,55 +29,52 @@ const ClienteAuthContext = createContext<ClienteAuthContextType | undefined>(und
 
 export function ClienteAuthProvider({ children }: { children: React.ReactNode }) {
   const [cliente, setCliente] = useState<ClienteRecord | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDashboardOpen, setIsDashboardOpen] = useState(false)
   const [activeModalTab, setActiveModalTab] = useState<
     'login' | 'primeiro_acesso' | 'esqueci_senha'
   >('login')
 
+  // Limpeza de segurança na inicialização: remove resquícios de sessões legadas do localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(CLIENTE_SESSION_STORAGE_KEY)
-      if (stored) {
-        const parsed = JSON.parse(stored) as ClienteRecord
-        if (parsed?.id && parsed?.numero_contrato) {
-          setCliente(parsed)
-          // Silently refresh in the background
-          buscarClientePorContrato(parsed.numero_contrato)
-            .then((fresh) => {
-              if (fresh) {
-                setCliente(fresh)
-                localStorage.setItem(CLIENTE_SESSION_STORAGE_KEY, JSON.stringify(fresh))
-              }
-            })
-            .catch(() => {
-              // ignore network errors on silent refresh
-            })
-        }
+      localStorage.removeItem(LEGACY_CLIENTE_SESSION_STORAGE_KEY)
+      sessionStorage.removeItem(LEGACY_CLIENTE_SESSION_STORAGE_KEY)
+    } catch {
+      // Ignora restrições de sandbox de storage
+    }
+  }, [])
+
+  // Medida de segurança: ao descarregar a página (refresh, fechar aba, navegar para fora),
+  // expurgar a sessão e qualquer dado residual imediatamente
+  useEffect(() => {
+    const handleUnload = () => {
+      try {
+        localStorage.removeItem(LEGACY_CLIENTE_SESSION_STORAGE_KEY)
+        sessionStorage.removeItem(LEGACY_CLIENTE_SESSION_STORAGE_KEY)
+      } catch {
+        // no-op
       }
-    } catch (e) {
-      console.error('Falha ao restaurar sessão de cliente:', e)
-      localStorage.removeItem(CLIENTE_SESSION_STORAGE_KEY)
-    } finally {
-      setIsLoading(false)
+    }
+    window.addEventListener('beforeunload', handleUnload)
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload)
     }
   }, [])
 
   const setSession = (newCliente: ClienteRecord) => {
+    // Sessão estritamente em memória
     setCliente(newCliente)
-    try {
-      localStorage.setItem(CLIENTE_SESSION_STORAGE_KEY, JSON.stringify(newCliente))
-    } catch (e) {
-      console.error('Falha ao salvar sessão do cliente no localStorage:', e)
-    }
   }
 
   const clearSession = () => {
+    // Logout completo: encerra sessão em memória e fecha dashboard
     setCliente(null)
     setIsDashboardOpen(false)
     try {
-      localStorage.removeItem(CLIENTE_SESSION_STORAGE_KEY)
+      localStorage.removeItem(LEGACY_CLIENTE_SESSION_STORAGE_KEY)
+      sessionStorage.removeItem(LEGACY_CLIENTE_SESSION_STORAGE_KEY)
     } catch (e) {
       console.error('Falha ao limpar sessão do cliente:', e)
     }
@@ -107,7 +107,8 @@ export function ClienteAuthProvider({ children }: { children: React.ReactNode })
   }
 
   const closeDashboard = () => {
-    setIsDashboardOpen(false)
+    // Medida de segurança: fechar a janela da Área do Cliente faz logout automático imediato
+    clearSession()
   }
 
   const openClienteArea = () => {
