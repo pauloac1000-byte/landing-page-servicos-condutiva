@@ -21,6 +21,10 @@ export const MENSAGEM_OS_JA_AVALIADA =
 export const MENSAGEM_AVALIACAO_SUCESSO =
   'Avaliação enviada com sucesso. Obrigado por ajudar a Condutiva a melhorar cada vez mais.'
 
+/** Mensagem única para qualquer falha nos fluxos de recuperação e redefinição de senha */
+export const MENSAGEM_ERRO_RECUPERACAO_REDEFINICAO =
+  'Não foi possível concluir o processo. Entre em contato com o suporte técnico.'
+
 /**
  * Ordem hierárquica de níveis de contrato
  * Sentinela Preventivo (1) < Controle Operacional (2) < Maestro Engenharia (3)

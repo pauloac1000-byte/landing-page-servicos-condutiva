@@ -28,6 +28,7 @@ import {
   atualizarSenhaCliente,
   recuperarSenhaCliente,
   redefinirSenhaClienteComValidacao,
+  MENSAGEM_ERRO_RECUPERACAO_REDEFINICAO,
 } from '@/services/clienteArea'
 
 export function ClienteLoginModal() {
@@ -206,16 +207,14 @@ export function ClienteLoginModal() {
       } else {
         setProvisoriaFeedback({
           tipo: 'error',
-          mensagem:
-            'Não foi possível concluir a recuperação. Verifique o número do contrato ou entre em contato com o suporte técnico.',
+          mensagem: MENSAGEM_ERRO_RECUPERACAO_REDEFINICAO,
         })
       }
     } catch (err) {
       console.error('Erro ao recuperar senha:', err)
       setProvisoriaFeedback({
         tipo: 'error',
-        mensagem:
-          'Não foi possível concluir a recuperação. Entre em contato com o suporte técnico.',
+        mensagem: MENSAGEM_ERRO_RECUPERACAO_REDEFINICAO,
       })
     } finally {
       setIsEnviandoProvisoria(false)
@@ -266,21 +265,11 @@ export function ClienteLoginModal() {
         setRedefinirConfirmSenha('')
         setProvisoriaFeedback(null)
       } else {
-        if (result.reason === 'senha_atual_invalida') {
-          setEsqueciError(
-            'Senha atual ou provisória incorreta. Verifique o valor digitado ou solicite uma nova senha provisória.',
-          )
-        } else if (result.reason === 'contrato_nao_encontrado') {
-          setEsqueciError(
-            'Contrato não encontrado. Verifique o número informado ou contate a assistência técnica.',
-          )
-        } else {
-          setEsqueciError('Ocorreu um erro ao redefinir a senha. Tente novamente mais tarde.')
-        }
+        setEsqueciError(MENSAGEM_ERRO_RECUPERACAO_REDEFINICAO)
       }
     } catch (err) {
       console.error('Erro ao redefinir senha:', err)
-      setEsqueciError('Ocorreu um erro ao redefinir a senha. Tente novamente mais tarde.')
+      setEsqueciError(MENSAGEM_ERRO_RECUPERACAO_REDEFINICAO)
     } finally {
       setIsRedefinindo(false)
     }
