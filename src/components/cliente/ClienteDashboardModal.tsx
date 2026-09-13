@@ -39,6 +39,7 @@ import {
   MENSAGEM_NEGACAO_SENTINELA,
   MENSAGEM_OS_NAO_ENCONTRADA,
   temAcessoDocumentacaoTecnica,
+  temAcessoRelatorioAtividades,
   validarOSParaAvaliacao,
   atualizarSenhaCliente,
   conferirSenhaCliente,
@@ -172,6 +173,7 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
   if (!cliente) return null
 
   const acessoDoc = temAcessoDocumentacaoTecnica(cliente.nivel_contrato)
+  const podeVerRelatorio = temAcessoRelatorioAtividades(cliente.nivel_contrato)
   const isSentinela = cliente.nivel_contrato === 'Sentinela Preventivo'
 
   // Handler de clique no Card 1: Avaliar Atendimento
@@ -822,30 +824,37 @@ export function ClienteDashboardModal({ isOpen, onClose }: ClienteDashboardModal
                             </div>
                           )}
 
-                          {/* Seção do Relatório de Atividades da OS */}
-                          <div className="px-2 pb-1.5 pt-0">
-                            {relatorioUrl ? (
-                              <a
-                                href={relatorioUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                download
-                                title={`Abrir/baixar relatório de atividades em PDF da ${os.numero_os}`}
-                                className="w-full h-6 text-[10px] px-1.5 rounded border border-[#8CC63F]/40 hover:border-[#8CC63F] bg-[#8CC63F]/10 hover:bg-[#8CC63F]/20 text-[#8CC63F] hover:text-white flex items-center justify-center gap-1 transition-colors font-medium truncate"
-                              >
-                                <FileText className="w-2.5 h-2.5 shrink-0" />
-                                <span className="truncate">Ver Relatório</span>
-                                <Download className="w-2.5 h-2.5 shrink-0 ml-0.5" />
-                              </a>
-                            ) : (
-                              <div
-                                className="w-full text-center py-1 px-1 text-[9.5px] leading-tight text-slate-500 rounded border border-slate-800/60 bg-slate-950/40 truncate"
-                                title="O relatório de atividades ainda não foi disponibilizado pelo administrador"
-                              >
-                                Relatório ainda não disponível
+                          {/* Bloco Relatório de Atividades da OS (restrito aos planos com direito: Controle Operacional e Maestro Engenharia) */}
+                          {podeVerRelatorio && (
+                            <div className="px-2 pb-1.5 pt-0">
+                              <div className="p-1.5 rounded-lg bg-slate-950/60 border border-slate-800/80 space-y-1">
+                                <span className="text-[9px] font-mono font-semibold uppercase tracking-wider text-slate-400 block truncate text-center">
+                                  Relatório de Atividades
+                                </span>
+                                {relatorioUrl ? (
+                                  <a
+                                    href={relatorioUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    download
+                                    title={`Abrir/baixar relatório de atividades em PDF da ${os.numero_os}`}
+                                    className="w-full h-6 text-[10px] px-1.5 rounded border border-[#8CC63F]/40 hover:border-[#8CC63F] bg-[#8CC63F]/10 hover:bg-[#8CC63F]/20 text-[#8CC63F] hover:text-white flex items-center justify-center gap-1 transition-colors font-medium truncate"
+                                  >
+                                    <FileText className="w-2.5 h-2.5 shrink-0" />
+                                    <span className="truncate">Ver Relatório</span>
+                                    <Download className="w-2.5 h-2.5 shrink-0 ml-0.5" />
+                                  </a>
+                                ) : (
+                                  <div
+                                    className="w-full text-center py-1 px-1 text-[9.5px] leading-tight text-slate-500 rounded border border-slate-800/60 bg-slate-950/40 truncate"
+                                    title="O relatório de atividades ainda não foi disponibilizado pelo administrador"
+                                  >
+                                    Relatório ainda não disponível
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
+                            </div>
+                          )}
 
                           {/* Ação secundária: Avaliar atendimento da OS */}
                           <div className="p-2 pt-0 bg-transparent">

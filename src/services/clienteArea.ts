@@ -63,6 +63,17 @@ export function temAcessoDocumentacaoTecnica(nivelCliente: NivelContrato): {
 }
 
 /**
+ * Valida se o cliente tem acesso ao Relatório de Atividades em PDF da OS.
+ * Segue a mesma distinção de planos da Documentação Técnica:
+ * "Apenas clientes cujo plano dá direito ao relatório de atividades conseguem ver e baixar o PDF
+ * (Controle Operacional e Maestro Engenharia); para planos sem esse direito (Sentinela Preventivo),
+ * o bloco não deve aparecer."
+ */
+export function temAcessoRelatorioAtividades(nivelCliente: NivelContrato): boolean {
+  return nivelCliente === 'Controle Operacional' || nivelCliente === 'Maestro Engenharia'
+}
+
+/**
  * Conforme requisito do administrador, as senhas são armazenadas em texto puro legível no banco de dados.
  * Função utilitária mantida para compatibilidade com eventuais imports.
  */
