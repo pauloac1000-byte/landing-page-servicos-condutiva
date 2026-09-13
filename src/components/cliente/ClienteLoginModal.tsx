@@ -680,8 +680,9 @@ export function ClienteLoginModal() {
                     <FileText className="w-4 h-4 text-slate-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                   <span className="text-[11px] text-slate-400 mt-1 block">
-                    Não lembra sua senha atual? Clique acima para receber uma senha provisória por
-                    e-mail.
+                    {
+                      'Não lembra sua senha atual? Insira o número contrato e clique em "Enviar senha provisória por e-mail"  para receber uma senha provisória no e-mail cadastrado.'
+                    }
                   </span>
                 </div>
 
