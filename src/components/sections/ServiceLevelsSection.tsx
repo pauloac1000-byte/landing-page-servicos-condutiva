@@ -652,7 +652,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                   <span className="text-base sm:text-lg font-bold text-purple-100">/mês</span>
                 </div>
                 <p className="text-[11px] text-purple-100/90 leading-snug mt-2.5 max-w-[280px] mx-auto">
-                  Consulte nossos vendedores, o valor final será definido após uma avaliação dos
+                  Consulte nosso time comercial, o valor final será definido após uma avaliação dos
                   equipamentos — considerando quantidade e condições de cada um.
                 </p>
               </div>
