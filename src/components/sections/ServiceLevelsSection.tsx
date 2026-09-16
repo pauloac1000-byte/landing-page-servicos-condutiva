@@ -51,8 +51,8 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
             className="group relative flex flex-col bg-white rounded-[20px] transition-all duration-300 hover:-translate-y-1"
             style={{
               boxShadow:
-                '0 16px 40px -12px rgba(43, 185, 169, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05)',
-              border: '1px solid #2BB9A9',
+                '0 16px 40px -12px rgba(90, 158, 50, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05)',
+              border: '1px solid #5A9E32',
             }}
           >
             {/* Cabeçalho do Card */}
@@ -63,13 +63,13 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               }}
             >
               <div className="flex items-start justify-between gap-4">
-                {/* Ícone Glass-morphism 3D Teal */}
+                {/* Ícone Glass-morphism 3D Verde Profundo */}
                 <div
                   className="w-14 h-14 rounded-[16px] flex items-center justify-center shrink-0 relative overflow-hidden transition-transform duration-300 group-hover:scale-105"
                   style={{
-                    background: 'linear-gradient(135deg, #2BB9A9 0%, #1a9689 100%)',
+                    background: 'linear-gradient(135deg, #5A9E32 0%, #4d7c0f 100%)',
                     boxShadow:
-                      '0 8px 20px -6px rgba(43, 185, 169, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.25)',
+                      '0 8px 20px -6px rgba(90, 158, 50, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.25)',
                     border: '1px solid rgba(255, 255, 255, 0.35)',
                   }}
                 >
@@ -112,21 +112,21 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 className="mt-4 p-3 rounded-xl border flex items-center gap-2.5"
                 style={{
                   backgroundColor: '#FFFFFF',
-                  borderColor: '#2BB9A9',
+                  borderColor: '#5A9E32',
                 }}
               >
-                <Zap className="w-4 h-4 text-[#2BB9A9] shrink-0 fill-[#2BB9A9]/20" />
+                <Zap className="w-4 h-4 text-[#5A9E32] shrink-0 fill-[#5A9E32]/20" />
                 <span className="text-[11px] font-medium text-[#1B2A4A] leading-snug">
                   Opera com previsibilidade sobre seus ativos.
                 </span>
               </div>
 
-              {/* Bloco de Preço com Gradiente Teal da Marca */}
+              {/* Bloco de Preço com Gradiente Verde Profundo */}
               <div
                 className="mt-5 rounded-2xl p-4 text-white text-center relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, #2BB9A9 0%, #1a9689 100%)',
-                  boxShadow: '0 8px 20px -4px rgba(43, 185, 169, 0.4)',
+                  background: 'linear-gradient(135deg, #5A9E32 0%, #4d7c0f 100%)',
+                  boxShadow: '0 8px 20px -4px rgba(90, 158, 50, 0.4)',
                 }}
               >
                 <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
@@ -151,8 +151,8 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               <span
                 className="text-[11px] font-bold uppercase tracking-wider block pb-1 border-b"
                 style={{
-                  color: '#2BB9A9',
-                  borderColor: 'rgba(43, 185, 169, 0.3)',
+                  color: '#5A9E32',
+                  borderColor: 'rgba(90, 158, 50, 0.3)',
                 }}
               >
                 INCLUSO NO PACOTE:
@@ -162,7 +162,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#2BB9A9' }}
+                    style={{ backgroundColor: '#5A9E32' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
@@ -170,7 +170,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                     <span className="font-semibold text-[#1B2A4A]">
                       1 visita bimestral técnica com as seguintes entregas:
                     </span>
-                    <ul className="space-y-1 pl-3 text-slate-600 text-[11px] list-disc marker:text-[#2BB9A9]">
+                    <ul className="space-y-1 pl-3 text-slate-600 text-[11px] list-disc marker:text-[#5A9E32]">
                       <li>Inspeção física do sensor</li>
                       <li>Verificação de calibração</li>
                       <li>Limpeza técnica</li>
@@ -184,7 +184,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#2BB9A9' }}
+                    style={{ backgroundColor: '#5A9E32' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
@@ -194,7 +194,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#2BB9A9' }}
+                    style={{ backgroundColor: '#5A9E32' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
@@ -204,7 +204,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#2BB9A9' }}
+                    style={{ backgroundColor: '#5A9E32' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
@@ -216,7 +216,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#2BB9A9' }}
+                    style={{ backgroundColor: '#5A9E32' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
@@ -229,15 +229,15 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 className="mt-6 p-4 rounded-xl border space-y-2 relative"
                 style={{
                   backgroundColor: '#F4F7F2',
-                  borderColor: '#2BB9A9',
+                  borderColor: '#5A9E32',
                 }}
               >
                 <div className="inline-block -mt-6">
                   <span
                     className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white border"
                     style={{
-                      borderColor: '#2BB9A9',
-                      color: '#2BB9A9',
+                      borderColor: '#5A9E32',
+                      color: '#5A9E32',
                     }}
                   >
                     2 motivos de adesão
@@ -246,7 +246,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <p className="text-xs text-[#1B2A4A] leading-relaxed">
                   Identificar desvios antes que eles comprometam a medição e prevenir retrabalho.
                 </p>
-                <ul className="space-y-1 pl-3 text-xs text-slate-600 list-disc marker:text-[#2BB9A9]">
+                <ul className="space-y-1 pl-3 text-xs text-slate-600 list-disc marker:text-[#5A9E32]">
                   <li>Parada não planejada evitada</li>
                   <li>Vida útil do sensor preservada</li>
                 </ul>
@@ -265,8 +265,8 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 onClick={() => onSelectPlan('Plano Sentinela Preventivo (Básico)')}
                 className="w-full font-bold py-6 rounded-[12px] text-white text-sm transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #2BB9A9 0%, #1a9689 100%)',
-                  boxShadow: '0 10px 24px -8px rgba(43, 185, 169, 0.45)',
+                  background: 'linear-gradient(135deg, #5A9E32 0%, #4d7c0f 100%)',
+                  boxShadow: '0 10px 24px -8px rgba(90, 158, 50, 0.45)',
                 }}
               >
                 Solicitar Proposta
