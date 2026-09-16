@@ -45,32 +45,31 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
         {/* TABELA COMPARATIVA DE 3 COLUNAS - SEMÁFORO EVOLUTIVO (VERDE → DOURADO → ROXO) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-7 max-w-[1240px] mx-auto items-stretch pt-6">
           {/* =========================================================
-              COLUNA 1: PLANO BÁSICO (SENTINELA PREVENTIVO) - VERDE
+              COLUNA 1: PLANO BÁSICO (SENTINELA PREVENTIVO)
           ========================================================== */}
           <div
             className="group relative flex flex-col bg-white rounded-[20px] transition-all duration-300 hover:-translate-y-1"
             style={{
               boxShadow:
-                '0 16px 40px -12px rgba(46, 125, 50, 0.12), 0 4px 12px rgba(0, 0, 0, 0.05)',
-              border: '1px solid rgba(46, 125, 50, 0.18)',
+                '0 16px 40px -12px rgba(43, 185, 169, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05)',
+              border: '1px solid #2BB9A9',
             }}
           >
-            {/* Cabeçalho do Card com Gradiente Verde */}
+            {/* Cabeçalho do Card */}
             <div
               className="p-7 sm:p-9 rounded-t-[20px] relative overflow-hidden"
               style={{
-                background:
-                  'linear-gradient(180deg, #E8F5E9 0%, rgba(232, 245, 233, 0.35) 65%, #FFFFFF 100%)',
+                backgroundColor: '#F4F7F2',
               }}
             >
               <div className="flex items-start justify-between gap-4">
-                {/* Ícone Glass-morphism 3D Verde */}
+                {/* Ícone Glass-morphism 3D Teal */}
                 <div
                   className="w-14 h-14 rounded-[16px] flex items-center justify-center shrink-0 relative overflow-hidden transition-transform duration-300 group-hover:scale-105"
                   style={{
-                    background: 'linear-gradient(135deg, #43A047 0%, #2E7D32 60%, #1B5E20 100%)',
+                    background: 'linear-gradient(135deg, #2BB9A9 0%, #1a9689 100%)',
                     boxShadow:
-                      '0 8px 20px -6px rgba(46, 125, 50, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.25)',
+                      '0 8px 20px -6px rgba(43, 185, 169, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.25)',
                     border: '1px solid rgba(255, 255, 255, 0.35)',
                   }}
                 >
@@ -99,10 +98,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
 
               {/* Título & Descrição */}
               <div className="mt-4">
-                <h3 className="text-[1.35rem] font-black text-slate-900 font-display leading-tight">
+                <h3 className="text-[1.35rem] font-black text-[#1B2A4A] font-display leading-tight">
                   Plano Sentinela Preventivo
                 </h3>
-                <span className="text-sm font-bold text-slate-700 block mt-0.5">(Básico)</span>
+                <span className="text-sm font-bold text-slate-500 block mt-0.5">(Básico)</span>
                 <p className="text-slate-600 text-xs mt-2 min-h-[34px] leading-relaxed">
                   Manutenção preventiva programada com cobertura essencial.
                 </p>
@@ -112,60 +111,66 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               <div
                 className="mt-4 p-3 rounded-xl border flex items-center gap-2.5"
                 style={{
-                  backgroundColor: 'rgba(232, 245, 233, 0.55)',
-                  borderColor: 'rgba(46, 125, 50, 0.22)',
+                  backgroundColor: '#FFFFFF',
+                  borderColor: '#2BB9A9',
                 }}
               >
-                <Zap className="w-4 h-4 text-emerald-600 shrink-0 fill-emerald-500/20" />
-                <span className="text-[11px] font-medium text-slate-700 leading-snug">
+                <Zap className="w-4 h-4 text-[#2BB9A9] shrink-0 fill-[#2BB9A9]/20" />
+                <span className="text-[11px] font-medium text-[#1B2A4A] leading-snug">
                   Opera com previsibilidade sobre seus ativos.
                 </span>
               </div>
 
-              {/* Bloco de Preço com Gradiente Sólido Verde */}
+              {/* Bloco de Preço com Gradiente Teal da Marca */}
               <div
                 className="mt-5 rounded-2xl p-4 text-white text-center relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%)',
-                  boxShadow: '0 8px 20px -4px rgba(46, 125, 50, 0.35)',
+                  background: 'linear-gradient(135deg, #2BB9A9 0%, #1a9689 100%)',
+                  boxShadow: '0 8px 20px -4px rgba(43, 185, 169, 0.4)',
                 }}
               >
                 <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
-                <span className="text-[11px] font-medium text-emerald-200/90 line-through block tracking-wide">
+                <span className="text-[11px] font-medium text-white/80 line-through block tracking-wide">
                   De R$ 1890,00
                 </span>
-                <span className="text-[11px] font-medium text-emerald-100 uppercase tracking-wider block mt-0.5">
+                <span className="text-[11px] font-medium text-white/90 uppercase tracking-wider block mt-0.5">
                   por R$
                 </span>
                 <div className="text-3xl sm:text-[2.1rem] font-black tracking-tight leading-none mt-1">
                   1.490,00
-                  <span className="text-base sm:text-lg font-bold text-emerald-100">/mês</span>
+                  <span className="text-base sm:text-lg font-bold text-white/90">/mês</span>
                 </div>
-                <span className="text-[11px] text-emerald-100/90 block mt-1 font-mono">
+                <span className="text-[11px] text-white/90 block mt-1 font-mono">
                   por equipamento
                 </span>
               </div>
             </div>
 
             {/* Corpo: Itens Inclusos */}
-            <div className="p-7 sm:p-9 pt-2 flex-grow space-y-5 bg-white">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 block pb-1 border-b border-emerald-100">
+            <div className="p-7 sm:p-9 pt-4 flex-grow space-y-5 bg-white">
+              <span
+                className="text-[11px] font-bold uppercase tracking-wider block pb-1 border-b"
+                style={{
+                  color: '#2BB9A9',
+                  borderColor: 'rgba(43, 185, 169, 0.3)',
+                }}
+              >
                 INCLUSO NO PACOTE:
               </span>
 
-              <ul className="space-y-3.5 text-xs text-slate-700">
+              <ul className="space-y-3.5 text-xs text-[#1B2A4A]">
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#2E7D32' }}
+                    style={{ backgroundColor: '#2BB9A9' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
                   <div className="space-y-1.5 flex-1">
-                    <span className="font-semibold text-slate-900">
+                    <span className="font-semibold text-[#1B2A4A]">
                       1 visita bimestral técnica com as seguintes entregas:
                     </span>
-                    <ul className="space-y-1 pl-3 text-slate-600 text-[11px] list-disc marker:text-emerald-600">
+                    <ul className="space-y-1 pl-3 text-slate-600 text-[11px] list-disc marker:text-[#2BB9A9]">
                       <li>Inspeção física do sensor</li>
                       <li>Verificação de calibração</li>
                       <li>Limpeza técnica</li>
@@ -179,31 +184,31 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#2E7D32' }}
+                    style={{ backgroundColor: '#2BB9A9' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <span className="text-slate-700">SICO Básico para clientes com CC5200</span>
+                  <span className="text-[#1B2A4A]">SICO Básico para clientes com CC5200</span>
                 </li>
 
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#2E7D32' }}
+                    style={{ backgroundColor: '#2BB9A9' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <span className="text-slate-700">20% desconto na substituição do CC5200</span>
+                  <span className="text-[#1B2A4A]">20% desconto na substituição do CC5200</span>
                 </li>
 
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#2E7D32' }}
+                    style={{ backgroundColor: '#2BB9A9' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <span className="text-slate-700">
+                  <span className="text-[#1B2A4A]">
                     Suporte remoto prioritário em horário comercial
                   </span>
                 </li>
@@ -211,11 +216,11 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#2E7D32' }}
+                    style={{ backgroundColor: '#2BB9A9' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <span className="text-slate-700">Desconto por sensor: 10/15/20% (2/3/4+)</span>
+                  <span className="text-[#1B2A4A]">Desconto por sensor: 10/15/20% (2/3/4+)</span>
                 </li>
               </ul>
 
@@ -223,25 +228,25 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               <div
                 className="mt-6 p-4 rounded-xl border space-y-2 relative"
                 style={{
-                  backgroundColor: '#F9FDF9',
-                  borderColor: 'rgba(46, 125, 50, 0.22)',
+                  backgroundColor: '#F4F7F2',
+                  borderColor: '#2BB9A9',
                 }}
               >
                 <div className="inline-block -mt-6">
                   <span
                     className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white border"
                     style={{
-                      borderColor: 'rgba(46, 125, 50, 0.3)',
-                      color: '#2E7D32',
+                      borderColor: '#2BB9A9',
+                      color: '#2BB9A9',
                     }}
                   >
                     2 motivos de adesão
                   </span>
                 </div>
-                <p className="text-xs text-slate-700 leading-relaxed">
+                <p className="text-xs text-[#1B2A4A] leading-relaxed">
                   Identificar desvios antes que eles comprometam a medição e prevenir retrabalho.
                 </p>
-                <ul className="space-y-1 pl-3 text-xs text-slate-600 list-disc marker:text-emerald-600">
+                <ul className="space-y-1 pl-3 text-xs text-slate-600 list-disc marker:text-[#2BB9A9]">
                   <li>Parada não planejada evitada</li>
                   <li>Vida útil do sensor preservada</li>
                 </ul>
@@ -249,19 +254,19 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
 
               {/* Ideal para */}
               <div className="pt-2 text-center text-xs text-slate-600 italic">
-                <span className="font-semibold not-italic text-emerald-800">Ideal para:</span>{' '}
-                início do monitoramento preventivo.
+                <span className="font-semibold not-italic text-[#1B2A4A]">Ideal para:</span> início
+                do monitoramento preventivo.
               </div>
             </div>
 
-            {/* Botão CTA Verde Sólido */}
+            {/* Botão CTA */}
             <div className="p-7 sm:p-9 pt-0 bg-white rounded-b-[20px]">
               <Button
                 onClick={() => onSelectPlan('Plano Sentinela Preventivo (Básico)')}
                 className="w-full font-bold py-6 rounded-[12px] text-white text-sm transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #43A047 0%, #2E7D32 100%)',
-                  boxShadow: '0 10px 24px -8px rgba(46, 125, 50, 0.4)',
+                  background: 'linear-gradient(135deg, #2BB9A9 0%, #1a9689 100%)',
+                  boxShadow: '0 10px 24px -8px rgba(43, 185, 169, 0.45)',
                 }}
               >
                 Solicitar Proposta
@@ -553,32 +558,31 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
           </div>
 
           {/* =========================================================
-              COLUNA 3: PLANO COMPLETO (MAESTRO ENGENHARIA) - ROXO
+              COLUNA 3: PLANO COMPLETO (MAESTRO ENGENHARIA)
           ========================================================== */}
           <div
             className="group relative flex flex-col bg-white rounded-[20px] transition-all duration-300 hover:-translate-y-1"
             style={{
               boxShadow:
-                '0 16px 40px -12px rgba(123, 31, 162, 0.12), 0 4px 12px rgba(0, 0, 0, 0.05)',
-              border: '1px solid rgba(123, 31, 162, 0.18)',
+                '0 16px 40px -12px rgba(90, 158, 50, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05)',
+              border: '1px solid #5A9E32',
             }}
           >
-            {/* Cabeçalho do Card com Gradiente Roxo */}
+            {/* Cabeçalho do Card */}
             <div
               className="p-7 sm:p-9 rounded-t-[20px] relative overflow-hidden"
               style={{
-                background:
-                  'linear-gradient(180deg, #F3E5F5 0%, rgba(243, 229, 245, 0.35) 65%, #FFFFFF 100%)',
+                backgroundColor: '#F4F7F2',
               }}
             >
               <div className="flex items-start justify-between gap-4">
-                {/* Ícone Glass-morphism 3D Roxo */}
+                {/* Ícone Glass-morphism 3D Verde Profundo */}
                 <div
                   className="w-14 h-14 rounded-[16px] flex items-center justify-center shrink-0 relative overflow-hidden transition-transform duration-300 group-hover:scale-105"
                   style={{
-                    background: 'linear-gradient(135deg, #8E24AA 0%, #7B1FA2 60%, #4A148C 100%)',
+                    background: 'linear-gradient(135deg, #5A9E32 0%, #4d7c0f 100%)',
                     boxShadow:
-                      '0 8px 20px -6px rgba(123, 31, 162, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.25)',
+                      '0 8px 20px -6px rgba(90, 158, 50, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.25)',
                     border: '1px solid rgba(255, 255, 255, 0.35)',
                   }}
                 >
@@ -609,10 +613,10 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
 
               {/* Título & Descrição */}
               <div className="mt-4">
-                <h3 className="text-[1.35rem] font-black text-slate-900 font-display leading-tight">
+                <h3 className="text-[1.35rem] font-black text-[#1B2A4A] font-display leading-tight">
                   Plano Maestro Engenharia
                 </h3>
-                <span className="text-sm font-bold text-slate-700 block mt-0.5">(Completo)</span>
+                <span className="text-sm font-bold text-slate-500 block mt-0.5">(Completo)</span>
                 <p className="text-slate-600 text-xs mt-2 min-h-[34px] leading-relaxed">
                   Engenharia dedicada com gestão completa de ativos.
                 </p>
@@ -622,36 +626,36 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               <div
                 className="mt-4 p-3 rounded-xl border flex items-center gap-2.5"
                 style={{
-                  backgroundColor: 'rgba(243, 229, 245, 0.55)',
-                  borderColor: 'rgba(123, 31, 162, 0.22)',
+                  backgroundColor: '#FFFFFF',
+                  borderColor: '#5A9E32',
                 }}
               >
-                <Zap className="w-4 h-4 text-purple-600 shrink-0 fill-purple-500/20" />
-                <span className="text-[11px] font-medium text-slate-700 leading-snug">
+                <Zap className="w-4 h-4 text-[#5A9E32] shrink-0 fill-[#5A9E32]/20" />
+                <span className="text-[11px] font-medium text-[#1B2A4A] leading-snug">
                   Onde o domínio do processo encontra a eficiência máxima.
                 </span>
               </div>
 
-              {/* Bloco de Preço com Gradiente Sólido Roxo */}
+              {/* Bloco de Preço com Gradiente Verde Profundo */}
               <div
                 className="mt-5 rounded-2xl p-4 text-white text-center relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, #7B1FA2 0%, #4A148C 100%)',
-                  boxShadow: '0 8px 20px -4px rgba(123, 31, 162, 0.35)',
+                  background: 'linear-gradient(135deg, #5A9E32 0%, #4d7c0f 100%)',
+                  boxShadow: '0 8px 20px -4px rgba(90, 158, 50, 0.4)',
                 }}
               >
                 <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
-                <span className="text-[11px] font-medium text-purple-200/90 line-through block tracking-wide">
+                <span className="text-[11px] font-medium text-white/80 line-through block tracking-wide">
                   De R$ 6090,00
                 </span>
-                <span className="text-[11px] font-medium text-purple-100 uppercase tracking-wider block mt-0.5">
+                <span className="text-[11px] font-medium text-white/90 uppercase tracking-wider block mt-0.5">
                   por R$
                 </span>
                 <div className="text-3xl sm:text-[2.1rem] font-black tracking-tight leading-none mt-1">
                   5.690,00
-                  <span className="text-base sm:text-lg font-bold text-purple-100">/mês</span>
+                  <span className="text-base sm:text-lg font-bold text-white/90">/mês</span>
                 </div>
-                <p className="text-[11px] text-purple-100/90 leading-snug mt-2.5 max-w-[280px] mx-auto">
+                <p className="text-[11px] text-white/90 leading-snug mt-2.5 max-w-[280px] mx-auto">
                   Consulte nosso time comercial, o valor final será definido após uma avaliação dos
                   equipamentos — considerando quantidade e condições de cada um.
                 </p>
@@ -659,14 +663,20 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
             </div>
 
             {/* Corpo: Itens Inclusos */}
-            <div className="p-7 sm:p-9 pt-2 flex-grow space-y-5 bg-white">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-900 block pb-1 border-b border-purple-100">
+            <div className="p-7 sm:p-9 pt-4 flex-grow space-y-5 bg-white">
+              <span
+                className="text-[11px] font-bold uppercase tracking-wider block pb-1 border-b"
+                style={{
+                  color: '#5A9E32',
+                  borderColor: 'rgba(90, 158, 50, 0.3)',
+                }}
+              >
                 INCLUSO NO PACOTE:
               </span>
 
-              <ul className="space-y-3 text-xs text-slate-700">
+              <ul className="space-y-3 text-xs text-[#1B2A4A]">
                 <li className="pt-0.5 pb-1">
-                  <span className="font-bold text-slate-900 text-[13px] tracking-tight block">
+                  <span className="font-bold text-[#1B2A4A] text-[13px] tracking-tight block">
                     Tudo do Controle Operacional
                   </span>
                 </li>
@@ -674,12 +684,12 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#7B1FA2' }}
+                    style={{ backgroundColor: '#5A9E32' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
                   <span>
-                    <strong className="text-purple-700 font-bold">+</strong> Visita bimestral com
+                    <strong className="text-[#5A9E32] font-bold">+</strong> Visita bimestral com
                     engenheiro dedicado
                   </span>
                 </li>
@@ -687,12 +697,12 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#7B1FA2' }}
+                    style={{ backgroundColor: '#5A9E32' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
                   <span>
-                    <strong className="text-purple-700 font-bold">+</strong> Relatório executivo
+                    <strong className="text-[#5A9E32] font-bold">+</strong> Relatório executivo
                     mensal presencial
                   </span>
                 </li>
@@ -700,12 +710,12 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#7B1FA2' }}
+                    style={{ backgroundColor: '#5A9E32' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
                   <span>
-                    <strong className="text-purple-700 font-bold">+</strong> Kit anual de reposição
+                    <strong className="text-[#5A9E32] font-bold">+</strong> Kit anual de reposição
                     completo com desconto especial
                   </span>
                 </li>
@@ -713,12 +723,12 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#7B1FA2' }}
+                    style={{ backgroundColor: '#5A9E32' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
                   <span>
-                    <strong className="text-purple-700 font-bold">+</strong> Atendimento prioritário
+                    <strong className="text-[#5A9E32] font-bold">+</strong> Atendimento prioritário
                     com dedicação integral
                   </span>
                 </li>
@@ -726,7 +736,7 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
                 <li className="flex items-start gap-2.5">
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 text-white"
-                    style={{ backgroundColor: '#7B1FA2' }}
+                    style={{ backgroundColor: '#5A9E32' }}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
@@ -743,26 +753,26 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               <div
                 className="mt-6 p-4 rounded-xl border space-y-2 relative"
                 style={{
-                  backgroundColor: '#FAF5FC',
-                  borderColor: 'rgba(123, 31, 162, 0.22)',
+                  backgroundColor: '#F4F7F2',
+                  borderColor: '#5A9E32',
                 }}
               >
                 <div className="inline-block -mt-6">
                   <span
                     className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white border"
                     style={{
-                      borderColor: 'rgba(123, 31, 162, 0.3)',
-                      color: '#7B1FA2',
+                      borderColor: '#5A9E32',
+                      color: '#5A9E32',
                     }}
                   >
                     2 motivos de adesão
                   </span>
                 </div>
-                <p className="text-xs text-slate-700 leading-relaxed">
+                <p className="text-xs text-[#1B2A4A] leading-relaxed">
                   Gestão técnica completa para proteger os ativos, acelerar decisões e garantir
                   confiabilidade e eficiência operacional.
                 </p>
-                <ul className="space-y-1 pl-3 text-xs text-slate-600 list-disc marker:text-purple-600">
+                <ul className="space-y-1 pl-3 text-xs text-slate-600 list-disc marker:text-[#5A9E32]">
                   <li>Maximização de resultados</li>
                   <li>Rastreabilidade total</li>
                 </ul>
@@ -770,19 +780,19 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
 
               {/* Ideal para */}
               <div className="pt-2 text-center text-xs text-slate-600 italic">
-                <span className="font-semibold not-italic text-purple-900">Ideal para:</span>{' '}
+                <span className="font-semibold not-italic text-[#1B2A4A]">Ideal para:</span>{' '}
                 prioridade máxima e terceirização avançada.
               </div>
             </div>
 
-            {/* Botão CTA Roxo Sólido */}
+            {/* Botão CTA */}
             <div className="p-7 sm:p-9 pt-0 bg-white rounded-b-[20px]">
               <Button
                 onClick={() => onSelectPlan('Plano Maestro Engenharia (Completo)')}
                 className="w-full font-bold py-6 rounded-[12px] text-white text-sm transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #8E24AA 0%, #6A1B9A 100%)',
-                  boxShadow: '0 10px 24px -8px rgba(123, 31, 162, 0.4)',
+                  background: 'linear-gradient(135deg, #5A9E32 0%, #4d7c0f 100%)',
+                  boxShadow: '0 10px 24px -8px rgba(90, 158, 50, 0.45)',
                 }}
               >
                 Solicitar Proposta
