@@ -35,8 +35,37 @@ export async function loginWithEmail(email: string, password: string): Promise<A
   }
 }
 
+// Lista de chaves legadas e resíduos de storage para expurgo preventivo
+export const LEGACY_AUTH_STORAGE_KEYS = [
+  'pocketbase_auth',
+  'condutiva_leads_authenticated',
+  'condutiva_cliente_session',
+] as const
+
+/**
+ * Limpeza preventiva de qualquer resquício de autenticação persistido em navegadores anteriores.
+ * A sessão vive exclusivamente em memória RAM durante o ciclo da página ativa.
+ */
+export function purgeAuthStorage(): void {
+  try {
+    for (const key of LEGACY_AUTH_STORAGE_KEYS) {
+      localStorage.removeItem(key)
+      sessionStorage.removeItem(key)
+    }
+  } catch {
+    // Tratamento silencioso para restrições de sandbox de storage do navegador
+  }
+}
+
+// Execução preventiva imediata na importação do módulo de autenticação
+purgeAuthStorage()
+
 export function logout(): void {
-  pb.authStore.clear()
+  try {
+    pb.authStore.clear()
+  } finally {
+    purgeAuthStorage()
+  }
 }
 
 export function subscribeToAuthChange(callback: (user: AuthUser | null) => void): () => void {

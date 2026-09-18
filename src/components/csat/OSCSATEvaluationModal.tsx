@@ -106,7 +106,11 @@ export function OSCSATEvaluationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-950 border-slate-800 text-slate-100 max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl">
+      <DialogContent
+        onPointerDownOutside={() => onOpenChange(false)}
+        onEscapeKeyDown={() => onOpenChange(false)}
+        className="bg-slate-950 border-slate-800 text-slate-100 max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl"
+      >
         <DialogHeader className="pb-3 border-b border-slate-800">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">

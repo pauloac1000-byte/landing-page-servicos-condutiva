@@ -28,6 +28,13 @@ export function AuthGate({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
 
+  const resetFormState = () => {
+    setEmail('')
+    setPassword('')
+    setErrorMsg('')
+    setShowPassword(false)
+  }
+
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     if (!email.trim()) {
@@ -48,6 +55,7 @@ export function AuthGate({
         title: 'Acesso liberado',
         description: `Bem-vindo(a), ${user.name || user.email}!`,
       })
+      resetFormState()
       onAuthenticated?.()
     } catch (err: unknown) {
       console.error('Falha na autenticação:', err)
@@ -108,7 +116,7 @@ export function AuthGate({
             </CardHeader>
 
             <CardContent className="pt-4">
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} autoComplete="off" className="space-y-4">
                 {/* Email field */}
                 <div className="space-y-1.5">
                   <label
@@ -129,6 +137,7 @@ export function AuthGate({
                         setEmail(e.target.value)
                         if (errorMsg) setErrorMsg('')
                       }}
+                      autoComplete="off"
                       autoFocus
                       className="pl-9 pr-3 bg-slate-950 border border-slate-800 focus-visible:ring-[#8CC63F] text-white placeholder:text-slate-600 text-sm h-11 rounded-xl"
                     />
@@ -155,6 +164,7 @@ export function AuthGate({
                         setPassword(e.target.value)
                         if (errorMsg) setErrorMsg('')
                       }}
+                      autoComplete="new-password"
                       className="pl-9 pr-10 bg-slate-950 border border-slate-800 focus-visible:ring-[#8CC63F] text-white placeholder:text-slate-600 text-sm h-11 rounded-xl"
                     />
                     <button

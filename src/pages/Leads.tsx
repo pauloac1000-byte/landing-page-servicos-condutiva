@@ -129,6 +129,25 @@ export default function LeadsPage() {
     })
   }, [leads, search, segmentFilter])
 
+  // Listener de tecla ESC para logout imediato quando nenhum modal de detalhe ou exclusão estiver aberto
+  useEffect(() => {
+    if (!isAuthenticated) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (selectedLead || leadToDelete) {
+          return
+        }
+        handleLogout()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isAuthenticated, selectedLead, leadToDelete])
+
   // Export leads to CSV
   const handleExportCSV = () => {
     if (filteredLeads.length === 0) {
@@ -251,7 +270,16 @@ export default function LeadsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col selection:bg-[#8CC63F] selection:text-slate-950">
+    <div
+      onClick={(e) => {
+        // Detecção de clique fora do container central para logout automático
+        const target = e.target as HTMLElement
+        if (target === e.currentTarget || target.dataset?.backdropLogout === 'true') {
+          handleLogout()
+        }
+      }}
+      className="min-h-screen bg-slate-900 text-slate-100 flex flex-col selection:bg-[#8CC63F] selection:text-slate-950"
+    >
       {/* Top Navigation Bar */}
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-30">
         <div className="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
@@ -764,7 +792,11 @@ export default function LeadsPage() {
 
       {/* Lead Detail Modal */}
       <Dialog open={!!selectedLead} onOpenChange={(open) => !open && setSelectedLead(null)}>
-        <DialogContent className="bg-slate-950 border-slate-800 text-slate-100 max-w-2xl">
+        <DialogContent
+          onPointerDownOutside={() => handleLogout()}
+          onEscapeKeyDown={() => handleLogout()}
+          className="bg-slate-950 border-slate-800 text-slate-100 max-w-2xl"
+        >
           {selectedLead && (
             <>
               <DialogHeader>
@@ -897,7 +929,11 @@ export default function LeadsPage() {
           if (!open && !isDeleting) setLeadToDelete(null)
         }}
       >
-        <DialogContent className="bg-slate-950 border-slate-800 text-slate-100 max-w-md">
+        <DialogContent
+          onPointerDownOutside={() => handleLogout()}
+          onEscapeKeyDown={() => handleLogout()}
+          className="bg-slate-950 border-slate-800 text-slate-100 max-w-md"
+        >
           <DialogHeader>
             <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-2">
               <AlertTriangle className="w-6 h-6" />

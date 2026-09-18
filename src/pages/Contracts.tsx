@@ -481,6 +481,44 @@ export default function ContractsPage() {
     }
   }
 
+  // Listener de tecla ESC para logout imediato quando nenhum modal secundário estiver aberto
+  useEffect(() => {
+    if (!isAuthenticated) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        // Se houver algum modal aberto, fecha o modal primeiro
+        if (
+          isFormOpen ||
+          contractToDelete ||
+          isOSModalOpen ||
+          contractForOSModal ||
+          osForAttachmentsModal ||
+          osToDelete ||
+          viewingEvaluationOS
+        ) {
+          return
+        }
+        // Se nenhum modal estiver ativo, ESC encerra a sessão na área autenticada
+        handleLogout()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [
+    isAuthenticated,
+    isFormOpen,
+    contractToDelete,
+    isOSModalOpen,
+    contractForOSModal,
+    osForAttachmentsModal,
+    osToDelete,
+    viewingEvaluationOS,
+  ])
+
   // Delete handling
   const handleDeleteClick = (contract: ContractRecord, e?: React.MouseEvent) => {
     if (e) e.stopPropagation()
@@ -862,7 +900,17 @@ export default function ContractsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col selection:bg-[#8CC63F] selection:text-slate-950">
+    <div
+      onClick={(e) => {
+        // Se o clique ocorreu no backdrop/área externa do container principal (fora do card de conteúdo e fora do header),
+        // e nenhum modal estiver aberto, aciona logout automático por "clique fora".
+        const target = e.target as HTMLElement
+        if (target === e.currentTarget || target.dataset?.backdropLogout === 'true') {
+          handleLogout()
+        }
+      }}
+      className="min-h-screen bg-slate-900 text-slate-100 flex flex-col selection:bg-[#8CC63F] selection:text-slate-950"
+    >
       {/* Top Header */}
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-30">
         <div className="container mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-4">
@@ -1977,7 +2025,11 @@ export default function ContractsPage() {
 
       {/* Modal: Create / Edit Contract */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-lg rounded-2xl shadow-2xl">
+        <DialogContent
+          onPointerDownOutside={() => handleLogout()}
+          onEscapeKeyDown={() => handleLogout()}
+          className="bg-slate-900 border-slate-800 text-white max-w-lg rounded-2xl shadow-2xl"
+        >
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
               <FileText className="w-5 h-5 text-[#8CC63F]" />
@@ -2159,7 +2211,11 @@ export default function ContractsPage() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={!!contractToDelete} onOpenChange={(open) => !open && setContractToDelete(null)}>
-        <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-md rounded-2xl shadow-2xl">
+        <DialogContent
+          onPointerDownOutside={() => handleLogout()}
+          onEscapeKeyDown={() => handleLogout()}
+          className="bg-slate-900 border-slate-800 text-white max-w-md rounded-2xl shadow-2xl"
+        >
           <DialogHeader>
             <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mb-2">
               <AlertTriangle className="w-5 h-5" />
@@ -2208,7 +2264,11 @@ export default function ContractsPage() {
 
       {/* ================= MODAL: CADASTRO / EDIÇÃO DE ORDEM DE SERVIÇO (OS) ================= */}
       <Dialog open={isOSModalOpen} onOpenChange={setIsOSModalOpen}>
-        <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-lg rounded-2xl shadow-2xl">
+        <DialogContent
+          onPointerDownOutside={() => handleLogout()}
+          onEscapeKeyDown={() => handleLogout()}
+          className="bg-slate-900 border-slate-800 text-white max-w-lg rounded-2xl shadow-2xl"
+        >
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
               <Layers className="w-5 h-5 text-[#8CC63F]" />
@@ -2735,11 +2795,16 @@ export default function ContractsPage() {
 
       {/* ================= MODAL: LISTAGEM DE TODAS AS OS DO CONTRATO ================= */}
       <Dialog
-        open={!!contractForOSModal}
+        open={Boolean(contractForOSModal)}
         onOpenChange={(open) => !open && setContractForOSModal(null)}
       >
-        <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-3xl rounded-2xl shadow-2xl max-h-[85vh] flex flex-col">
+        <DialogContent
+          onPointerDownOutside={() => handleLogout()}
+          onEscapeKeyDown={() => handleLogout()}
+          className="bg-slate-900 border-slate-800 text-white max-w-3xl rounded-2xl shadow-2xl max-h-[85vh] flex flex-col"
+        >
           <DialogHeader className="pb-3 border-b border-slate-800">
+            {' '}
             <div className="flex items-center justify-between gap-4">
               <div>
                 <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
@@ -3052,7 +3117,11 @@ export default function ContractsPage() {
 
       {/* ================= MODAL: CONFIRMAÇÃO DE EXCLUSÃO DE OS ================= */}
       <Dialog open={!!osToDelete} onOpenChange={(open) => !open && setOsToDelete(null)}>
-        <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-md rounded-2xl shadow-2xl">
+        <DialogContent
+          onPointerDownOutside={() => handleLogout()}
+          onEscapeKeyDown={() => handleLogout()}
+          className="bg-slate-900 border-slate-800 text-white max-w-md rounded-2xl shadow-2xl"
+        >
           <DialogHeader>
             <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mb-2">
               <AlertTriangle className="w-5 h-5" />
@@ -3099,7 +3168,7 @@ export default function ContractsPage() {
 
       {/* ================= MODAL DEDICADO: GERENCIAR ANEXOS ================= */}
       <Dialog
-        open={!!osForAttachmentsModal}
+        open={Boolean(osForAttachmentsModal)}
         onOpenChange={(open) => {
           if (!open) {
             setOsForAttachmentsModal(null)
@@ -3109,8 +3178,13 @@ export default function ContractsPage() {
           }
         }}
       >
-        <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-2xl rounded-2xl shadow-2xl">
+        <DialogContent
+          onPointerDownOutside={() => handleLogout()}
+          onEscapeKeyDown={() => handleLogout()}
+          className="bg-slate-900 border-slate-800 text-white max-w-2xl rounded-2xl shadow-2xl"
+        >
           <DialogHeader className="pb-3 border-b border-slate-800">
+            {' '}
             <div className="flex items-center gap-2 text-xs font-mono text-[#8CC63F] uppercase tracking-wider">
               <FileUp className="w-4 h-4" />
               <span>Armazenamento Skip Cloud</span>

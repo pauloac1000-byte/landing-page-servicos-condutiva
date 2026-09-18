@@ -32,7 +32,14 @@ export function PasswordGate({
   const handleLogin = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     if (inputPassword === CONDUTIVA_EXPECTED_PASSWORD) {
-      sessionStorage.setItem(CONDUTIVA_SESSION_AUTH_KEY, 'true')
+      // Sessão estritamente em memória: expurgar resíduos antigos e não persistir no sessionStorage
+      try {
+        localStorage.removeItem(CONDUTIVA_SESSION_AUTH_KEY)
+        sessionStorage.removeItem(CONDUTIVA_SESSION_AUTH_KEY)
+      } catch {
+        // no-op
+      }
+      setInputPassword('')
       setPasswordError('')
       onAuthenticated()
       toast({
@@ -95,7 +102,7 @@ export function PasswordGate({
             </CardHeader>
 
             <CardContent className="pt-4">
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} autoComplete="off" className="space-y-4">
                 <div className="space-y-1.5">
                   <label
                     htmlFor="gate-password-input"
@@ -116,6 +123,7 @@ export function PasswordGate({
                         setInputPassword(e.target.value)
                         if (passwordError) setPasswordError('')
                       }}
+                      autoComplete="new-password"
                       autoFocus
                       className={`pl-9 pr-10 bg-slate-950 border ${
                         passwordError

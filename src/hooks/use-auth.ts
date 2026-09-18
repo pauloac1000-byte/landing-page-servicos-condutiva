@@ -16,8 +16,25 @@ export function useAuth() {
     const unsubscribe = subscribeToAuthChange((updated) => {
       setUser(updated)
     })
+
+    // Medida de segurança réplica da Área do Cliente:
+    // Ao descarregar a página (F5, fechar aba, fechar janela ou navegar para fora),
+    // expurgar a sessão e deslogar imediatamente. A sessão vive exclusivamente na memória.
+    const handleUnload = () => {
+      try {
+        serviceLogout()
+      } catch {
+        // no-op
+      }
+    }
+
+    window.addEventListener('beforeunload', handleUnload)
+    window.addEventListener('pagehide', handleUnload)
+
     return () => {
       unsubscribe()
+      window.removeEventListener('beforeunload', handleUnload)
+      window.removeEventListener('pagehide', handleUnload)
     }
   }, [])
 

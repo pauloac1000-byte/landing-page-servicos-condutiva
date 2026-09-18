@@ -9,6 +9,10 @@ import CSATAccessPage from './pages/Avaliacao'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
 import { ClienteAuthProvider } from '@/contexts/ClienteAuthContext'
+import { purgeAuthStorage } from '@/services/auth'
+
+// Limpeza preventiva de chaves legadas e resíduos de storage na inicialização da aplicação
+purgeAuthStorage()
 
 const App = () => (
   <ClienteAuthProvider>
