@@ -122,28 +122,6 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               </div>
 
               {/* Bloco de Preço com Gradiente Verde Profundo */}
-              <div
-                className="mt-5 rounded-2xl p-4 text-white text-center relative overflow-hidden"
-                style={{
-                  background: 'linear-gradient(135deg, #5A9E32 0%, #4d7c0f 100%)',
-                  boxShadow: '0 8px 20px -4px rgba(90, 158, 50, 0.4)',
-                }}
-              >
-                <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
-                <span className="text-[11px] font-medium text-white/80 line-through block tracking-wide">
-                  De R$ 1890,00
-                </span>
-                <span className="text-[11px] font-medium text-white/90 uppercase tracking-wider block mt-0.5">
-                  por R$
-                </span>
-                <div className="text-3xl sm:text-[2.1rem] font-black tracking-tight leading-none mt-1">
-                  1.490,00
-                  <span className="text-base sm:text-lg font-bold text-white/90">/mês</span>
-                </div>
-                <span className="text-[11px] text-white/90 block mt-1 font-mono">
-                  por equipamento
-                </span>
-              </div>
             </div>
 
             {/* Corpo: Itens Inclusos */}
@@ -372,28 +350,6 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               </div>
 
               {/* Bloco de Preço com Gradiente Sólido Dourado */}
-              <div
-                className="mt-5 rounded-2xl p-4 text-white text-center relative overflow-hidden"
-                style={{
-                  background: 'linear-gradient(135deg, #F57F17 0%, #D84315 100%)',
-                  boxShadow: '0 8px 24px -4px rgba(245, 127, 23, 0.45)',
-                }}
-              >
-                <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                <span className="text-[11px] font-medium text-amber-200/90 line-through block tracking-wide">
-                  De R$ 2390,00
-                </span>
-                <span className="text-[11px] font-medium text-amber-100 uppercase tracking-wider block mt-0.5">
-                  por R$
-                </span>
-                <div className="text-3xl sm:text-[2.25rem] font-black tracking-tight leading-none mt-1">
-                  1.990,00
-                  <span className="text-base sm:text-lg font-bold text-amber-100">/mês</span>
-                </div>
-                <span className="text-[11px] text-amber-100/90 block mt-1 font-mono">
-                  por equipamento
-                </span>
-              </div>
             </div>
 
             {/* Corpo: Itens Inclusos + Bônus */}
@@ -637,29 +593,6 @@ export function ServiceLevelsSection({ onSelectPlan }: ServiceLevelsProps) {
               </div>
 
               {/* Bloco de Preço com Gradiente Verde Profundo */}
-              <div
-                className="mt-5 rounded-2xl p-4 text-white text-center relative overflow-hidden"
-                style={{
-                  background: 'linear-gradient(135deg, #5A9E32 0%, #4d7c0f 100%)',
-                  boxShadow: '0 8px 20px -4px rgba(90, 158, 50, 0.4)',
-                }}
-              >
-                <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
-                <span className="text-[11px] font-medium text-white/80 line-through block tracking-wide">
-                  De R$ 6090,00
-                </span>
-                <span className="text-[11px] font-medium text-white/90 uppercase tracking-wider block mt-0.5">
-                  por R$
-                </span>
-                <div className="text-3xl sm:text-[2.1rem] font-black tracking-tight leading-none mt-1">
-                  5.690,00
-                  <span className="text-base sm:text-lg font-bold text-white/90">/mês</span>
-                </div>
-                <p className="text-[11px] text-white/90 leading-snug mt-2.5 max-w-[280px] mx-auto">
-                  Consulte nosso time comercial, o valor final será definido após uma avaliação dos
-                  equipamentos — considerando quantidade e condições de cada um.
-                </p>
-              </div>
             </div>
 
             {/* Corpo: Itens Inclusos */}
