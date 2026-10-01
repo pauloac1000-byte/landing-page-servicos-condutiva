@@ -118,6 +118,7 @@ export default function ContractsPage() {
     contrato_id: '',
     data: new Date().toISOString().slice(0, 10),
     status: 'aberta',
+    situacao_questionario: 'pendente',
     observacoes: '',
     arquivo: null,
     relatorio_arquivo: null,
@@ -426,9 +427,6 @@ export default function ContractsPage() {
     if (!formData.contractNumber.trim()) {
       errors.contractNumber = 'Número do contrato é obrigatório.'
     }
-    if (!formData.serviceOrderNumber.trim()) {
-      errors.serviceOrderNumber = 'Número da OS é obrigatório.'
-    }
     if (!formData.clientName.trim()) {
       errors.clientName = 'Nome do cliente ou empresa é obrigatório.'
     }
@@ -439,7 +437,7 @@ export default function ContractsPage() {
       errors.clientEmail = 'Informe um endereço de e-mail válido.'
     }
     if (!formData.technicianName.trim()) {
-      errors.technicianName = 'Técnico da Condutiva responsável é obrigatório.'
+      errors.technicianName = 'Responsável Condutiva é obrigatório.'
     }
 
     setFormErrors(errors)
@@ -456,6 +454,7 @@ export default function ContractsPage() {
       if (editingContract) {
         const updated = await updateContract(editingContract.id, formData)
         setContracts((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
+        setIsFormOpen(false)
         toast({
           title: 'Contrato atualizado',
           description: `Os dados do contrato ${updated.contract_number} foram salvos com sucesso.`,
@@ -463,12 +462,24 @@ export default function ContractsPage() {
       } else {
         const created = await createContract(formData)
         setContracts((prev) => [created, ...prev])
+        // Atualiza a lista de clientes para vincular OS imediatamente
+        loadOSData(true)
+        setIsFormOpen(false)
         toast({
-          title: 'Contrato cadastrado',
-          description: `Contrato ${created.contract_number} / OS ${created.service_order_number} cadastrado com sucesso.`,
+          title: 'Contrato cadastrado com sucesso',
+          description: `Contrato ${created.contract_number} cadastrado. Deseja criar uma OS agora?`,
+          action: (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleOpenCreateOSModal(created)}
+              className="bg-[#8CC63F] text-slate-950 hover:bg-[#7ab334] font-bold text-xs h-8 border-none"
+            >
+              Criar Nova OS
+            </Button>
+          ),
         })
       }
-      setIsFormOpen(false)
     } catch (err: unknown) {
       console.error('Error saving contract:', err)
       toast({
@@ -577,6 +588,7 @@ export default function ContractsPage() {
       contrato_id: initialContratoId,
       data: new Date().toISOString().slice(0, 10),
       status: 'aberta',
+      situacao_questionario: 'pendente',
       observacoes: '',
       arquivo: null,
       relatorio_arquivo: null,
@@ -605,6 +617,8 @@ export default function ContractsPage() {
       contrato_id: os.contrato_id,
       data: os.data ? os.data.slice(0, 10) : new Date().toISOString().slice(0, 10),
       status: os.status || 'aberta',
+      situacao_questionario:
+        os.situacao_questionario || (os.avaliacao_realizada ? 'respondido' : 'pendente'),
       observacoes: os.observacoes || '',
       arquivo: null,
       relatorio_arquivo: null,
@@ -727,6 +741,11 @@ export default function ContractsPage() {
 
     if (!osFormData.status) {
       errors.status = 'Selecione o status da OS (aberta ou executada).'
+    }
+
+    if (!osFormData.situacao_questionario) {
+      errors.situacao_questionario =
+        'Selecione a situação do questionário (pendente ou respondido).'
     }
 
     // Validação de arquivo da OS (se fornecido, deve ser PDF)
@@ -996,7 +1015,7 @@ export default function ContractsPage() {
                 className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs"
               >
                 <Plus className="w-3.5 h-3.5 mr-1.5" />
-                Novo Contrato / OS
+                Novo Contrato
               </Button>
             )}
 
@@ -1237,7 +1256,7 @@ export default function ContractsPage() {
                     <thead>
                       <tr className="border-b border-slate-800 bg-slate-950 text-slate-400 uppercase tracking-wider font-mono text-[11px]">
                         <th className="py-3.5 px-4 font-semibold">Ordem de Serviço (OS)</th>
-                        <th className="py-3.5 px-4 font-semibold">Contrato / Cliente</th>
+                        <th className="py-3.5 px-4 font-semibold">Contrato Vinculado</th>
                         <th className="py-3.5 px-4 font-semibold">Técnico / Data</th>
                         <th className="py-3.5 px-4 font-semibold">Status</th>
                         <th className="py-3.5 px-4 font-semibold">Anexos</th>
@@ -1304,15 +1323,15 @@ export default function ContractsPage() {
                                   </Badge>
                                 )}
 
-                                {isAvaliada ? (
+                                {os.situacao_questionario === 'respondido' || isAvaliada ? (
                                   <span className="text-[10px] text-emerald-400 font-mono inline-flex items-center gap-1">
                                     <CheckCircle2 className="w-2.5 h-2.5" />
-                                    CSAT Respondido
+                                    Questionário Respondido
                                   </span>
                                 ) : (
                                   <span className="text-[10px] text-slate-500 font-mono inline-flex items-center gap-1">
                                     <Clock className="w-2.5 h-2.5" />
-                                    CSAT Pendente
+                                    Questionário Pendente
                                   </span>
                                 )}
                               </div>
@@ -1634,220 +1653,112 @@ export default function ContractsPage() {
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
                       <tr className="border-b border-slate-800 bg-slate-950 text-slate-400 uppercase tracking-wider font-mono text-[11px]">
-                        <th className="py-3.5 px-4 font-semibold">Contrato / OS</th>
+                        <th className="py-3.5 px-4 font-semibold">Contrato</th>
+                        <th className="py-3.5 px-4 font-semibold">OS Vinculadas</th>
                         <th className="py-3.5 px-4 font-semibold">Cliente / Empresa</th>
                         <th className="py-3.5 px-4 font-semibold">E-mail do Cliente</th>
-                        <th className="py-3.5 px-4 font-semibold">Técnico Condutiva</th>
-                        <th className="py-3.5 px-4 font-semibold text-center">
-                          Situação do Questionário
-                        </th>
+                        <th className="py-3.5 px-4 font-semibold">Responsável Condutiva</th>
                         <th className="py-3.5 px-4 font-semibold">Data</th>
                         <th className="py-3.5 px-4 font-semibold text-right">Ações</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60">
-                      {filteredContracts.map((item) => (
-                        <tr key={item.id} className="hover:bg-slate-800/30 transition-colors group">
-                          {/* Contract & OS numbers linked to client */}
-                          <td className="py-3.5 px-4">
-                            <div className="flex flex-col gap-1.5">
+                      {filteredContracts.map((item) => {
+                        const osList = getOSDoContrato(item)
+                        return (
+                          <tr
+                            key={item.id}
+                            className="hover:bg-slate-800/30 transition-colors group"
+                          >
+                            {/* Contract number */}
+                            <td className="py-3.5 px-4">
                               <span className="font-bold text-white font-mono text-sm flex items-center gap-1.5">
                                 <span className="w-2 h-2 rounded-full bg-[#8CC63F]" />
                                 {item.contract_number}
                               </span>
+                            </td>
 
-                              {/* Múltiplas OS do Contrato */}
-                              <div className="pl-3.5 flex flex-wrap items-center gap-1.5">
-                                {(() => {
-                                  const osList = getOSDoContrato(item)
-                                  if (osList.length === 0) {
-                                    return (
-                                      <span className="text-slate-400 font-mono text-[11px]">
-                                        OS:{' '}
-                                        <strong className="text-slate-200">
-                                          {item.service_order_number}
-                                        </strong>
-                                      </span>
-                                    )
-                                  }
+                            {/* OS Vinculadas Badge */}
+                            <td className="py-3.5 px-4">
+                              <Badge className="bg-[#8CC63F]/15 text-[#8CC63F] border border-[#8CC63F]/30 font-mono text-xs font-semibold py-0.5 px-2.5">
+                                {osList.length} OS
+                              </Badge>
+                            </td>
 
-                                  return (
-                                    <>
-                                      <div className="flex flex-wrap gap-1">
-                                        {osList.slice(0, 3).map((os) => {
-                                          const csatResp = getCSATDaOS(os.numero_os)
-                                          const isAvaliada = Boolean(
-                                            os.avaliacao_realizada || csatResp,
-                                          )
-                                          return (
-                                            <button
-                                              key={os.id}
-                                              type="button"
-                                              onClick={(e) => {
-                                                e.stopPropagation()
-                                                setViewingEvaluationOS(os)
-                                              }}
-                                              title={`OS ${os.numero_os} - Avaliação: ${
-                                                isAvaliada ? 'Respondida' : 'Não respondida'
-                                              }. Clique para ver detalhes.`}
-                                              className={`inline-flex items-center gap-1 font-mono text-[10px] px-2 py-0.5 rounded-md border font-semibold transition hover:scale-105 ${
-                                                isAvaliada
-                                                  ? 'bg-emerald-950/70 border-emerald-600/70 text-emerald-300'
-                                                  : 'bg-slate-900 border-slate-700 text-slate-300'
-                                              }`}
-                                            >
-                                              <span
-                                                className={`w-1.5 h-1.5 rounded-full ${
-                                                  isAvaliada ? 'bg-emerald-400' : 'bg-slate-500'
-                                                }`}
-                                              />
-                                              <span>{os.numero_os}</span>
-                                              {os.arquivo && (
-                                                <FileText className="w-2.5 h-2.5 opacity-70" />
-                                              )}
-                                            </button>
-                                          )
-                                        })}
-                                        {osList.length > 3 && (
-                                          <span className="text-[10px] text-slate-400 font-mono self-center">
-                                            +{osList.length - 3}
-                                          </span>
-                                        )}
-                                      </div>
-                                      <button
-                                        type="button"
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          setContractForOSModal(item)
-                                        }}
-                                        className="text-[10px] text-[#8CC63F] hover:underline font-mono ml-1 inline-flex items-center gap-0.5"
-                                        title="Ver todas as Ordens de Serviço deste contrato e respostas de avaliação"
-                                      >
-                                        <span>({osList.length} OS)</span>
-                                      </button>
-                                    </>
-                                  )
-                                })()}
+                            {/* Client / Company */}
+                            <td className="py-3.5 px-4">
+                              <div className="flex items-center gap-2">
+                                <Building2 className="w-4 h-4 text-slate-500 shrink-0" />
+                                <span className="font-semibold text-slate-200 text-sm">
+                                  {item.client_name}
+                                </span>
                               </div>
-                            </div>
-                          </td>
+                            </td>
 
-                          {/* Client / Company */}
-                          <td className="py-3.5 px-4">
-                            <div className="flex items-center gap-2">
-                              <Building2 className="w-4 h-4 text-slate-500 shrink-0" />
-                              <span className="font-semibold text-slate-200 text-sm">
-                                {item.client_name}
-                              </span>
-                            </div>
-                          </td>
-
-                          {/* Email */}
-                          <td className="py-3.5 px-4">
-                            <a
-                              href={`mailto:${item.client_email}`}
-                              className="flex items-center gap-1.5 text-slate-400 hover:text-[#8CC63F] transition-colors"
-                              title="Enviar e-mail para o cliente"
-                            >
-                              <Mail className="w-3.5 h-3.5 text-slate-500" />
-                              <span className="truncate max-w-[200px]">{item.client_email}</span>
-                            </a>
-                          </td>
-
-                          {/* Technician */}
-                          <td className="py-3.5 px-4">
-                            <div className="flex items-center gap-1.5 text-slate-300">
-                              <UserCheck className="w-3.5 h-3.5 text-[#8CC63F]" />
-                              <span>{item.technician_name}</span>
-                            </div>
-                          </td>
-
-                          {/* Questionnaire status toggle */}
-                          <td className="py-3.5 px-4 text-center">
-                            <button
-                              type="button"
-                              onClick={(e) => handleToggleStatus(item, e)}
-                              disabled={updatingStatusId === item.id}
-                              title="Clique para alternar a situação do questionário"
-                              className="inline-flex items-center gap-1.5 group/btn transition-transform hover:scale-105"
-                            >
-                              {item.questionnaire_status === 'respondido' ? (
-                                <Badge className="bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 gap-1 font-semibold text-[11px] py-1 px-2.5 cursor-pointer">
-                                  {updatingStatusId === item.id ? (
-                                    <Loader2 className="w-3 h-3 animate-spin" />
-                                  ) : (
-                                    <CheckCircle2 className="w-3 h-3" />
-                                  )}
-                                  Respondido
-                                </Badge>
-                              ) : (
-                                <Badge className="bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 gap-1 font-semibold text-[11px] py-1 px-2.5 cursor-pointer">
-                                  {updatingStatusId === item.id ? (
-                                    <Loader2 className="w-3 h-3 animate-spin" />
-                                  ) : (
-                                    <Clock className="w-3 h-3" />
-                                  )}
-                                  Pendente
-                                </Badge>
-                              )}
-                            </button>
-                          </td>
-
-                          {/* Date */}
-                          <td className="py-3.5 px-4 text-slate-400 font-mono text-[11px]">
-                            {formatDate(item.created)}
-                          </td>
-
-                          {/* Actions */}
-                          <td className="py-3.5 px-4 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleOpenCreateOSModal(item)
-                                }}
-                                className="h-8 px-2.5 bg-slate-900 border-slate-700 text-[#8CC63F] hover:bg-[#8CC63F]/10 hover:border-[#8CC63F]/50 text-xs font-semibold gap-1"
-                                title="Cadastrar nova OS para este contrato"
+                            {/* Email */}
+                            <td className="py-3.5 px-4">
+                              <a
+                                href={`mailto:${item.client_email}`}
+                                className="flex items-center gap-1.5 text-slate-400 hover:text-[#8CC63F] transition-colors"
+                                title="Enviar e-mail para o cliente"
                               >
-                                <Plus className="w-3 h-3" />
-                                <span>OS</span>
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setContractForOSModal(item)
-                                }}
-                                className="h-8 w-8 p-0 text-slate-400 hover:text-[#8CC63F] hover:bg-slate-800"
-                                title="Ver e gerenciar todas as OS do contrato"
-                              >
-                                <Layers className="w-3.5 h-3.5" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => handleOpenEditModal(item, e)}
-                                className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-800"
-                                title="Editar contrato"
-                              >
-                                <Pencil className="w-3.5 h-3.5" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => handleDeleteClick(item, e)}
-                                className="h-8 w-8 p-0 text-slate-400 hover:text-red-400 hover:bg-red-950/30"
-                                title="Excluir contrato"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                                <Mail className="w-3.5 h-3.5 text-slate-500" />
+                                <span className="truncate max-w-[200px]">{item.client_email}</span>
+                              </a>
+                            </td>
+
+                            {/* Technician / Responsável Condutiva */}
+                            <td className="py-3.5 px-4">
+                              <div className="flex items-center gap-1.5 text-slate-300">
+                                <UserCheck className="w-3.5 h-3.5 text-[#8CC63F]" />
+                                <span>{item.technician_name}</span>
+                              </div>
+                            </td>
+
+                            {/* Date */}
+                            <td className="py-3.5 px-4 text-slate-400 font-mono text-[11px]">
+                              {formatDate(item.created)}
+                            </td>
+
+                            {/* Actions */}
+                            <td className="py-3.5 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setContractForOSModal(item)
+                                  }}
+                                  className="h-8 px-2.5 bg-slate-900 border-slate-700 text-[#8CC63F] hover:bg-[#8CC63F]/10 hover:border-[#8CC63F]/50 text-xs font-semibold gap-1.5"
+                                  title="Ver todas as OS deste contrato"
+                                >
+                                  <Layers className="w-3.5 h-3.5" />
+                                  <span>Ver OS</span>
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => handleOpenEditModal(item, e)}
+                                  className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-800"
+                                  title="Editar contrato"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => handleDeleteClick(item, e)}
+                                  className="h-8 w-8 p-0 text-slate-400 hover:text-red-400 hover:bg-red-950/30"
+                                  title="Excluir contrato"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -2033,61 +1944,36 @@ export default function ContractsPage() {
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
               <FileText className="w-5 h-5 text-[#8CC63F]" />
-              {editingContract ? 'Editar Contrato & OS' : 'Novo Contrato & Ordem de Serviço'}
+              {editingContract ? 'Editar Contrato' : 'Novo Contrato'}
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-400">
-              O número do contrato e da OS estão associados ao mesmo cliente. Preencha os dados
-              abaixo.
+              Cadastre as informações do contrato e do cliente. As Ordens de Serviço (OS) podem ser
+              adicionadas posteriormente.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmitForm} className="space-y-4 pt-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Contract Number */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-300 flex items-center justify-between">
-                  <span>Nº do Contrato *</span>
-                </label>
-                <Input
-                  placeholder="Ex: CTR-2025-0301"
-                  value={formData.contractNumber}
-                  onChange={(e) => {
-                    setFormData({ ...formData, contractNumber: e.target.value })
-                    if (formErrors.contractNumber) {
-                      setFormErrors({ ...formErrors, contractNumber: '' })
-                    }
-                  }}
-                  className={`bg-slate-950 border ${
-                    formErrors.contractNumber ? 'border-red-500' : 'border-slate-800'
-                  } text-white text-xs h-9 rounded-xl font-mono`}
-                />
-                {formErrors.contractNumber && (
-                  <p className="text-[11px] text-red-400">{formErrors.contractNumber}</p>
-                )}
-              </div>
-
-              {/* Service Order Number */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-300 flex items-center justify-between">
-                  <span>Nº da OS *</span>
-                </label>
-                <Input
-                  placeholder="Ex: OS-9240"
-                  value={formData.serviceOrderNumber}
-                  onChange={(e) => {
-                    setFormData({ ...formData, serviceOrderNumber: e.target.value })
-                    if (formErrors.serviceOrderNumber) {
-                      setFormErrors({ ...formErrors, serviceOrderNumber: '' })
-                    }
-                  }}
-                  className={`bg-slate-950 border ${
-                    formErrors.serviceOrderNumber ? 'border-red-500' : 'border-slate-800'
-                  } text-white text-xs h-9 rounded-xl font-mono`}
-                />
-                {formErrors.serviceOrderNumber && (
-                  <p className="text-[11px] text-red-400">{formErrors.serviceOrderNumber}</p>
-                )}
-              </div>
+            {/* Contract Number */}
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-300 flex items-center justify-between">
+                <span>Nº do Contrato *</span>
+              </label>
+              <Input
+                placeholder="Ex: CTR-2025-0301"
+                value={formData.contractNumber}
+                onChange={(e) => {
+                  setFormData({ ...formData, contractNumber: e.target.value })
+                  if (formErrors.contractNumber) {
+                    setFormErrors({ ...formErrors, contractNumber: '' })
+                  }
+                }}
+                className={`bg-slate-950 border ${
+                  formErrors.contractNumber ? 'border-red-500' : 'border-slate-800'
+                } text-white text-xs h-9 rounded-xl font-mono`}
+              />
+              {formErrors.contractNumber && (
+                <p className="text-[11px] text-red-400">{formErrors.contractNumber}</p>
+              )}
             </div>
 
             {/* Client / Company */}
@@ -2133,49 +2019,25 @@ export default function ContractsPage() {
               )}
             </div>
 
-            {/* Technician & Questionnaire status */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-300">
-                  Técnico Condutiva Responsável *
-                </label>
-                <Input
-                  placeholder="Ex: Rafael Albuquerque"
-                  value={formData.technicianName}
-                  onChange={(e) => {
-                    setFormData({ ...formData, technicianName: e.target.value })
-                    if (formErrors.technicianName) {
-                      setFormErrors({ ...formErrors, technicianName: '' })
-                    }
-                  }}
-                  className={`bg-slate-950 border ${
-                    formErrors.technicianName ? 'border-red-500' : 'border-slate-800'
-                  } text-white text-xs h-9 rounded-xl`}
-                />
-                {formErrors.technicianName && (
-                  <p className="text-[11px] text-red-400">{formErrors.technicianName}</p>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-300">
-                  Situação do Questionário *
-                </label>
-                <Select
-                  value={formData.questionnaireStatus}
-                  onValueChange={(val: QuestionnaireStatus) =>
-                    setFormData({ ...formData, questionnaireStatus: val })
+            {/* Responsável Condutiva */}
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-300">Responsável Condutiva *</label>
+              <Input
+                placeholder="Ex: Rafael Albuquerque"
+                value={formData.technicianName}
+                onChange={(e) => {
+                  setFormData({ ...formData, technicianName: e.target.value })
+                  if (formErrors.technicianName) {
+                    setFormErrors({ ...formErrors, technicianName: '' })
                   }
-                >
-                  <SelectTrigger className="bg-slate-950 border-slate-800 text-white text-xs h-9 rounded-xl">
-                    <SelectValue placeholder="Selecione a situação" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800 text-white">
-                    <SelectItem value="pendente">Pendente</SelectItem>
-                    <SelectItem value="respondido">Respondido</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                }}
+                className={`bg-slate-950 border ${
+                  formErrors.technicianName ? 'border-red-500' : 'border-slate-800'
+                } text-white text-xs h-9 rounded-xl`}
+              />
+              {formErrors.technicianName && (
+                <p className="text-[11px] text-red-400">{formErrors.technicianName}</p>
+              )}
             </div>
 
             <DialogFooter className="pt-3 gap-2">
@@ -2196,12 +2058,10 @@ export default function ContractsPage() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                    Salvando...
+                    Salvando Contrato...
                   </>
-                ) : editingContract ? (
-                  'Salvar Alterações'
                 ) : (
-                  'Cadastrar Contrato'
+                  'Salvar Contrato'
                 )}
               </Button>
             </DialogFooter>
@@ -2220,17 +2080,37 @@ export default function ContractsPage() {
             <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mb-2">
               <AlertTriangle className="w-5 h-5" />
             </div>
-            <DialogTitle className="text-base font-bold text-white">
-              Excluir Contrato & OS?
-            </DialogTitle>
+            <DialogTitle className="text-base font-bold text-white">Excluir Contrato?</DialogTitle>
             <DialogDescription className="text-xs text-slate-400">
               Tem certeza de que deseja remover permanentemente o contrato{' '}
-              <strong className="text-white">{contractToDelete?.contract_number}</strong> (OS{' '}
-              <strong className="text-white">{contractToDelete?.service_order_number}</strong>) do
-              cliente <strong className="text-white">{contractToDelete?.client_name}</strong>? Esta
-              ação não pode ser desfeita.
+              <strong className="text-white">{contractToDelete?.contract_number}</strong> do cliente{' '}
+              <strong className="text-white">{contractToDelete?.client_name}</strong>? Esta ação não
+              pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
+
+          {/* Aviso âmbar se houver OS vinculadas a este contrato */}
+          {(() => {
+            if (!contractToDelete) return null
+            const osVinculadas = getOSDoContrato(contractToDelete)
+            if (osVinculadas.length === 0) return null
+
+            return (
+              <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 p-3 rounded-xl flex items-start gap-2.5 text-xs">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-semibold text-amber-200">
+                    Atenção: este contrato possui {osVinculadas.length}{' '}
+                    {osVinculadas.length === 1 ? 'OS vinculada' : 'OS vinculadas'}.
+                  </p>
+                  <p className="text-[11px] text-amber-300/90 leading-relaxed">
+                    Excluir o contrato deixará essas Ordens de Serviço sem vínculo direto ou poderá
+                    afetar o acesso do cliente na área restrita. Verifique antes de prosseguir.
+                  </p>
+                </div>
+              </div>
+            )
+          })()}
 
           <DialogFooter className="gap-2 pt-2">
             <Button
@@ -2281,33 +2161,45 @@ export default function ContractsPage() {
           </DialogHeader>
 
           <form onSubmit={handleSubmitOSForm} className="space-y-4 pt-2">
-            {/* Contrato Vinculado */}
+            {/* Contrato * (Dropdown obrigatório no topo) */}
             <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-300">Contrato Vinculado *</label>
-              <Select
-                value={osFormData.contrato_id}
-                onValueChange={(val) => {
-                  setOsFormData({ ...osFormData, contrato_id: val })
-                  if (osFormErrors.contrato_id) {
-                    setOsFormErrors({ ...osFormErrors, contrato_id: '' })
-                  }
-                }}
-              >
-                <SelectTrigger
-                  className={`bg-slate-950 border ${
-                    osFormErrors.contrato_id ? 'border-red-500' : 'border-slate-800'
-                  } text-white text-xs h-9 rounded-xl`}
+              <label className="text-xs font-medium text-slate-300">Contrato *</label>
+              {clientesContratos.length === 0 ? (
+                <div className="p-3 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl text-xs space-y-1">
+                  <p className="font-semibold text-amber-200 flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                    Nenhum contrato cadastrado
+                  </p>
+                  <p className="text-[11px] text-amber-300/80">
+                    Cadastre um contrato primeiro antes de criar uma Ordem de Serviço.
+                  </p>
+                </div>
+              ) : (
+                <Select
+                  value={osFormData.contrato_id}
+                  onValueChange={(val) => {
+                    setOsFormData({ ...osFormData, contrato_id: val })
+                    if (osFormErrors.contrato_id) {
+                      setOsFormErrors({ ...osFormErrors, contrato_id: '' })
+                    }
+                  }}
                 >
-                  <SelectValue placeholder="Selecione o contrato..." />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-900 border-slate-800 text-white max-h-56">
-                  {clientesContratos.map((cliente) => (
-                    <SelectItem key={cliente.id} value={cliente.id}>
-                      {cliente.numero_contrato} - {cliente.nome_cliente}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <SelectTrigger
+                    className={`bg-slate-950 border ${
+                      osFormErrors.contrato_id ? 'border-red-500' : 'border-slate-800'
+                    } text-white text-xs h-9 rounded-xl`}
+                  >
+                    <SelectValue placeholder="Selecione o contrato..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-800 text-white max-h-56">
+                    {clientesContratos.map((cliente) => (
+                      <SelectItem key={cliente.id} value={cliente.id}>
+                        {cliente.numero_contrato} — {cliente.nome_cliente}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
               {osFormErrors.contrato_id && (
                 <p className="text-[11px] text-red-400">{osFormErrors.contrato_id}</p>
               )}
@@ -2382,18 +2274,42 @@ export default function ContractsPage() {
                 )}
               </div>
 
-              {/* Técnico Responsável */}
+              {/* Situação do Questionário * */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-300">Técnico Responsável</label>
-                <Input
-                  placeholder="Ex: Rafael Albuquerque"
-                  value={osFormData.tecnico_responsavel || ''}
-                  onChange={(e) =>
-                    setOsFormData({ ...osFormData, tecnico_responsavel: e.target.value })
+                <label className="text-xs font-medium text-slate-300">
+                  Situação do Questionário *
+                </label>
+                <Select
+                  value={osFormData.situacao_questionario || 'pendente'}
+                  onValueChange={(val: QuestionnaireStatus) =>
+                    setOsFormData({ ...osFormData, situacao_questionario: val })
                   }
-                  className="bg-slate-950 border-slate-800 text-white text-xs h-9 rounded-xl"
-                />
+                >
+                  <SelectTrigger className="bg-slate-950 border-slate-800 text-white text-xs h-9 rounded-xl">
+                    <SelectValue placeholder="Selecione a situação" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-800 text-white">
+                    <SelectItem value="pendente">Pendente</SelectItem>
+                    <SelectItem value="respondido">Respondido</SelectItem>
+                  </SelectContent>
+                </Select>
+                {osFormErrors.situacao_questionario && (
+                  <p className="text-[11px] text-red-400">{osFormErrors.situacao_questionario}</p>
+                )}
               </div>
+            </div>
+
+            {/* Técnico Responsável */}
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-300">Técnico Responsável</label>
+              <Input
+                placeholder="Ex: Rafael Albuquerque"
+                value={osFormData.tecnico_responsavel || ''}
+                onChange={(e) =>
+                  setOsFormData({ ...osFormData, tecnico_responsavel: e.target.value })
+                }
+                className="bg-slate-950 border-slate-800 text-white text-xs h-9 rounded-xl"
+              />
             </div>
 
             {/* Descrição do Serviço */}
@@ -2776,16 +2692,16 @@ export default function ContractsPage() {
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmittingOS}
-                className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs cursor-pointer shadow-md shadow-[#8CC63F]/20"
+                disabled={isSubmittingOS || !osFormData.contrato_id}
+                className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs cursor-pointer shadow-md shadow-[#8CC63F]/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmittingOS ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                    Salvando anexos da OS...
+                    Salvando OS...
                   </>
                 ) : (
-                  'Salvar anexos da OS'
+                  'Salvar OS'
                 )}
               </Button>
             </DialogFooter>
