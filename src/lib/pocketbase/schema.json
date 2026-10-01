@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-18T19:40:08.579Z",
+  "generatedAt": "2026-10-01T17:57:11.430Z",
   "collections": [
     {
       "name": "users",
@@ -149,7 +149,7 @@
         {
           "name": "service_order_number",
           "type": "text",
-          "required": true,
+          "required": false,
           "system": false
         },
         {
@@ -553,6 +553,13 @@
           "type": "file",
           "required": false,
           "system": false
+        },
+        {
+          "name": "situacao_questionario",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["pendente", "respondido"]
         }
       ],
       "indexes": [

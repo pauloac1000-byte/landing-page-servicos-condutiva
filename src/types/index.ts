@@ -89,12 +89,13 @@ export type NivelContrato = 'Sentinela Preventivo' | 'Controle Operacional' | 'M
 
 export interface ContractFormData {
   contractNumber: string
-  serviceOrderNumber: string
+  serviceOrderNumber?: string
   clientName: string
   clientEmail: string
   technicianName: string
-  questionnaireStatus: QuestionnaireStatus
+  questionnaireStatus?: QuestionnaireStatus
   nivelContrato?: NivelContrato
+  senha?: string
 }
 
 export interface ContractRecord {
@@ -104,11 +105,11 @@ export interface ContractRecord {
   created: string
   updated: string
   contract_number: string
-  service_order_number: string
+  service_order_number?: string
   client_name: string
   client_email: string
   technician_name: string
-  questionnaire_status: QuestionnaireStatus
+  questionnaire_status?: QuestionnaireStatus
   nivel_contrato?: NivelContrato
 }
 
@@ -143,6 +144,7 @@ export interface OrdemServicoRecord {
   relatorio_arquivo?: string
   observacoes?: string
   avaliacao_realizada?: boolean
+  situacao_questionario?: QuestionnaireStatus
   descricao_servico?: string
   tecnico_responsavel?: string
   relatorio_pdf_url?: string
@@ -156,6 +158,7 @@ export interface OrdemServicoFormData {
   contrato_id: string
   data?: string
   status?: StatusOrdemServico
+  situacao_questionario?: QuestionnaireStatus
   observacoes?: string
   arquivo?: File | null
   relatorio_arquivo?: File | null

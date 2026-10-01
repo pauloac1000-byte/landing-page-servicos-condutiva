@@ -67,7 +67,9 @@ export async function createOrdemServico(data: OrdemServicoFormData): Promise<Or
     const formData = new FormData()
     formData.append('numero_os', data.numero_os.trim())
     formData.append('contrato_id', data.contrato_id)
-    formData.append('avaliacao_realizada', 'false')
+    const isRespondido = data.situacao_questionario === 'respondido'
+    formData.append('avaliacao_realizada', isRespondido ? 'true' : 'false')
+    formData.append('situacao_questionario', data.situacao_questionario || 'pendente')
     if (data.data) {
       formData.append('data', data.data)
     }
@@ -114,10 +116,12 @@ export async function createOrdemServico(data: OrdemServicoFormData): Promise<Or
     return created
   }
 
+  const isRespondido = data.situacao_questionario === 'respondido'
   const payload: Record<string, unknown> = {
     numero_os: data.numero_os.trim(),
     contrato_id: data.contrato_id,
-    avaliacao_realizada: false,
+    avaliacao_realizada: isRespondido,
+    situacao_questionario: data.situacao_questionario || 'pendente',
   }
   if (data.data) payload.data = data.data
   if (data.status) payload.status = data.status
@@ -147,6 +151,13 @@ export async function updateOrdemServico(
     if (data.contrato_id !== undefined) formData.append('contrato_id', data.contrato_id)
     if (data.data !== undefined) formData.append('data', data.data)
     if (data.status !== undefined) formData.append('status', data.status)
+    if (data.situacao_questionario !== undefined) {
+      formData.append('situacao_questionario', data.situacao_questionario)
+      formData.append(
+        'avaliacao_realizada',
+        data.situacao_questionario === 'respondido' ? 'true' : 'false',
+      )
+    }
     if (data.observacoes !== undefined) formData.append('observacoes', data.observacoes.trim())
     if (data.descricao_servico !== undefined)
       formData.append('descricao_servico', data.descricao_servico.trim())
@@ -190,6 +201,10 @@ export async function updateOrdemServico(
   if (data.contrato_id !== undefined) payload.contrato_id = data.contrato_id
   if (data.data !== undefined) payload.data = data.data
   if (data.status !== undefined) payload.status = data.status
+  if (data.situacao_questionario !== undefined) {
+    payload.situacao_questionario = data.situacao_questionario
+    payload.avaliacao_realizada = data.situacao_questionario === 'respondido'
+  }
   if (data.observacoes !== undefined) payload.observacoes = data.observacoes.trim()
   if (data.descricao_servico !== undefined)
     payload.descricao_servico = data.descricao_servico.trim()

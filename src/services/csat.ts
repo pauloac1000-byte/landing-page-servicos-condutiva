@@ -92,6 +92,7 @@ export async function submitCSATResponse(data: CSATSubmissionData): Promise<CSAT
     if (osRec) {
       await pb.collection('ordens_servico').update(osRec.id, {
         avaliacao_realizada: true,
+        situacao_questionario: 'respondido',
       })
     }
   } catch (err) {

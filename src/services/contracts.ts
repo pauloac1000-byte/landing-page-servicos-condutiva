@@ -53,18 +53,41 @@ export async function findContractByNumbers(
  * Creates a new contract & service order record.
  */
 export async function createContract(data: ContractFormData): Promise<ContractRecord> {
+  const contractNumber = data.contractNumber.trim()
   const payload: Record<string, unknown> = {
-    contract_number: data.contractNumber.trim(),
-    service_order_number: data.serviceOrderNumber.trim(),
+    contract_number: contractNumber,
+    service_order_number: data.serviceOrderNumber?.trim() || '',
     client_name: data.clientName.trim(),
     client_email: data.clientEmail.trim().toLowerCase(),
     technician_name: data.technicianName.trim(),
-    questionnaire_status: data.questionnaireStatus,
+    questionnaire_status: data.questionnaireStatus || 'pendente',
   }
   if (data.nivelContrato) {
     payload.nivel_contrato = data.nivelContrato
   }
-  return await pb.collection<ContractRecord>('contracts').create(payload)
+  const createdContract = await pb.collection<ContractRecord>('contracts').create(payload)
+
+  // Sincroniza também com a coleção clientes (Área do Cliente)
+  try {
+    const existingCliente = await pb
+      .collection('clientes')
+      .getFirstListItem(`numero_contrato = '${contractNumber.replace(/'/g, "\\'")}'`)
+      .catch(() => null)
+
+    if (!existingCliente) {
+      await pb.collection('clientes').create({
+        numero_contrato: contractNumber,
+        nome_cliente: data.clientName.trim(),
+        email: data.clientEmail.trim().toLowerCase(),
+        senha: data.senha?.trim() || 'Condutiva@2025',
+        nivel_contrato: data.nivelContrato || 'Controle Operacional',
+      })
+    }
+  } catch (err) {
+    console.warn('Aviso ao sincronizar cliente para Área do Cliente:', err)
+  }
+
+  return createdContract
 }
 
 /**
@@ -85,7 +108,32 @@ export async function updateContract(
     payload.questionnaire_status = data.questionnaireStatus
   if (data.nivelContrato !== undefined) payload.nivel_contrato = data.nivelContrato
 
-  return await pb.collection<ContractRecord>('contracts').update(id, payload)
+  const updatedContract = await pb.collection<ContractRecord>('contracts').update(id, payload)
+
+  // Se houver alteração de nome, email ou plano, sincroniza também na coleção clientes
+  if (data.contractNumber || data.clientName || data.clientEmail || data.nivelContrato) {
+    try {
+      const contractNum = (data.contractNumber || updatedContract.contract_number).trim()
+      const cliente = await pb
+        .collection('clientes')
+        .getFirstListItem(`numero_contrato = '${contractNum.replace(/'/g, "\\'")}'`)
+        .catch(() => null)
+
+      if (cliente) {
+        const clientePayload: Record<string, unknown> = {}
+        if (data.clientName) clientePayload.nome_cliente = data.clientName.trim()
+        if (data.clientEmail) clientePayload.email = data.clientEmail.trim().toLowerCase()
+        if (data.nivelContrato) clientePayload.nivel_contrato = data.nivelContrato
+        if (Object.keys(clientePayload).length > 0) {
+          await pb.collection('clientes').update(cliente.id, clientePayload)
+        }
+      }
+    } catch (err) {
+      console.warn('Aviso ao sincronizar atualização em clientes:', err)
+    }
+  }
+
+  return updatedContract
 }
 
 /**
