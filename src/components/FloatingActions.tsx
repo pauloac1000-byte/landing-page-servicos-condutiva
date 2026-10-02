@@ -1,8 +1,8 @@
 import { COMPANY_INFO } from '@/data/mockData'
 
 export function FloatingActions() {
-  // Uses WhatsApp click-to-chat URL with default phone number: 5519993413270
-  const whatsappNumber = COMPANY_INFO.whatsappRaw || '5519993413270'
+  // Uses WhatsApp click-to-chat URL with default phone number: 551999229137
+  const whatsappNumber = COMPANY_INFO.whatsappRaw || '551999229137'
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
     'Olá! Vim pelo site da Condutiva e gostaria de mais informações sobre a unidade de serviços de vocês.',
   )}`

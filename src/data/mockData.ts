@@ -5,8 +5,8 @@ import prestoBlocosImg from '@/assets/generatedimage1787338313508-d7b92.png'
 
 export const COMPANY_INFO = {
   phoneLandline: '(19) 3032-1751',
-  phoneWhatsapp: '(19) 99341-3270',
-  whatsappRaw: '5519993413270',
+  phoneWhatsapp: '(19) 99922-9137',
+  whatsappRaw: '551999229137',
   email: 'servicos@condutiva.com.br',
   address:
     'Rua José Moreira de Souza, 84 (Parque das Indústrias) - Betel, Paulínia - SP, CEP: 13148-378',
