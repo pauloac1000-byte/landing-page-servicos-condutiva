@@ -29,6 +29,7 @@ import {
   Layers,
   ChevronRight,
   ExternalLink,
+  Contact,
 } from 'lucide-react'
 import {
   getContracts,
@@ -992,6 +993,21 @@ export default function ContractsPage() {
                 Site Principal
               </Button>
             </Link>
+
+            <a
+              href="https://crm-condutiva-servicos.goskip.app"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-slate-900 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 text-xs hidden sm:flex"
+              >
+                <Contact className="w-3.5 h-3.5 mr-1.5" />
+                CRM
+              </Button>
+            </a>
 
             <Button
               variant="outline"
