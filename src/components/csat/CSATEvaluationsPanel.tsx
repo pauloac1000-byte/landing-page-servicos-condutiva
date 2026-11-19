@@ -318,80 +318,80 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
       {/* Resumo no Topo (KPIs) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Total de Avaliações */}
-        <div className="bg-slate-950/80 border border-slate-800/90 rounded-2xl p-4 shadow-lg backdrop-blur">
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-mono text-[#6C757D] uppercase tracking-wider">
               Total de Avaliações
             </span>
-            <div className="w-8 h-8 rounded-lg bg-[#8CC63F]/10 border border-[#8CC63F]/20 flex items-center justify-center text-[#8CC63F]">
+            <div className="w-8 h-8 rounded-lg bg-[#F1F8E9] border border-[#8BC34A]/30 flex items-center justify-center text-[#689F38]">
               <FileCheck2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{stats.total}</span>
-            <span className="text-[11px] text-slate-400">respostas</span>
+            <span className="text-3xl font-black text-[#212529]">{stats.total}</span>
+            <span className="text-[11px] text-[#6C757D]">respostas</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="mt-2 pt-2 border-t border-[#EEF0F2] flex items-center justify-between text-[11px] text-[#6C757D]">
             <span>
-              Completo: <strong className="text-slate-200">{stats.fullCount}</strong>
+              Completo: <strong className="text-[#212529]">{stats.fullCount}</strong>
             </span>
             <span>
-              Rápido: <strong className="text-slate-200">{stats.shortCount}</strong>
+              Rápido: <strong className="text-[#212529]">{stats.shortCount}</strong>
             </span>
           </div>
         </div>
 
         {/* KPI 2: Média Geral de Satisfação */}
-        <div className="bg-slate-950/80 border border-slate-800/90 rounded-2xl p-4 shadow-lg backdrop-blur">
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-mono text-[#6C757D] uppercase tracking-wider">
               Satisfação Média
             </span>
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-              <Star className="w-4 h-4 fill-amber-400" />
+            <div className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-500">
+              <Star className="w-4 h-4 fill-amber-500" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">
+            <span className="text-3xl font-black text-[#212529]">
               {stats.avgSatisfaction > 0 ? stats.avgSatisfaction.toFixed(1) : '—'}
             </span>
-            <span className="text-xs text-slate-400">/ 5.0</span>
+            <span className="text-xs text-[#6C757D]">/ 5.0</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-center gap-1.5 text-[11px] text-slate-400">
-            <div className="flex text-amber-400">
+          <div className="mt-2 pt-2 border-t border-[#EEF0F2] flex items-center gap-1.5 text-[11px] text-[#6C757D]">
+            <div className="flex text-amber-500">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
                   className={`w-3 h-3 ${
                     star <= Math.round(stats.avgSatisfaction)
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'text-slate-700'
+                      ? 'fill-amber-500 text-amber-500'
+                      : 'text-slate-300'
                   }`}
                 />
               ))}
             </div>
-            <span className="text-slate-400 ml-1">Média das notas 1 a 5</span>
+            <span className="text-[#6C757D] ml-1">Média das notas 1 a 5</span>
           </div>
         </div>
 
         {/* KPI 3: NPS Médio e Índice NPS */}
-        <div className="bg-slate-950/80 border border-slate-800/90 rounded-2xl p-4 shadow-lg backdrop-blur">
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-mono text-[#6C757D] uppercase tracking-wider">
               NPS Médio (0 a 10)
             </span>
-            <div className="w-8 h-8 rounded-lg bg-[#8CC63F]/10 border border-[#8CC63F]/20 flex items-center justify-center text-[#8CC63F]">
+            <div className="w-8 h-8 rounded-lg bg-[#F1F8E9] border border-[#8BC34A]/30 flex items-center justify-center text-[#689F38]">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-3">
-            <span className="text-3xl font-black text-[#8CC63F]">
+            <span className="text-3xl font-black text-[#689F38]">
               {stats.total > 0 ? stats.npsAverage.toFixed(1) : '—'}
             </span>
             <div className="text-[11px] font-mono">
-              <span className="text-slate-400">Índice: </span>
+              <span className="text-[#6C757D]">Índice: </span>
               <span
-                className={`font-bold ${stats.npsScoreIndex >= 50 ? 'text-emerald-400' : 'text-amber-400'}`}
+                className={`font-bold ${stats.npsScoreIndex >= 50 ? 'text-emerald-600' : 'text-amber-600'}`}
               >
                 {stats.total > 0
                   ? stats.npsScoreIndex > 0
@@ -401,52 +401,52 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
               </span>
             </div>
           </div>
-          <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px]">
-            <span className="text-emerald-400 font-medium">Promotores: {stats.npsPromoters}</span>
-            <span className="text-amber-400 font-medium">Neutros: {stats.npsPassives}</span>
-            <span className="text-rose-400 font-medium">Detratores: {stats.npsDetractors}</span>
+          <div className="mt-2 pt-2 border-t border-[#EEF0F2] flex items-center justify-between text-[11px]">
+            <span className="text-emerald-600 font-medium">Promotores: {stats.npsPromoters}</span>
+            <span className="text-amber-600 font-medium">Neutros: {stats.npsPassives}</span>
+            <span className="text-rose-600 font-medium">Detratores: {stats.npsDetractors}</span>
           </div>
         </div>
 
         {/* KPI 4: Taxa de Resolução */}
-        <div className="bg-slate-950/80 border border-slate-800/90 rounded-2xl p-4 shadow-lg backdrop-blur">
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-mono text-[#6C757D] uppercase tracking-wider">
               Problema Resolvido
             </span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+            <div className="w-8 h-8 rounded-lg bg-[#F1F8E9] border border-[#8BC34A]/30 flex items-center justify-center text-[#689F38]">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">
+            <span className="text-3xl font-black text-[#212529]">
               {stats.total > 0 ? `${stats.problemResolvedPct}%` : '—'}
             </span>
-            <span className="text-[11px] text-slate-400">de eficácia</span>
+            <span className="text-[11px] text-[#6C757D]">de eficácia</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+          <div className="mt-2 pt-2 border-t border-[#EEF0F2] text-[11px] text-[#6C757D]">
             Resolução completa no primeiro atendimento
           </div>
         </div>
       </div>
 
       {/* Barra de Filtros */}
-      <div className="bg-slate-950/70 border border-slate-800/90 rounded-2xl p-4 backdrop-blur space-y-3">
+      <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm space-y-3">
         <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
           {/* Busca por cliente, contrato, OS, técnico */}
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#ADB5BD] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <Input
               placeholder="Buscar por cliente, empresa, contrato, OS ou técnico..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 text-xs h-10 rounded-xl focus-visible:ring-[#8CC63F]"
+              className="pl-9 bg-white border-[#E5E7EB] text-[#212529] placeholder:text-[#ADB5BD] text-xs h-10 rounded-xl focus-visible:ring-[#8BC34A]"
             />
             {search && (
               <button
                 type="button"
                 onClick={() => setSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#ADB5BD] hover:text-[#6C757D]"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -456,8 +456,8 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
           {/* Filtros: Versão, Resolução, Período */}
           <div className="flex flex-wrap items-center gap-2">
             {/* Versão do questionário */}
-            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl p-1">
-              <span className="text-[11px] font-mono text-slate-400 px-2 hidden sm:inline">
+            <div className="flex items-center gap-1 bg-white border border-[#E5E7EB] rounded-xl p-1 shadow-sm">
+              <span className="text-[11px] font-mono text-[#6C757D] px-2 hidden sm:inline">
                 Versão:
               </span>
               <button
@@ -465,8 +465,8 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                 onClick={() => setVersionFilter('all')}
                 className={`px-2.5 py-1 text-xs rounded-lg font-medium transition ${
                   versionFilter === 'all'
-                    ? 'bg-[#8CC63F] text-slate-950 font-bold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-[#8BC34A] text-[#1F2A16] font-bold hover:bg-[#7AB334]'
+                    : 'text-[#6C757D] hover:text-[#212529] hover:bg-[#F1F8E9]'
                 }`}
               >
                 Todas ({responses.length})
@@ -476,8 +476,8 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                 onClick={() => setVersionFilter('completo')}
                 className={`px-2.5 py-1 text-xs rounded-lg font-medium transition ${
                   versionFilter === 'completo'
-                    ? 'bg-sky-600 text-white font-bold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-blue-100 text-blue-800 font-bold'
+                    : 'text-[#6C757D] hover:text-[#212529] hover:bg-[#F1F8E9]'
                 }`}
               >
                 Completo ({stats.fullCount})
@@ -487,8 +487,8 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                 onClick={() => setVersionFilter('curto')}
                 className={`px-2.5 py-1 text-xs rounded-lg font-medium transition ${
                   versionFilter === 'curto'
-                    ? 'bg-purple-600 text-white font-bold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-purple-100 text-purple-800 font-bold'
+                    : 'text-[#6C757D] hover:text-[#212529] hover:bg-[#F1F8E9]'
                 }`}
               >
                 Rápido ({stats.shortCount})
@@ -499,7 +499,7 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
             <select
               value={resolvedFilter}
               onChange={(e) => setResolvedFilter(e.target.value as 'all' | ProblemResolvedOption)}
-              className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#8CC63F] h-10"
+              className="bg-white border border-[#E5E7EB] text-[#6C757D] text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#8BC34A] h-10"
             >
               <option value="all">Todas Resoluções</option>
               <option value="sim">Resolvido (Sim)</option>
@@ -508,14 +508,14 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
             </select>
 
             {/* Alternar Tabela / Cards */}
-            <div className="hidden sm:flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1 h-10">
+            <div className="hidden sm:flex items-center bg-white border border-[#E5E7EB] rounded-xl p-1 h-10 shadow-sm">
               <button
                 type="button"
                 onClick={() => setViewMode('table')}
                 className={`px-3 py-1 text-xs rounded-lg font-medium transition ${
                   viewMode === 'table'
-                    ? 'bg-slate-800 text-white font-semibold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-[#8BC34A] text-[#1F2A16] font-semibold hover:bg-[#7AB334]'
+                    : 'text-[#6C757D] hover:text-[#212529] hover:bg-[#F1F8E9]'
                 }`}
               >
                 Tabela
@@ -525,8 +525,8 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                 onClick={() => setViewMode('cards')}
                 className={`px-3 py-1 text-xs rounded-lg font-medium transition ${
                   viewMode === 'cards'
-                    ? 'bg-slate-800 text-white font-semibold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-[#8BC34A] text-[#1F2A16] font-semibold hover:bg-[#7AB334]'
+                    : 'text-[#6C757D] hover:text-[#212529] hover:bg-[#F1F8E9]'
                 }`}
               >
                 Cards
@@ -537,34 +537,34 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
               variant="outline"
               size="sm"
               onClick={handleExportCSV}
-              className="bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 text-xs h-10 rounded-xl"
+              className="bg-[#8BC34A] border-none text-[#1F2A16] hover:bg-[#7AB334] hover:text-[#1F2A16] font-bold text-xs h-10 rounded-xl shadow-sm"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-[#8CC63F]" />
+              <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-[#1F2A16]" />
               Exportar CSV
             </Button>
           </div>
         </div>
 
         {/* Linha secundária de filtro por período */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/60 text-xs text-slate-400">
-          <Calendar className="w-3.5 h-3.5 text-slate-500" />
-          <span className="font-mono text-[11px] text-slate-400">Filtrar por Período:</span>
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#EEF0F2] text-xs text-[#6C757D]">
+          <Calendar className="w-3.5 h-3.5 text-[#ADB5BD]" />
+          <span className="font-mono text-[11px] text-[#6C757D]">Filtrar por Período:</span>
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] text-slate-500">De</span>
+            <span className="text-[11px] text-[#ADB5BD]">De</span>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#8CC63F]"
+              className="bg-white border border-[#E5E7EB] text-[#212529] text-xs rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#8BC34A] [color-scheme:light]"
             />
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] text-slate-500">Até</span>
+            <span className="text-[11px] text-[#ADB5BD]">Até</span>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#8CC63F]"
+              className="bg-white border border-[#E5E7EB] text-[#212529] text-xs rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#8BC34A] [color-scheme:light]"
             />
           </div>
 
@@ -573,7 +573,7 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="text-xs text-slate-400 hover:text-white h-7 px-2 ml-auto"
+              className="text-xs text-[#6C757D] hover:text-[#212529] hover:bg-[#F1F8E9] h-7 px-2 ml-auto"
             >
               <X className="w-3 h-3 mr-1" />
               Limpar filtros
@@ -584,15 +584,15 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
 
       {/* Lista de Avaliações */}
       {loading ? (
-        <div className="bg-slate-950/40 border border-slate-800 rounded-2xl p-16 text-center">
-          <Loader2 className="w-8 h-8 text-[#8CC63F] animate-spin mx-auto mb-3" />
-          <p className="text-sm text-slate-400">Carregando avaliações CSAT...</p>
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-16 text-center shadow-sm">
+          <Loader2 className="w-8 h-8 text-[#8BC34A] animate-spin mx-auto mb-3" />
+          <p className="text-sm text-[#6C757D]">Carregando avaliações CSAT...</p>
         </div>
       ) : filteredResponses.length === 0 ? (
-        <div className="bg-slate-950/40 border border-slate-800 rounded-2xl p-12 text-center">
-          <FileCheck2 className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h3 className="text-base font-semibold text-white">Nenhuma avaliação encontrada</h3>
-          <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-12 text-center shadow-sm">
+          <FileCheck2 className="w-12 h-12 text-[#ADB5BD] mx-auto mb-3" />
+          <h3 className="text-base font-semibold text-[#212529]">Nenhuma avaliação encontrada</h3>
+          <p className="text-xs text-[#6C757D] mt-1 max-w-md mx-auto">
             {hasActiveFilters
               ? 'Nenhuma resposta corresponde aos filtros aplicados. Tente ajustar o período ou a busca.'
               : 'Ainda não foram registradas avaliações CSAT no sistema.'}
@@ -603,7 +603,7 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                 variant="outline"
                 size="sm"
                 onClick={clearFilters}
-                className="bg-slate-900 border-slate-700 text-xs"
+                className="bg-white border-[#8BC34A]/50 text-[#5A7A2E] hover:bg-[#F1F8E9] hover:border-[#8BC34A] text-xs"
               >
                 Limpar Todos os Filtros
               </Button>
@@ -612,11 +612,11 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
         </div>
       ) : viewMode === 'table' ? (
         /* Visualização em Tabela */
-        <div className="bg-slate-950/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-800 bg-slate-950 text-slate-400 uppercase tracking-wider font-mono text-[11px]">
+                <tr className="border-b border-[#EEF0F2] bg-white text-[#6C757D] uppercase tracking-wider font-mono text-[11px]">
                   <th className="py-3.5 px-4 font-semibold">Contrato / OS</th>
                   <th className="py-3.5 px-4 font-semibold">Cliente / Empresa</th>
                   <th className="py-3.5 px-4 font-semibold">Data</th>
@@ -627,7 +627,7 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                   <th className="py-3.5 px-4 font-semibold text-right">Ação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-[#EEF0F2]">
                 {filteredResponses.map((item) => {
                   const avgSat = calculateAverageSatisfaction(item)
                   const nps = item.nps_score
@@ -636,18 +636,18 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                     <tr
                       key={item.id}
                       onClick={() => setSelectedResponse(item)}
-                      className="hover:bg-slate-800/40 transition-colors group cursor-pointer"
+                      className="hover:bg-[#F1F8E9] transition-colors group cursor-pointer"
                     >
                       {/* Contrato e OS */}
                       <td className="py-3.5 px-4">
                         <div className="flex flex-col gap-0.5">
-                          <span className="font-bold text-white font-mono text-sm flex items-center gap-1.5 group-hover:text-[#8CC63F] transition-colors">
-                            <span className="w-2 h-2 rounded-full bg-[#8CC63F]" />
+                          <span className="font-bold text-[#212529] font-mono text-sm flex items-center gap-1.5 group-hover:text-[#5A7A2E] transition-colors">
+                            <span className="w-2 h-2 rounded-full bg-[#8BC34A]" />
                             {item.contract_number}
                           </span>
-                          <span className="text-slate-400 font-mono text-[11px] pl-3.5">
+                          <span className="text-[#6C757D] font-mono text-[11px] pl-3.5">
                             OS:{' '}
-                            <strong className="text-slate-200">{item.service_order_number}</strong>
+                            <strong className="text-[#212529]">{item.service_order_number}</strong>
                           </span>
                         </div>
                       </td>
@@ -655,12 +655,12 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                       {/* Cliente / Empresa */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-start gap-2 max-w-xs">
-                          <Building2 className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                          <Building2 className="w-4 h-4 text-[#ADB5BD] shrink-0 mt-0.5" />
                           <div>
-                            <span className="font-semibold text-slate-200 text-sm block">
+                            <span className="font-semibold text-[#212529] text-sm block">
                               {item.client_name}
                             </span>
-                            <span className="text-[11px] text-slate-400">
+                            <span className="text-[11px] text-[#6C757D]">
                               {item.respondent_name}{' '}
                               {item.respondent_role ? `• ${item.respondent_role}` : ''}
                             </span>
@@ -669,9 +669,9 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                       </td>
 
                       {/* Data da Avaliação */}
-                      <td className="py-3.5 px-4 text-slate-400 font-mono text-[11px] whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-[#6C757D] font-mono text-[11px] whitespace-nowrap">
                         <div className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-[#8CC63F]" />
+                          <Calendar className="w-3.5 h-3.5 text-[#8BC34A]" />
                           <span>{formatDateDisplay(item.evaluation_date || item.created)}</span>
                         </div>
                       </td>
@@ -679,11 +679,11 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                       {/* Versão (Completo ou Curto) */}
                       <td className="py-3.5 px-4 text-center whitespace-nowrap">
                         {item.form_version === 'completo' ? (
-                          <Badge className="bg-sky-500/15 text-sky-400 border border-sky-500/30 font-medium text-[10px] py-0.5 px-2">
+                          <Badge className="bg-blue-50 text-blue-700 border border-blue-200 font-medium text-[10px] py-0.5 px-2">
                             Formulário Completo
                           </Badge>
                         ) : (
-                          <Badge className="bg-purple-500/15 text-purple-400 border border-purple-500/30 font-medium text-[10px] py-0.5 px-2">
+                          <Badge className="bg-purple-50 text-purple-700 border border-purple-200 font-medium text-[10px] py-0.5 px-2">
                             Aplicação Rápida
                           </Badge>
                         )}
@@ -694,10 +694,10 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                         <span
                           className={`inline-flex items-center justify-center font-bold font-mono text-xs px-2.5 py-1 rounded-lg border ${
                             nps >= 9
-                              ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                              ? 'bg-green-50 text-green-700 border-green-200'
                               : nps >= 7
-                                ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-                                : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                                ? 'bg-orange-50 text-orange-700 border-orange-200'
+                                : 'bg-rose-50 text-rose-700 border-rose-200'
                           }`}
                         >
                           {nps} / 10
@@ -706,27 +706,29 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
 
                       {/* Média das notas de satisfação (1 a 5) */}
                       <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
-                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                          <span className="font-bold text-white text-xs">{avgSat.toFixed(1)}</span>
-                          <span className="text-[10px] text-slate-500">/ 5</span>
+                        <div className="inline-flex items-center gap-1 bg-[#F8F9FA] px-2.5 py-1 rounded-lg border border-[#E5E7EB]">
+                          <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                          <span className="font-bold text-[#212529] text-xs">
+                            {avgSat.toFixed(1)}
+                          </span>
+                          <span className="text-[10px] text-[#ADB5BD]">/ 5</span>
                         </div>
                       </td>
 
                       {/* Problema resolvido */}
                       <td className="py-3.5 px-4 text-center whitespace-nowrap">
                         {item.problem_resolved === 'sim' ? (
-                          <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 gap-1 text-[11px] py-0.5 px-2">
+                          <Badge className="bg-[#F1F8E9] text-[#5A7A2E] border border-[#8BC34A]/40 gap-1 text-[11px] py-0.5 px-2">
                             <CheckCircle2 className="w-3 h-3" />
                             Sim
                           </Badge>
                         ) : item.problem_resolved === 'nao' ? (
-                          <Badge className="bg-rose-500/15 text-rose-400 border border-rose-500/30 gap-1 text-[11px] py-0.5 px-2">
+                          <Badge className="bg-rose-50 text-rose-700 border border-rose-200 gap-1 text-[11px] py-0.5 px-2">
                             <XCircle className="w-3 h-3" />
                             Não
                           </Badge>
                         ) : (
-                          <Badge className="bg-slate-800 text-slate-400 border border-slate-700 gap-1 text-[11px] py-0.5 px-2">
+                          <Badge className="bg-slate-100 text-[#6C757D] border border-[#E5E7EB] gap-1 text-[11px] py-0.5 px-2">
                             <HelpCircle className="w-3 h-3" />
                             Não se aplica
                           </Badge>
@@ -742,7 +744,7 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                             e.stopPropagation()
                             setSelectedResponse(item)
                           }}
-                          className="h-8 px-2.5 text-[#8CC63F] hover:text-[#8CC63F] hover:bg-[#8CC63F]/10 text-xs font-semibold gap-1"
+                          className="h-8 px-2.5 text-[#5A7A2E] hover:text-[#5A7A2E] hover:bg-[#F1F8E9] text-xs font-semibold gap-1"
                         >
                           <span>Ver Respostas</span>
                           <ChevronRight className="w-3.5 h-3.5" />
@@ -754,12 +756,12 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
               </tbody>
             </table>
           </div>
-          <div className="px-4 py-3 border-t border-slate-800 bg-slate-950/90 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-2">
+          <div className="px-4 py-3 border-t border-[#EEF0F2] bg-[#F8F9FA] text-xs text-[#6C757D] flex flex-wrap items-center justify-between gap-2">
             <span>
-              Exibindo <strong className="text-white">{filteredResponses.length}</strong> de{' '}
-              <strong className="text-white">{responses.length}</strong> avaliações registradas
+              Exibindo <strong className="text-[#212529]">{filteredResponses.length}</strong> de{' '}
+              <strong className="text-[#212529]">{responses.length}</strong> avaliações registradas
             </span>
-            <span className="text-[11px] text-slate-500">
+            <span className="text-[11px] text-[#ADB5BD]">
               Clique em qualquer linha para abrir o detalhe completo com perguntas abertas e
               autorização.
             </span>
@@ -776,96 +778,96 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
               <Card
                 key={item.id}
                 onClick={() => setSelectedResponse(item)}
-                className="bg-slate-950/80 border-slate-800 hover:border-[#8CC63F]/50 transition-all cursor-pointer group shadow-lg flex flex-col justify-between"
+                className="bg-white border-[#E5E7EB] hover:border-[#8BC34A]/60 transition-all cursor-pointer group shadow-sm hover:shadow-md flex flex-col justify-between"
               >
                 <div
                   className={`h-1.5 w-full ${
-                    nps >= 9 ? 'bg-[#8CC63F]' : nps >= 7 ? 'bg-amber-500' : 'bg-rose-500'
+                    nps >= 9 ? 'bg-[#8BC34A]' : nps >= 7 ? 'bg-amber-500' : 'bg-rose-500'
                   }`}
                 />
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="text-xs font-mono text-[#8CC63F] font-bold">
+                      <div className="text-xs font-mono text-[#689F38] font-bold">
                         {item.contract_number}
                       </div>
-                      <div className="text-sm font-semibold text-white mt-0.5 group-hover:text-[#8CC63F] transition-colors">
+                      <div className="text-sm font-semibold text-[#212529] mt-0.5 group-hover:text-[#5A7A2E] transition-colors">
                         {item.client_name}
                       </div>
                     </div>
                     {item.form_version === 'completo' ? (
-                      <Badge className="bg-sky-500/15 text-sky-400 border border-sky-500/30 text-[10px] py-0.5 px-2">
+                      <Badge className="bg-blue-50 text-blue-700 border border-blue-200 text-[10px] py-0.5 px-2">
                         Completo
                       </Badge>
                     ) : (
-                      <Badge className="bg-purple-500/15 text-purple-400 border border-purple-500/30 text-[10px] py-0.5 px-2">
+                      <Badge className="bg-purple-50 text-purple-700 border border-purple-200 text-[10px] py-0.5 px-2">
                         Rápido
                       </Badge>
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 bg-slate-900/70 p-2.5 rounded-xl border border-slate-800 text-xs">
+                  <div className="grid grid-cols-2 gap-2 bg-[#F8F9FA] p-2.5 rounded-xl border border-[#E5E7EB] text-xs">
                     <div>
-                      <span className="text-[10px] text-slate-400 block font-mono">Nota NPS</span>
+                      <span className="text-[10px] text-[#6C757D] block font-mono">Nota NPS</span>
                       <span
                         className={`font-bold font-mono text-sm ${
                           nps >= 9
-                            ? 'text-emerald-400'
+                            ? 'text-emerald-600'
                             : nps >= 7
-                              ? 'text-amber-400'
-                              : 'text-rose-400'
+                              ? 'text-amber-600'
+                              : 'text-rose-600'
                         }`}
                       >
                         {nps} / 10
                       </span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-slate-400 block font-mono">
+                      <span className="text-[10px] text-[#6C757D] block font-mono">
                         Satisfação Média
                       </span>
-                      <span className="font-bold text-white text-sm flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <span className="font-bold text-[#212529] text-sm flex items-center gap-1">
+                        <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
                         {avgSat.toFixed(1)} / 5
                       </span>
                     </div>
                   </div>
 
-                  <div className="space-y-1.5 text-xs text-slate-300">
-                    <div className="flex items-center justify-between text-slate-400">
+                  <div className="space-y-1.5 text-xs text-[#6C757D]">
+                    <div className="flex items-center justify-between text-[#6C757D]">
                       <span>Ordem de Serviço:</span>
-                      <span className="font-mono text-white font-bold">
+                      <span className="font-mono text-[#212529] font-bold">
                         {item.service_order_number}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-slate-400">
+                    <div className="flex items-center justify-between text-[#6C757D]">
                       <span>Problema Resolvido:</span>
                       {item.problem_resolved === 'sim' ? (
-                        <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                        <span className="text-emerald-600 font-semibold flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" /> Sim
                         </span>
                       ) : item.problem_resolved === 'nao' ? (
-                        <span className="text-rose-400 font-semibold flex items-center gap-1">
+                        <span className="text-rose-600 font-semibold flex items-center gap-1">
                           <XCircle className="w-3 h-3" /> Não
                         </span>
                       ) : (
-                        <span className="text-slate-400">Não se aplica</span>
+                        <span className="text-[#6C757D]">Não se aplica</span>
                       )}
                     </div>
-                    <div className="flex items-center justify-between text-slate-400">
+                    <div className="flex items-center justify-between text-[#6C757D]">
                       <span>Técnico:</span>
-                      <span className="text-slate-200">{item.technician_name}</span>
+                      <span className="text-[#212529]">{item.technician_name}</span>
                     </div>
                   </div>
 
                   {item.positive_highlights && (
-                    <div className="text-[11px] text-slate-300 line-clamp-2 italic bg-slate-900/40 p-2 rounded-lg border border-slate-800/60">
+                    <div className="text-[11px] text-[#6C757D] line-clamp-2 italic bg-[#F8F9FA] p-2 rounded-lg border border-[#EEF0F2]">
                       "{item.positive_highlights}"
                     </div>
                   )}
 
-                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500">
+                  <div className="pt-2 border-t border-[#EEF0F2] flex items-center justify-between text-[11px] text-[#ADB5BD]">
                     <span>{formatDateDisplay(item.evaluation_date || item.created)}</span>
-                    <span className="text-[#8CC63F] font-semibold flex items-center gap-0.5">
+                    <span className="text-[#5A7A2E] font-semibold flex items-center gap-0.5">
                       Ver detalhe
                       <ChevronRight className="w-3.5 h-3.5" />
                     </span>
@@ -884,41 +886,41 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
           if (!open) setSelectedResponse(null)
         }}
       >
-        <DialogContent className="bg-slate-950 border-slate-800 text-slate-100 max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl">
+        <DialogContent className="bg-white border-[#E5E7EB] text-[#212529] max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl">
           {selectedResponse && (
             <>
               <DialogHeader>
-                <div className="flex flex-wrap items-center justify-between gap-2 pb-1 border-b border-slate-800/80">
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-1 border-b border-[#EEF0F2]">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-[#8CC63F] uppercase tracking-wider">
+                    <span className="font-mono text-xs font-bold text-[#689F38] uppercase tracking-wider">
                       {selectedResponse.contract_number}
                     </span>
-                    <span className="text-slate-600">•</span>
-                    <span className="font-mono text-xs text-slate-400">
+                    <span className="text-[#ADB5BD]">•</span>
+                    <span className="font-mono text-xs text-[#6C757D]">
                       OS:{' '}
-                      <strong className="text-slate-200">
+                      <strong className="text-[#212529]">
                         {selectedResponse.service_order_number}
                       </strong>
                     </span>
                   </div>
 
                   {selectedResponse.form_version === 'completo' ? (
-                    <Badge className="bg-sky-500/15 text-sky-400 border border-sky-500/30 text-xs">
+                    <Badge className="bg-blue-50 text-blue-700 border border-blue-200 text-xs">
                       Formulário Completo
                     </Badge>
                   ) : (
-                    <Badge className="bg-purple-500/15 text-purple-400 border border-purple-500/30 text-xs">
+                    <Badge className="bg-purple-50 text-purple-700 border border-purple-200 text-xs">
                       Aplicação Rápida
                     </Badge>
                   )}
                 </div>
 
-                <DialogTitle className="text-xl font-bold text-white pt-2">
+                <DialogTitle className="text-xl font-bold text-[#212529] pt-2">
                   {selectedResponse.client_name}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-slate-400 flex flex-wrap items-center gap-3">
+                <DialogDescription className="text-xs text-[#6C757D] flex flex-wrap items-center gap-3">
                   <span className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-[#8CC63F]" />
+                    <Calendar className="w-3.5 h-3.5 text-[#8BC34A]" />
                     Avaliação em{' '}
                     {formatDateDisplay(
                       selectedResponse.evaluation_date || selectedResponse.created,
@@ -927,24 +929,24 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                   <span>•</span>
                   <span>
                     Respondente:{' '}
-                    <strong className="text-slate-300">{selectedResponse.respondent_name}</strong> (
+                    <strong className="text-[#212529]">{selectedResponse.respondent_name}</strong> (
                     {selectedResponse.respondent_role})
                   </span>
                   <span>•</span>
                   <span>
                     Técnico:{' '}
-                    <strong className="text-slate-300">{selectedResponse.technician_name}</strong>
+                    <strong className="text-[#212529]">{selectedResponse.technician_name}</strong>
                   </span>
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-5 pt-3 text-xs">
                 {/* Serviço Avaliado */}
-                <div className="bg-slate-900/80 border border-slate-800 p-3.5 rounded-xl">
-                  <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-1">
+                <div className="bg-[#F8F9FA] border border-[#E5E7EB] p-3.5 rounded-xl">
+                  <span className="text-[11px] font-mono text-[#6C757D] uppercase tracking-wider block mb-1">
                     Serviço Avaliado
                   </span>
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-[#212529]">
                     {selectedResponse.service_evaluated ||
                       'Serviços técnicos especializados Condutiva'}
                   </p>
@@ -953,23 +955,23 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                 {/* Bloco de Indicadores Centrais: Problema Resolvido, NPS e Média */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {/* Resolução */}
-                  <div className="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
-                    <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-1">
+                  <div className="bg-[#F8F9FA] border border-[#E5E7EB] p-3.5 rounded-xl">
+                    <span className="text-[11px] font-mono text-[#6C757D] uppercase tracking-wider block mb-1">
                       Problema Resolvido?
                     </span>
                     <div className="mt-1">
                       {selectedResponse.problem_resolved === 'sim' ? (
-                        <div className="inline-flex items-center gap-1.5 text-emerald-400 font-bold text-sm bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-lg">
+                        <div className="inline-flex items-center gap-1.5 text-[#5A7A2E] font-bold text-sm bg-[#F1F8E9] border border-[#8BC34A]/30 px-2.5 py-1 rounded-lg">
                           <CheckCircle2 className="w-4 h-4" />
                           Sim, resolvido
                         </div>
                       ) : selectedResponse.problem_resolved === 'nao' ? (
-                        <div className="inline-flex items-center gap-1.5 text-rose-400 font-bold text-sm bg-rose-500/10 border border-rose-500/30 px-2.5 py-1 rounded-lg">
+                        <div className="inline-flex items-center gap-1.5 text-rose-700 font-bold text-sm bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg">
                           <XCircle className="w-4 h-4" />
                           Não resolvido
                         </div>
                       ) : (
-                        <div className="inline-flex items-center gap-1.5 text-slate-400 font-bold text-sm bg-slate-800 px-2.5 py-1 rounded-lg">
+                        <div className="inline-flex items-center gap-1.5 text-[#6C757D] font-bold text-sm bg-slate-100 border border-[#E5E7EB] px-2.5 py-1 rounded-lg">
                           <HelpCircle className="w-4 h-4" />
                           Não se aplica
                         </div>
@@ -978,23 +980,23 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                   </div>
 
                   {/* NPS */}
-                  <div className="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
-                    <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-1">
+                  <div className="bg-[#F8F9FA] border border-[#E5E7EB] p-3.5 rounded-xl">
+                    <span className="text-[11px] font-mono text-[#6C757D] uppercase tracking-wider block mb-1">
                       Nota NPS (0 a 10)
                     </span>
                     <div className="mt-1 flex items-baseline gap-2">
                       <span
                         className={`text-2xl font-black font-mono ${
                           selectedResponse.nps_score >= 9
-                            ? 'text-emerald-400'
+                            ? 'text-emerald-600'
                             : selectedResponse.nps_score >= 7
-                              ? 'text-amber-400'
-                              : 'text-rose-400'
+                              ? 'text-amber-600'
+                              : 'text-rose-600'
                         }`}
                       >
                         {selectedResponse.nps_score}
                       </span>
-                      <span className="text-slate-400 text-xs">
+                      <span className="text-[#6C757D] text-xs">
                         {selectedResponse.nps_score >= 9
                           ? 'Promotor'
                           : selectedResponse.nps_score >= 7
@@ -1005,53 +1007,53 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                   </div>
 
                   {/* Satisfação Média */}
-                  <div className="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
-                    <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-1">
+                  <div className="bg-[#F8F9FA] border border-[#E5E7EB] p-3.5 rounded-xl">
+                    <span className="text-[11px] font-mono text-[#6C757D] uppercase tracking-wider block mb-1">
                       Média de Satisfação
                     </span>
                     <div className="mt-1 flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-white">
+                      <span className="text-2xl font-black text-[#212529]">
                         {calculateAverageSatisfaction(selectedResponse).toFixed(1)}
                       </span>
-                      <span className="text-slate-400 text-xs">/ 5.0</span>
+                      <span className="text-[#6C757D] text-xs">/ 5.0</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Grade de Notas Detalhadas (1 a 5) */}
-                <div className="bg-slate-900/40 border border-slate-800 p-4 rounded-xl space-y-3">
-                  <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
+                <div className="bg-[#F8F9FA] border border-[#E5E7EB] p-4 rounded-xl space-y-3">
+                  <span className="text-[11px] font-mono text-[#6C757D] uppercase tracking-wider block">
                     Notas de Satisfação por Dimensão (Escala 1 a 5)
                   </span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="bg-slate-950/70 p-3 rounded-lg border border-slate-800">
-                      <span className="text-slate-400 text-[11px] block">Satisfação Geral</span>
-                      <span className="text-lg font-bold text-white flex items-center gap-1 mt-1">
-                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <div className="bg-white p-3 rounded-lg border border-[#E5E7EB] shadow-sm">
+                      <span className="text-[#6C757D] text-[11px] block">Satisfação Geral</span>
+                      <span className="text-lg font-bold text-[#212529] flex items-center gap-1 mt-1">
+                        <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
                         {selectedResponse.score_general_satisfaction}
                       </span>
                     </div>
 
-                    <div className="bg-slate-950/70 p-3 rounded-lg border border-slate-800">
-                      <span className="text-slate-400 text-[11px] block">Execução Técnica</span>
-                      <span className="text-lg font-bold text-white flex items-center gap-1 mt-1">
-                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <div className="bg-white p-3 rounded-lg border border-[#E5E7EB] shadow-sm">
+                      <span className="text-[#6C757D] text-[11px] block">Execução Técnica</span>
+                      <span className="text-lg font-bold text-[#212529] flex items-center gap-1 mt-1">
+                        <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
                         {selectedResponse.score_technical_execution ?? '—'}
                       </span>
                     </div>
 
-                    <div className="bg-slate-950/70 p-3 rounded-lg border border-slate-800">
-                      <span className="text-slate-400 text-[11px] block">Atendimento</span>
-                      <span className="text-lg font-bold text-white flex items-center gap-1 mt-1">
-                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <div className="bg-white p-3 rounded-lg border border-[#E5E7EB] shadow-sm">
+                      <span className="text-[#6C757D] text-[11px] block">Atendimento</span>
+                      <span className="text-lg font-bold text-[#212529] flex items-center gap-1 mt-1">
+                        <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
                         {selectedResponse.score_customer_service ?? '—'}
                       </span>
                     </div>
 
-                    <div className="bg-slate-950/70 p-3 rounded-lg border border-slate-800">
-                      <span className="text-slate-400 text-[11px] block">Valor Percebido</span>
-                      <span className="text-lg font-bold text-white flex items-center gap-1 mt-1">
-                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <div className="bg-white p-3 rounded-lg border border-[#E5E7EB] shadow-sm">
+                      <span className="text-[#6C757D] text-[11px] block">Valor Percebido</span>
+                      <span className="text-lg font-bold text-[#212529] flex items-center gap-1 mt-1">
+                        <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
                         {selectedResponse.score_perceived_value ?? '—'}
                       </span>
                     </div>
@@ -1060,36 +1062,36 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
 
                 {/* Justificativas do NPS */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-[#8CC63F]">
+                  <h4 className="text-xs font-mono uppercase tracking-wider text-[#689F38]">
                     Fundamentação do NPS & Renovação
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {selectedResponse.nps_reason && (
-                      <div className="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
-                        <span className="text-[11px] font-mono text-slate-400 block mb-1">
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E5E7EB] shadow-sm">
+                        <span className="text-[11px] font-mono text-[#6C757D] block mb-1">
                           Principal motivo da nota NPS:
                         </span>
-                        <p className="text-slate-200 text-xs leading-relaxed whitespace-pre-wrap">
+                        <p className="text-[#212529] text-xs leading-relaxed whitespace-pre-wrap">
                           "{selectedResponse.nps_reason}"
                         </p>
                       </div>
                     )}
                     {selectedResponse.nps_improvement && (
-                      <div className="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
-                        <span className="text-[11px] font-mono text-slate-400 block mb-1">
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E5E7EB] shadow-sm">
+                        <span className="text-[11px] font-mono text-[#6C757D] block mb-1">
                           O que faria a nota ser mais alta:
                         </span>
-                        <p className="text-slate-200 text-xs leading-relaxed whitespace-pre-wrap">
+                        <p className="text-[#212529] text-xs leading-relaxed whitespace-pre-wrap">
                           "{selectedResponse.nps_improvement}"
                         </p>
                       </div>
                     )}
                     {selectedResponse.renewal_intent && (
-                      <div className="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 md:col-span-2">
-                        <span className="text-[11px] font-mono text-slate-400 block mb-1">
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E5E7EB] shadow-sm md:col-span-2">
+                        <span className="text-[11px] font-mono text-[#6C757D] block mb-1">
                           Intenção de renovação ou contratação futura:
                         </span>
-                        <p className="text-slate-200 text-xs leading-relaxed whitespace-pre-wrap">
+                        <p className="text-[#212529] text-xs leading-relaxed whitespace-pre-wrap">
                           "{selectedResponse.renewal_intent}"
                         </p>
                       </div>
@@ -1099,61 +1101,61 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
 
                 {/* Perguntas Abertas e Considerações */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-[#8CC63F]">
+                  <h4 className="text-xs font-mono uppercase tracking-wider text-[#689F38]">
                     Considerações Abertas do Cliente
                   </h4>
                   <div className="space-y-3">
                     {selectedResponse.positive_highlights ? (
-                      <div className="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
-                        <span className="text-[11px] font-mono text-emerald-400 block mb-1 flex items-center gap-1.5">
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E5E7EB] shadow-sm">
+                        <span className="text-[11px] font-mono text-emerald-600 block mb-1 flex items-center gap-1.5">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           Pontos Positivos & Destaques:
                         </span>
-                        <p className="text-slate-200 text-xs leading-relaxed whitespace-pre-wrap">
+                        <p className="text-[#212529] text-xs leading-relaxed whitespace-pre-wrap">
                           {selectedResponse.positive_highlights}
                         </p>
                       </div>
                     ) : (
-                      <div className="bg-slate-900/30 p-2.5 rounded-xl border border-slate-800/50 text-slate-500 italic text-[11px]">
+                      <div className="bg-[#F8F9FA] p-2.5 rounded-xl border border-[#EEF0F2] text-[#ADB5BD] italic text-[11px]">
                         Nenhum ponto positivo descrito.
                       </div>
                     )}
 
                     {selectedResponse.points_to_improve ? (
-                      <div className="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
-                        <span className="text-[11px] font-mono text-amber-400 block mb-1 flex items-center gap-1.5">
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E5E7EB] shadow-sm">
+                        <span className="text-[11px] font-mono text-amber-600 block mb-1 flex items-center gap-1.5">
                           <Info className="w-3.5 h-3.5" />
                           Oportunidades de Melhoria:
                         </span>
-                        <p className="text-slate-200 text-xs leading-relaxed whitespace-pre-wrap">
+                        <p className="text-[#212529] text-xs leading-relaxed whitespace-pre-wrap">
                           {selectedResponse.points_to_improve}
                         </p>
                       </div>
                     ) : (
-                      <div className="bg-slate-900/30 p-2.5 rounded-xl border border-slate-800/50 text-slate-500 italic text-[11px]">
+                      <div className="bg-[#F8F9FA] p-2.5 rounded-xl border border-[#EEF0F2] text-[#ADB5BD] italic text-[11px]">
                         Nenhuma melhoria sugerida.
                       </div>
                     )}
 
                     {selectedResponse.additional_services_needed && (
-                      <div className="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
-                        <span className="text-[11px] font-mono text-sky-400 block mb-1 flex items-center gap-1.5">
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E5E7EB] shadow-sm">
+                        <span className="text-[11px] font-mono text-sky-600 block mb-1 flex items-center gap-1.5">
                           <Sparkles className="w-3.5 h-3.5" />
                           Outros Serviços ou Necessidades Futuras:
                         </span>
-                        <p className="text-slate-200 text-xs leading-relaxed whitespace-pre-wrap">
+                        <p className="text-[#212529] text-xs leading-relaxed whitespace-pre-wrap">
                           {selectedResponse.additional_services_needed}
                         </p>
                       </div>
                     )}
 
                     {selectedResponse.final_comments && (
-                      <div className="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
-                        <span className="text-[11px] font-mono text-slate-400 block mb-1 flex items-center gap-1.5">
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E5E7EB] shadow-sm">
+                        <span className="text-[11px] font-mono text-[#6C757D] block mb-1 flex items-center gap-1.5">
                           <MessageSquare className="w-3.5 h-3.5" />
                           Comentários Finais:
                         </span>
-                        <p className="text-slate-200 text-xs leading-relaxed whitespace-pre-wrap">
+                        <p className="text-[#212529] text-xs leading-relaxed whitespace-pre-wrap">
                           {selectedResponse.final_comments}
                         </p>
                       </div>
@@ -1162,12 +1164,12 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                 </div>
 
                 {/* Autorização de Contato */}
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+                <div className="bg-[#F8F9FA] p-4 rounded-xl border border-[#E5E7EB] flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
+                    <span className="text-[11px] font-mono text-[#6C757D] uppercase tracking-wider block">
                       Autorização para Contato Posterior
                     </span>
-                    <p className="text-xs text-slate-300 mt-0.5">
+                    <p className="text-xs text-[#6C757D] mt-0.5">
                       {selectedResponse.contact_authorized
                         ? 'O cliente autorizou a equipe da Condutiva a entrar em contato sobre esta avaliação.'
                         : 'O cliente optou por NÃO receber contato posterior sobre esta avaliação.'}
@@ -1175,12 +1177,12 @@ export function CSATEvaluationsPanel({ responses, loading, onRefresh }: CSATPane
                   </div>
                   <div>
                     {selectedResponse.contact_authorized ? (
-                      <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs px-3 py-1 gap-1">
+                      <Badge className="bg-[#F1F8E9] text-[#5A7A2E] border border-[#8BC34A]/40 text-xs px-3 py-1 gap-1">
                         <Check className="w-3.5 h-3.5" />
                         Autorizado
                       </Badge>
                     ) : (
-                      <Badge className="bg-slate-800 text-slate-400 border border-slate-700 text-xs px-3 py-1 gap-1">
+                      <Badge className="bg-slate-100 text-[#6C757D] border border-[#E5E7EB] text-xs px-3 py-1 gap-1">
                         <X className="w-3.5 h-3.5" />
                         Não autorizado
                       </Badge>
