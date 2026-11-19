@@ -279,10 +279,10 @@ export default function LeadsPage() {
           handleLogout()
         }
       }}
-      className="min-h-screen bg-slate-900 text-slate-100 flex flex-col selection:bg-[#8CC63F] selection:text-slate-950"
+      className="min-h-screen bg-[#F8F9FA] text-[#212529] flex flex-col selection:bg-[#8BC34A] selection:text-[#1F2A16]"
     >
       {/* Top Navigation Bar */}
-      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-30">
+      <header className="border-b border-[#E5E7EB] bg-white backdrop-blur sticky top-0 z-30">
         <div className="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -290,29 +290,29 @@ export default function LeadsPage() {
               className="flex items-center gap-3 group transition hover:opacity-95"
               title="Voltar à página inicial"
             >
-              <div className="bg-white/95 rounded-xl p-1.5 shadow-md flex items-center justify-center border border-slate-700/60 group-hover:border-[#8CC63F]/50 group-hover:scale-[1.02] transition-all">
+              <div className="bg-white rounded-xl p-1.5 shadow-sm flex items-center justify-center border border-[#E5E7EB] group-hover:border-[#8BC34A]/60 group-hover:scale-[1.02] transition-all">
                 <img
                   src={logoImg}
                   alt="Condutiva Tecnologia"
                   className="h-9 md:h-10 w-auto object-contain"
                 />
               </div>
-              <div className="border-l border-slate-800 pl-3">
-                <span className="text-base md:text-lg font-black tracking-wider block text-white font-display uppercase leading-tight">
+              <div className="border-l border-[#E5E7EB] pl-3">
+                <span className="text-base md:text-lg font-black tracking-wider block text-[#212529] font-display uppercase leading-tight">
                   Painel Comercial
                 </span>
-                <span className="text-[10px] md:text-[11px] text-[#8CC63F] font-mono uppercase tracking-widest block font-semibold">
+                <span className="text-[10px] md:text-[11px] text-[#689F38] font-mono uppercase tracking-widest block font-semibold">
                   SERVIÇOS
                 </span>
               </div>
             </Link>
 
             {/* Navigation Tabs between Leads and Contracts */}
-            <div className="hidden md:flex items-center gap-1 ml-4 pl-4 border-l border-slate-800">
+            <div className="hidden md:flex items-center gap-1 ml-4 pl-4 border-l border-[#E5E7EB]">
               <Button
                 variant="ghost"
                 size="sm"
-                className="bg-[#8CC63F]/15 text-[#8CC63F] font-semibold text-xs gap-1.5 border border-[#8CC63F]/30"
+                className="bg-[#F1F8E9] text-[#689F38] font-semibold text-xs gap-1.5 border border-[#8BC34A]/40"
               >
                 <Users className="w-3.5 h-3.5" />
                 Leads & Diagnósticos
@@ -321,7 +321,7 @@ export default function LeadsPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs gap-1.5"
+                  className="text-[#6C757D] hover:text-[#212529] hover:bg-[#F1F8E9] text-xs gap-1.5"
                 >
                   <FileText className="w-3.5 h-3.5" />
                   Contratos & OS
@@ -332,8 +332,8 @@ export default function LeadsPage() {
 
           <div className="flex items-center gap-2.5">
             {/* Logged user badge */}
-            <div className="hidden sm:flex items-center gap-2 bg-slate-950 border border-slate-800/80 px-2.5 py-1 rounded-xl text-xs">
-              <span className="text-slate-300 font-medium truncate max-w-[160px]">
+            <div className="hidden sm:flex items-center gap-2 bg-white border border-[#E5E7EB] px-2.5 py-1 rounded-xl text-xs">
+              <span className="text-[#212529] font-medium truncate max-w-[160px]">
                 {user?.name || user?.email}
               </span>
             </div>
@@ -342,7 +342,7 @@ export default function LeadsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-slate-900 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 text-xs"
+                className="bg-white border-[#E5E7EB] text-[#6C757D] hover:text-[#212529] hover:bg-[#F1F8E9] text-xs"
               >
                 <Home className="w-3.5 h-3.5 mr-1.5" />
                 Landing Page
@@ -356,7 +356,7 @@ export default function LeadsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-slate-900 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 text-xs"
+                className="bg-white border-[#E5E7EB] text-[#6C757D] hover:text-[#212529] hover:bg-[#F1F8E9] text-xs"
               >
                 <Contact className="w-3.5 h-3.5 mr-1.5" />
                 CRM
@@ -367,7 +367,7 @@ export default function LeadsPage() {
               size="sm"
               onClick={() => loadData()}
               disabled={loading}
-              className="bg-slate-900 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 text-xs"
+              className="bg-white border-[#8BC34A] text-[#689F38] hover:bg-[#F1F8E9] text-xs disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${loading ? 'animate-spin' : ''}`} />
               Atualizar
@@ -375,7 +375,7 @@ export default function LeadsPage() {
             <Button
               size="sm"
               onClick={handleExportCSV}
-              className="bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold text-xs"
+              className="bg-[#8BC34A] hover:bg-[#7CB342] text-[#1F2A16] font-bold text-xs"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" />
               Exportar CSV
@@ -384,7 +384,7 @@ export default function LeadsPage() {
               variant="outline"
               size="sm"
               onClick={handleLogout}
-              className="bg-slate-900 border-slate-700 text-red-400 hover:text-red-300 hover:bg-red-950/30 hover:border-red-900 text-xs ml-1"
+              className="bg-white border-[#E5E7EB] text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300 text-xs ml-1"
               title="Sair do painel restrito"
             >
               <LogOut className="w-3.5 h-3.5 mr-1.5" />
@@ -393,10 +393,10 @@ export default function LeadsPage() {
           </div>
         </div>
         {/* Mobile secondary tab strip */}
-        <div className="md:hidden flex border-t border-slate-800/80 px-4 py-2 gap-2 bg-slate-950/40">
+        <div className="md:hidden flex border-t border-[#E5E7EB] px-4 py-2 gap-2 bg-white/60">
           <Button
             size="sm"
-            className="flex-1 bg-[#8CC63F]/20 text-[#8CC63F] border border-[#8CC63F]/40 text-xs gap-1.5 justify-center font-bold"
+            className="flex-1 bg-[#F1F8E9] text-[#689F38] border border-[#8BC34A]/40 text-xs gap-1.5 justify-center font-bold"
           >
             <Users className="w-3.5 h-3.5" />
             Leads
@@ -405,7 +405,7 @@ export default function LeadsPage() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full text-slate-400 hover:text-white text-xs gap-1.5 justify-center"
+              className="w-full text-[#6C757D] hover:text-[#212529] text-xs gap-1.5 justify-center"
             >
               <FileText className="w-3.5 h-3.5" />
               Contratos & OS
@@ -420,14 +420,14 @@ export default function LeadsPage() {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 mb-1 text-xs font-mono text-[#8CC63F] uppercase tracking-wider">
+              <div className="flex items-center gap-2 mb-1 text-xs font-mono text-[#689F38] uppercase tracking-wider">
                 <Users className="w-4 h-4" />
                 <span>Gestão de Leads & Diagnósticos</span>
               </div>
-              <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+              <h1 className="text-2xl md:text-3xl font-black text-[#212529] tracking-tight">
                 Solicitações de Diagnóstico Técnico
               </h1>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-sm text-[#6C757D] mt-1">
                 Acompanhe em tempo real todos os contatos gerados através dos formulários da landing
                 page.
               </p>
@@ -435,23 +435,23 @@ export default function LeadsPage() {
 
             {/* Quick KPI Stats */}
             <div className="flex items-center gap-3">
-              <div className="bg-slate-950 border border-slate-800 px-4 py-2.5 rounded-xl flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#8CC63F]/10 border border-[#8CC63F]/20 flex items-center justify-center text-[#8CC63F]">
+              <div className="bg-white border border-[#E5E7EB] px-4 py-2.5 rounded-xl flex items-center gap-3 shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-[#F1F8E9] border border-[#8BC34A]/30 flex items-center justify-center text-[#689F38]">
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400 font-medium">Total de Leads</div>
-                  <div className="text-xl font-black text-white">{leads.length}</div>
+                  <div className="text-xs text-[#6C757D] font-medium">Total de Leads</div>
+                  <div className="text-xl font-black text-[#212529]">{leads.length}</div>
                 </div>
               </div>
 
-              <div className="bg-slate-950 border border-slate-800 px-4 py-2.5 rounded-xl flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+              <div className="bg-white border border-[#E5E7EB] px-4 py-2.5 rounded-xl flex items-center gap-3 shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400 font-medium">Com LGPD Ativo</div>
-                  <div className="text-xl font-black text-white">
+                  <div className="text-xs text-[#6C757D] font-medium">Com LGPD Ativo</div>
+                  <div className="text-xl font-black text-[#212529]">
                     {leads.filter((l) => l.lgpd_consent).length}
                   </div>
                 </div>
@@ -461,21 +461,21 @@ export default function LeadsPage() {
         </div>
 
         {/* Filters and Controls */}
-        <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 mb-6 backdrop-blur">
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 mb-6 shadow-sm">
           <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
             {/* Search Input */}
             <div className="relative w-full md:w-96">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#6C757D] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <Input
                 placeholder="Buscar por nome, empresa, e-mail, cidade..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 text-sm h-10 rounded-xl focus-visible:ring-[#8CC63F]"
+                className="pl-10 bg-white border-[#E5E7EB] text-[#212529] placeholder:text-[#ADB5BD] text-sm h-10 rounded-xl focus-visible:ring-[#8BC34A]"
               />
               {search && (
                 <button
                   onClick={() => setSearch('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#6C757D] hover:text-[#212529]"
                 >
                   Limpar
                 </button>
@@ -484,14 +484,14 @@ export default function LeadsPage() {
 
             {/* Segment Filter & View Toggle */}
             <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-end">
-              <div className="flex items-center gap-2 text-xs text-slate-400">
+              <div className="flex items-center gap-2 text-xs text-[#6C757D]">
                 <Filter className="w-3.5 h-3.5" />
                 <span>Segmento:</span>
               </div>
               <select
                 value={segmentFilter}
                 onChange={(e) => setSegmentFilter(e.target.value)}
-                className="bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#8CC63F]"
+                className="bg-white border border-[#E5E7EB] text-[#212529] text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#8BC34A]"
               >
                 <option value="all">Todos os segmentos ({leads.length})</option>
                 {segments.map((s) => (
@@ -502,13 +502,13 @@ export default function LeadsPage() {
               </select>
 
               {/* View Mode Toggle */}
-              <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
+              <div className="flex bg-[#F1F8E9]/60 p-1 rounded-xl border border-[#E5E7EB]">
                 <button
                   onClick={() => setViewMode('table')}
                   className={`px-2.5 py-1 text-xs rounded-lg font-medium transition ${
                     viewMode === 'table'
-                      ? 'bg-slate-800 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-white text-[#212529] shadow-sm border border-[#E5E7EB]'
+                      : 'text-[#6C757D] hover:text-[#212529]'
                   }`}
                 >
                   Tabela
@@ -517,8 +517,8 @@ export default function LeadsPage() {
                   onClick={() => setViewMode('cards')}
                   className={`px-2.5 py-1 text-xs rounded-lg font-medium transition ${
                     viewMode === 'cards'
-                      ? 'bg-slate-800 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-white text-[#212529] shadow-sm border border-[#E5E7EB]'
+                      : 'text-[#6C757D] hover:text-[#212529]'
                   }`}
                 >
                   Cards
@@ -531,17 +531,17 @@ export default function LeadsPage() {
         {/* Lead Listing */}
         {loading ? (
           <div className="py-24 text-center">
-            <RefreshCw className="w-8 h-8 text-[#8CC63F] animate-spin mx-auto mb-3" />
-            <p className="text-slate-400 text-sm">Carregando lista de leads...</p>
+            <RefreshCw className="w-8 h-8 text-[#8BC34A] animate-spin mx-auto mb-3" />
+            <p className="text-[#6C757D] text-sm">Carregando lista de leads...</p>
           </div>
         ) : filteredLeads.length === 0 ? (
-          <Card className="bg-slate-950/60 border-slate-800 text-center py-16">
+          <Card className="bg-white border-[#E5E7EB] text-center py-16 shadow-sm">
             <CardContent className="space-y-3">
-              <div className="w-12 h-12 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 mx-auto">
+              <div className="w-12 h-12 rounded-full bg-[#F1F8E9] border border-[#E5E7EB] flex items-center justify-center text-[#6C757D] mx-auto">
                 <AlertCircle className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-white">Nenhum lead encontrado</h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              <h3 className="text-base font-bold text-[#212529]">Nenhum lead encontrado</h3>
+              <p className="text-xs text-[#6C757D] max-w-sm mx-auto">
                 {search || segmentFilter !== 'all'
                   ? 'Nenhum registro corresponde aos filtros selecionados. Tente limpar os filtros.'
                   : 'Nenhuma solicitação de diagnóstico foi registrada ainda no sistema.'}
@@ -554,7 +554,7 @@ export default function LeadsPage() {
                     setSearch('')
                     setSegmentFilter('all')
                   }}
-                  className="bg-slate-900 border-slate-700 text-xs"
+                  className="bg-white border-[#8BC34A] text-[#689F38] hover:bg-[#F1F8E9] text-xs"
                 >
                   Redefinir Filtros
                 </Button>
@@ -563,10 +563,10 @@ export default function LeadsPage() {
           </Card>
         ) : viewMode === 'table' ? (
           /* Table View */
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+          <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-900/90 text-slate-400 uppercase tracking-wider font-mono border-b border-slate-800">
+                <thead className="bg-[#F8F9FA] text-[#6C757D] uppercase tracking-wider font-mono border-b border-[#E5E7EB]">
                   <tr>
                     <th className="py-3.5 px-4">Data / Hora</th>
                     <th className="py-3.5 px-4">Lead / Contato</th>
@@ -577,31 +577,31 @@ export default function LeadsPage() {
                     <th className="py-3.5 px-4 text-right">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-[#EEF0F2]">
                   {filteredLeads.map((lead) => (
                     <tr
                       key={lead.id}
-                      className="hover:bg-slate-900/50 transition-colors group cursor-pointer"
+                      className="hover:bg-[#F1F8E9]/50 transition-colors group cursor-pointer"
                       onClick={() => setSelectedLead(lead)}
                     >
                       {/* Date */}
-                      <td className="py-3.5 px-4 whitespace-nowrap text-slate-400 font-mono text-[11px]">
+                      <td className="py-3.5 px-4 whitespace-nowrap text-[#6C757D] font-mono text-[11px]">
                         <div className="flex items-center gap-1.5">
-                          <Calendar className="w-3 h-3 text-[#8CC63F]" />
+                          <Calendar className="w-3 h-3 text-[#8BC34A]" />
                           <span>{formatDate(lead.created)}</span>
                         </div>
                       </td>
 
                       {/* Lead / Contact */}
                       <td className="py-3.5 px-4">
-                        <div className="font-bold text-white group-hover:text-[#8CC63F] transition-colors flex items-center gap-1.5">
+                        <div className="font-bold text-[#212529] group-hover:text-[#689F38] transition-colors flex items-center gap-1.5">
                           <span>{lead.full_name}</span>
                         </div>
-                        <div className="text-slate-400 text-[11px] flex items-center gap-2 mt-0.5">
+                        <div className="text-[#6C757D] text-[11px] flex items-center gap-2 mt-0.5">
                           <a
                             href={`mailto:${lead.email}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="hover:text-sky-400 transition flex items-center gap-1"
+                            className="hover:text-sky-600 transition flex items-center gap-1"
                             title="Enviar E-mail"
                           >
                             <Mail className="w-3 h-3" />
@@ -613,7 +613,7 @@ export default function LeadsPage() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="hover:text-emerald-400 transition flex items-center gap-1 text-emerald-400/90 font-mono"
+                            className="hover:text-emerald-600 transition flex items-center gap-1 text-emerald-600/90 font-mono"
                             title="Conversar no WhatsApp"
                           >
                             <Phone className="w-3 h-3" />
@@ -624,13 +624,13 @@ export default function LeadsPage() {
 
                       {/* Company / City */}
                       <td className="py-3.5 px-4">
-                        <div className="font-semibold text-slate-200 flex items-center gap-1">
-                          <Building2 className="w-3 h-3 text-slate-400" />
+                        <div className="font-semibold text-[#212529] flex items-center gap-1">
+                          <Building2 className="w-3 h-3 text-[#6C757D]" />
                           <span>{lead.company}</span>
                         </div>
                         {lead.city_state && (
-                          <div className="text-slate-400 text-[11px] flex items-center gap-1 mt-0.5">
-                            <MapPin className="w-3 h-3 text-amber-500/70" />
+                          <div className="text-[#6C757D] text-[11px] flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3 text-amber-600/80" />
                             <span>{lead.city_state}</span>
                           </div>
                         )}
@@ -641,34 +641,34 @@ export default function LeadsPage() {
                         {lead.segment ? (
                           <Badge
                             variant="outline"
-                            className="bg-slate-900 border-slate-700 text-slate-300 text-[10px] font-normal"
+                            className="bg-white border-[#E5E7EB] text-[#6C757D] text-[10px] font-normal"
                           >
                             {lead.segment}
                           </Badge>
                         ) : (
-                          <span className="text-slate-500 italic text-[11px]">-</span>
+                          <span className="text-[#ADB5BD] italic text-[11px]">-</span>
                         )}
                       </td>
 
                       {/* Equipment count */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {lead.equipment_count ? (
-                          <span className="font-mono text-slate-300 text-[11px] bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800">
+                          <span className="font-mono text-[#6C757D] text-[11px] bg-[#F8F9FA] px-2 py-0.5 rounded border border-[#E5E7EB]">
                             {lead.equipment_count} un.
                           </span>
                         ) : (
-                          <span className="text-slate-500 italic text-[11px]">-</span>
+                          <span className="text-[#ADB5BD] italic text-[11px]">-</span>
                         )}
                       </td>
 
                       {/* Challenge */}
                       <td className="py-3.5 px-4 max-w-xs">
                         <p
-                          className="text-slate-300 truncate text-[11px]"
+                          className="text-[#495057] truncate text-[11px]"
                           title={lead.main_challenge}
                         >
                           {lead.main_challenge || (
-                            <span className="text-slate-500 italic">Não informado</span>
+                            <span className="text-[#ADB5BD] italic">Não informado</span>
                           )}
                         </p>
                       </td>
@@ -680,7 +680,7 @@ export default function LeadsPage() {
                             variant="ghost"
                             size="sm"
                             onClick={(e) => handleDeleteClick(lead, e)}
-                            className="text-slate-400 hover:text-red-400 hover:bg-red-500/10 text-xs h-7 w-7 p-0 transition-colors"
+                            className="text-[#6C757D] hover:text-red-600 hover:bg-red-50 text-xs h-7 w-7 p-0 transition-colors"
                             title={`Excluir lead ${lead.full_name}`}
                             aria-label={`Excluir lead ${lead.full_name}`}
                           >
@@ -693,7 +693,7 @@ export default function LeadsPage() {
                               e.stopPropagation()
                               setSelectedLead(lead)
                             }}
-                            className="text-[#8CC63F] hover:text-[#8CC63F] hover:bg-[#8CC63F]/10 text-xs h-7 px-2"
+                            className="text-[#689F38] hover:text-[#689F38] hover:bg-[#F1F8E9] text-xs h-7 px-2"
                           >
                             Detalhes
                             <ChevronRight className="w-3.5 h-3.5 ml-1" />
@@ -705,12 +705,12 @@ export default function LeadsPage() {
                 </tbody>
               </table>
             </div>
-            <div className="bg-slate-900/60 px-4 py-3 border-t border-slate-800 text-xs text-slate-400 flex items-center justify-between">
+            <div className="bg-[#F8F9FA] px-4 py-3 border-t border-[#EEF0F2] text-xs text-[#6C757D] flex items-center justify-between">
               <span>
                 Exibindo <strong>{filteredLeads.length}</strong> de <strong>{leads.length}</strong>{' '}
                 solicitações
               </span>
-              <span className="text-[11px] text-slate-500 font-mono">
+              <span className="text-[11px] text-[#ADB5BD] font-mono">
                 Ordenado do mais recente para o mais antigo
               </span>
             </div>
@@ -722,13 +722,13 @@ export default function LeadsPage() {
               <Card
                 key={lead.id}
                 onClick={() => setSelectedLead(lead)}
-                className="bg-slate-950 border-slate-800 hover:border-[#8CC63F]/50 transition-all cursor-pointer group flex flex-col justify-between"
+                className="bg-white border-[#E5E7EB] hover:border-[#8BC34A]/60 transition-all cursor-pointer group flex flex-col justify-between shadow-sm"
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
                     <Badge
                       variant="outline"
-                      className="bg-slate-900 border-slate-800 text-[#8CC63F] font-mono text-[10px]"
+                      className="bg-[#F8F9FA] border-[#E5E7EB] text-[#689F38] font-mono text-[10px]"
                     >
                       <Calendar className="w-3 h-3 mr-1" />
                       {formatDate(lead.created)}
@@ -736,63 +736,63 @@ export default function LeadsPage() {
                     {lead.segment && (
                       <Badge
                         variant="secondary"
-                        className="bg-slate-900 text-slate-300 text-[10px]"
+                        className="bg-white text-[#6C757D] border border-[#E5E7EB] text-[10px]"
                       >
                         {lead.segment}
                       </Badge>
                     )}
                   </div>
-                  <CardTitle className="text-base text-white group-hover:text-[#8CC63F] transition-colors mt-2">
+                  <CardTitle className="text-base text-[#212529] group-hover:text-[#689F38] transition-colors mt-2">
                     {lead.full_name}
                   </CardTitle>
-                  <CardDescription className="text-slate-400 text-xs flex items-center gap-1.5 font-medium">
-                    <Building2 className="w-3.5 h-3.5 text-slate-500" />
+                  <CardDescription className="text-[#6C757D] text-xs flex items-center gap-1.5 font-medium">
+                    <Building2 className="w-3.5 h-3.5 text-[#6C757D]" />
                     <span>{lead.company}</span>
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-3 text-xs text-slate-300 pt-0">
-                  <div className="space-y-1.5 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <Mail className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                <CardContent className="space-y-3 text-xs text-[#495057] pt-0">
+                  <div className="space-y-1.5 bg-[#F8F9FA] p-2.5 rounded-lg border border-[#E5E7EB]">
+                    <div className="flex items-center gap-2 text-[#495057]">
+                      <Mail className="w-3.5 h-3.5 text-sky-600 shrink-0" />
                       <span className="truncate">{lead.email}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-slate-300 font-mono">
-                      <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <div className="flex items-center gap-2 text-[#495057] font-mono">
+                      <Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span>{lead.phone}</span>
                     </div>
                     {lead.city_state && (
-                      <div className="flex items-center gap-2 text-slate-400">
-                        <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                      <div className="flex items-center gap-2 text-[#6C757D]">
+                        <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                         <span>{lead.city_state}</span>
                       </div>
                     )}
                   </div>
 
                   {lead.main_challenge && (
-                    <div className="text-slate-400 line-clamp-2 text-[11px] italic bg-slate-900/30 p-2 rounded border border-slate-800/40">
+                    <div className="text-[#6C757D] line-clamp-2 text-[11px] italic bg-[#F8F9FA] p-2 rounded border border-[#EEF0F2]">
                       "{lead.main_challenge}"
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px]">
-                    <span className="text-slate-400">
+                  <div className="flex items-center justify-between pt-2 border-t border-[#EEF0F2] text-[11px]">
+                    <span className="text-[#6C757D]">
                       Equipamentos:{' '}
-                      <strong className="text-slate-200">{lead.equipment_count || 'N/I'}</strong>
+                      <strong className="text-[#212529]">{lead.equipment_count || 'N/I'}</strong>
                     </span>
                     <div className="flex items-center gap-1">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={(e) => handleDeleteClick(lead, e)}
-                        className="text-slate-400 hover:text-red-400 hover:bg-red-500/10 text-xs h-7 px-2 transition-colors"
+                        className="text-[#6C757D] hover:text-red-600 hover:bg-red-50 text-xs h-7 px-2 transition-colors"
                         title={`Excluir lead ${lead.full_name}`}
                         aria-label={`Excluir lead ${lead.full_name}`}
                       >
                         <Trash2 className="w-3.5 h-3.5 mr-1" />
                         Excluir
                       </Button>
-                      <span className="text-[#8CC63F] font-semibold flex items-center gap-0.5 ml-1">
+                      <span className="text-[#689F38] font-semibold flex items-center gap-0.5 ml-1">
                         Ver detalhes
                         <ChevronRight className="w-3 h-3" />
                       </span>
@@ -810,25 +810,25 @@ export default function LeadsPage() {
         <DialogContent
           onPointerDownOutside={() => handleLogout()}
           onEscapeKeyDown={() => handleLogout()}
-          className="bg-slate-950 border-slate-800 text-slate-100 max-w-2xl"
+          className="bg-white border-[#E5E7EB] text-[#212529] max-w-2xl"
         >
           {selectedLead && (
             <>
               <DialogHeader>
-                <div className="flex items-center gap-2 font-mono text-xs text-[#8CC63F] uppercase tracking-wider mb-1">
+                <div className="flex items-center gap-2 font-mono text-xs text-[#689F38] uppercase tracking-wider mb-1">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>Cadastrado em {formatDate(selectedLead.created)}</span>
                 </div>
-                <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
+                <DialogTitle className="text-xl font-bold text-[#212529] flex items-center gap-2">
                   <span>{selectedLead.full_name}</span>
                 </DialogTitle>
-                <DialogDescription className="text-slate-400 text-sm flex items-center gap-1.5">
-                  <Building2 className="w-4 h-4 text-slate-500" />
-                  <span className="font-semibold text-slate-300">{selectedLead.company}</span>
+                <DialogDescription className="text-[#6C757D] text-sm flex items-center gap-1.5">
+                  <Building2 className="w-4 h-4 text-[#6C757D]" />
+                  <span className="font-semibold text-[#495057]">{selectedLead.company}</span>
                   {selectedLead.city_state && (
                     <>
                       <span>•</span>
-                      <MapPin className="w-3.5 h-3.5 text-amber-500" />
+                      <MapPin className="w-3.5 h-3.5 text-amber-600" />
                       <span>{selectedLead.city_state}</span>
                     </>
                   )}
@@ -837,17 +837,17 @@ export default function LeadsPage() {
 
               <div className="space-y-4 my-2 text-xs">
                 {/* Contact Actions Box */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3">
+                <div className="bg-[#F8F9FA] border border-[#E5E7EB] rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3">
                   <div className="space-y-1">
-                    <div className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">
+                    <div className="text-[10px] text-[#6C757D] uppercase font-mono tracking-wider">
                       Canais Diretos de Contato
                     </div>
-                    <div className="text-sm font-bold text-white flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-emerald-400" />
+                    <div className="text-sm font-bold text-[#212529] flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-emerald-600" />
                       <span>{selectedLead.phone}</span>
                     </div>
-                    <div className="text-slate-400 flex items-center gap-2">
-                      <Mail className="w-3.5 h-3.5 text-sky-400" />
+                    <div className="text-[#6C757D] flex items-center gap-2">
+                      <Mail className="w-3.5 h-3.5 text-sky-600" />
                       <span>{selectedLead.email}</span>
                     </div>
                   </div>
@@ -872,7 +872,7 @@ export default function LeadsPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="bg-slate-800 border-slate-700 text-slate-200 hover:text-white text-xs"
+                        className="bg-white border-[#8BC34A] text-[#689F38] hover:bg-[#F1F8E9] text-xs"
                       >
                         <Mail className="w-3.5 h-3.5 mr-1.5" />
                         E-mail
@@ -883,40 +883,40 @@ export default function LeadsPage() {
 
                 {/* Technical Information Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                    <span className="text-slate-400 text-[11px] block mb-1">
+                  <div className="bg-[#F8F9FA] p-3 rounded-xl border border-[#E5E7EB]">
+                    <span className="text-[#6C757D] text-[11px] block mb-1">
                       Segmento de Atuação
                     </span>
-                    <span className="font-semibold text-white text-sm">
+                    <span className="font-semibold text-[#212529] text-sm">
                       {selectedLead.segment || 'Não informado'}
                     </span>
                   </div>
-                  <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                    <span className="text-slate-400 text-[11px] block mb-1">
+                  <div className="bg-[#F8F9FA] p-3 rounded-xl border border-[#E5E7EB]">
+                    <span className="text-[#6C757D] text-[11px] block mb-1">
                       Quantidade de Equipamentos
                     </span>
-                    <span className="font-semibold text-white text-sm font-mono">
+                    <span className="font-semibold text-[#212529] text-sm font-mono">
                       {selectedLead.equipment_count || 'Não informado'}
                     </span>
                   </div>
                 </div>
 
                 {/* Main Challenge Box */}
-                <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 space-y-1.5">
-                  <span className="text-slate-400 text-[11px] font-mono uppercase tracking-wider block">
+                <div className="bg-[#F8F9FA] p-4 rounded-xl border border-[#E5E7EB] space-y-1.5">
+                  <span className="text-[#6C757D] text-[11px] font-mono uppercase tracking-wider block">
                     Desafio Principal / Necessidade Relatada
                   </span>
-                  <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-wrap">
+                  <p className="text-[#495057] text-sm leading-relaxed whitespace-pre-wrap">
                     {selectedLead.main_challenge ||
                       'Nenhuma descrição detalhada informada no formulário.'}
                   </p>
                 </div>
 
                 {/* Metadata & Actions */}
-                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-3 border-t border-slate-800">
+                <div className="flex items-center justify-between text-[11px] text-[#ADB5BD] pt-3 border-t border-[#EEF0F2]">
                   <div className="flex items-center gap-3">
                     <span className="font-mono">ID: {selectedLead.id}</span>
-                    <span className="flex items-center gap-1 text-emerald-400">
+                    <span className="flex items-center gap-1 text-emerald-600">
                       <CheckCircle2 className="w-3 h-3" />
                       Consentimento LGPD
                     </span>
@@ -925,7 +925,7 @@ export default function LeadsPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDeleteClick(selectedLead)}
-                    className="border-red-900/50 bg-red-950/20 text-red-400 hover:bg-red-950/50 hover:text-red-300 hover:border-red-800 text-xs h-8 px-3"
+                    className="border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-300 text-xs h-8 px-3"
                   >
                     <Trash2 className="w-3.5 h-3.5 mr-1.5" />
                     Excluir Lead
@@ -947,20 +947,22 @@ export default function LeadsPage() {
         <DialogContent
           onPointerDownOutside={() => handleLogout()}
           onEscapeKeyDown={() => handleLogout()}
-          className="bg-slate-950 border-slate-800 text-slate-100 max-w-md"
+          className="bg-white border-[#E5E7EB] text-[#212529] max-w-md"
         >
           <DialogHeader>
-            <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-2">
+            <div className="w-12 h-12 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-red-600 mb-2">
               <AlertTriangle className="w-6 h-6" />
             </div>
-            <DialogTitle className="text-lg font-bold text-white">Excluir este lead?</DialogTitle>
-            <DialogDescription className="text-slate-400 text-xs space-y-2 pt-1">
+            <DialogTitle className="text-lg font-bold text-[#212529]">
+              Excluir este lead?
+            </DialogTitle>
+            <DialogDescription className="text-[#6C757D] text-xs space-y-2 pt-1">
               <span>
                 Tem certeza de que deseja apagar permanentemente o lead de{' '}
-                <strong className="text-white font-semibold">{leadToDelete?.full_name}</strong>
+                <strong className="text-[#212529] font-semibold">{leadToDelete?.full_name}</strong>
                 {leadToDelete?.company ? ` (${leadToDelete.company})` : ''}?
               </span>
-              <span className="block text-slate-500 text-[11px] mt-1">
+              <span className="block text-[#ADB5BD] text-[11px] mt-1">
                 Esta ação removerá o registro do banco de dados e não poderá ser desfeita.
               </span>
             </DialogDescription>
@@ -972,7 +974,7 @@ export default function LeadsPage() {
               size="sm"
               onClick={() => setLeadToDelete(null)}
               disabled={isDeleting}
-              className="bg-slate-900 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 text-xs h-9"
+              className="bg-white border-[#8BC34A] text-[#689F38] hover:bg-[#F1F8E9] text-xs h-9"
             >
               Cancelar
             </Button>

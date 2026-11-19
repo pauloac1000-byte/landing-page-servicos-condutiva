@@ -66,26 +66,26 @@ export function AuthGate({
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-[#8CC63F] selection:text-slate-950 relative overflow-hidden">
+    <div className="min-h-screen bg-[#F8F9FA] text-[#212529] flex flex-col justify-between selection:bg-[#8BC34A] selection:text-[#1F2A16] relative overflow-hidden">
       {/* Background ambient accents */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#8CC63F]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#8BC34A]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-10 right-10 w-80 h-80 bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Minimal header */}
-      <header className="border-b border-slate-800/80 bg-slate-950/60 backdrop-blur px-6 py-4 flex items-center justify-between">
+      <header className="border-b border-[#E5E7EB] bg-white/80 backdrop-blur px-6 py-4 flex items-center justify-between">
         <Link
           to="/"
           className="flex items-center gap-3 group transition-opacity hover:opacity-90"
           title="Voltar à página inicial"
         >
-          <div className="bg-white/95 rounded-lg p-1.5 shadow-md flex items-center justify-center border border-slate-700/50 group-hover:border-[#8CC63F]/50 transition-colors">
+          <div className="bg-white rounded-lg p-1.5 shadow-sm flex items-center justify-center border border-[#E5E7EB] group-hover:border-[#8BC34A]/60 transition-colors">
             <img
               src={logoImg}
               alt="Condutiva Tecnologia"
               className="h-8 md:h-9 w-auto object-contain"
             />
           </div>
-          <span className="font-bold tracking-wider text-sm text-white hidden sm:inline-block">
+          <span className="font-bold tracking-wider text-sm text-[#212529] hidden sm:inline-block">
             CONDUTIVA
           </span>
         </Link>
@@ -93,7 +93,7 @@ export function AuthGate({
           <Button
             variant="ghost"
             size="sm"
-            className="text-slate-400 hover:text-white hover:bg-slate-900 text-xs gap-1.5"
+            className="text-[#6C757D] hover:text-[#212529] hover:bg-[#F1F8E9] text-xs gap-1.5"
           >
             <Home className="w-3.5 h-3.5" />
             Voltar ao Site
@@ -104,13 +104,15 @@ export function AuthGate({
       {/* Center Login Box */}
       <main className="container mx-auto px-4 py-12 flex items-center justify-center relative z-10">
         <div className="w-full max-w-md">
-          <Card className="bg-slate-900/90 border-slate-800 shadow-2xl backdrop-blur-xl">
+          <Card className="bg-white border-[#E5E7EB] shadow-md">
             <CardHeader className="text-center pb-2">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-b from-[#8CC63F]/20 to-[#8CC63F]/5 border border-[#8CC63F]/30 mx-auto flex items-center justify-center text-[#8CC63F] shadow-lg mb-3">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-b from-[#F1F8E9] to-white border border-[#8BC34A]/40 mx-auto flex items-center justify-center text-[#689F38] shadow-sm mb-3">
                 <ShieldCheck className="w-7 h-7" />
               </div>
-              <CardTitle className="text-xl font-bold text-white tracking-tight">{title}</CardTitle>
-              <CardDescription className="text-xs text-slate-400 mt-1 leading-relaxed">
+              <CardTitle className="text-xl font-bold text-[#212529] tracking-tight">
+                {title}
+              </CardTitle>
+              <CardDescription className="text-xs text-[#6C757D] mt-1 leading-relaxed">
                 {subtitle}
               </CardDescription>
             </CardHeader>
@@ -121,13 +123,13 @@ export function AuthGate({
                 <div className="space-y-1.5">
                   <label
                     htmlFor="auth-email-input"
-                    className="text-xs font-medium text-slate-300 flex items-center justify-between"
+                    className="text-xs font-medium text-[#212529] flex items-center justify-between"
                   >
                     <span>E-mail Corporativo</span>
-                    <span className="text-[10px] text-slate-500 font-mono">{areaLabel}</span>
+                    <span className="text-[10px] text-[#6C757D] font-mono">{areaLabel}</span>
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <Mail className="w-4 h-4 text-[#ADB5BD] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <Input
                       id="auth-email-input"
                       type="email"
@@ -139,7 +141,7 @@ export function AuthGate({
                       }}
                       autoComplete="off"
                       autoFocus
-                      className="pl-9 pr-3 bg-slate-950 border border-slate-800 focus-visible:ring-[#8CC63F] text-white placeholder:text-slate-600 text-sm h-11 rounded-xl"
+                      className="pl-9 pr-3 bg-white border border-[#E5E7EB] focus-visible:ring-[#8BC34A] text-[#212529] placeholder:text-[#ADB5BD] text-sm h-11 rounded-xl"
                     />
                   </div>
                 </div>
@@ -148,13 +150,13 @@ export function AuthGate({
                 <div className="space-y-1.5">
                   <label
                     htmlFor="auth-password-input"
-                    className="text-xs font-medium text-slate-300 flex items-center justify-between"
+                    className="text-xs font-medium text-[#212529] flex items-center justify-between"
                   >
                     <span>Senha de Acesso</span>
                   </label>
 
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <Lock className="w-4 h-4 text-[#ADB5BD] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <Input
                       id="auth-password-input"
                       type={showPassword ? 'text' : 'password'}
@@ -165,12 +167,12 @@ export function AuthGate({
                         if (errorMsg) setErrorMsg('')
                       }}
                       autoComplete="new-password"
-                      className="pl-9 pr-10 bg-slate-950 border border-slate-800 focus-visible:ring-[#8CC63F] text-white placeholder:text-slate-600 text-sm h-11 rounded-xl"
+                      className="pl-9 pr-10 bg-white border border-[#E5E7EB] focus-visible:ring-[#8BC34A] text-[#212529] placeholder:text-[#ADB5BD] text-sm h-11 rounded-xl"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6C757D] hover:text-[#212529] p-1"
                       title={showPassword ? 'Ocultar senha' : 'Exibir senha'}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -178,7 +180,7 @@ export function AuthGate({
                   </div>
 
                   {errorMsg && (
-                    <div className="flex items-center gap-1.5 text-xs text-red-400 pt-1 font-medium">
+                    <div className="flex items-center gap-1.5 text-xs text-red-600 pt-1 font-medium">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                       <span>{errorMsg}</span>
                     </div>
@@ -188,7 +190,7 @@ export function AuthGate({
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#8CC63F] hover:bg-[#7ab334] text-slate-950 font-bold h-11 rounded-xl shadow-lg shadow-[#8CC63F]/10 transition-all text-sm cursor-pointer"
+                  className="w-full bg-[#8BC34A] hover:bg-[#7CB342] text-[#1F2A16] font-bold h-11 rounded-xl shadow-md shadow-[#8BC34A]/20 transition-all text-sm cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
@@ -202,7 +204,7 @@ export function AuthGate({
               </form>
 
               <div className="mt-4 text-center">
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-[#6C757D]">
                   Acesso restrito exclusivamente a colaboradores autorizados da Condutiva
                   Tecnologia.
                 </p>
@@ -213,7 +215,7 @@ export function AuthGate({
       </main>
 
       {/* Minimal footer */}
-      <footer className="border-t border-slate-800/80 py-4 px-6 text-center text-xs text-slate-500">
+      <footer className="border-t border-[#E5E7EB] bg-white py-4 px-6 text-center text-xs text-[#6C757D]">
         © {new Date().getFullYear()} Condutiva Tecnologia — Todos os direitos reservados.
       </footer>
     </div>

@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 86 54% 51%;
+    --primary: 86 58% 59%;
     --primary-foreground: 222 47% 11%;
 
     --secondary: 210 16% 93%;
@@ -30,15 +30,15 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 16% 88%;
-    --input: 214 16% 88%;
-    --ring: 86 54% 51%;
+    --border: 214 16% 91%;
+    --input: 214 16% 91%;
+    --ring: 86 58% 59%;
 
     --radius: 0.75rem;
   }
 
   body {
-    @apply bg-white text-slate-900 font-sans antialiased selection:bg-[#8CC63F] selection:text-white;
+    @apply bg-[#F8F9FA] text-slate-900 font-sans antialiased selection:bg-[#8BC34A] selection:text-white;
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
@@ -60,5 +60,5 @@
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8cc63f;
+  background: #8bc34a;
 }
