@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-15T22:03:11.107Z",
+  "generatedAt": "2026-11-19T13:59:54.979Z",
   "collections": [
     {
       "name": "users",
@@ -29,14 +29,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": [
@@ -114,14 +119,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": [
@@ -175,28 +185,40 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["pendente", "respondido"]
+          "selectValues": [
+            "pendente",
+            "respondido"
+          ]
         },
         {
           "name": "created",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         },
         {
           "name": "nivel_contrato",
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["Sentinela Preventivo", "Controle Operacional", "Maestro Engenharia"]
+          "selectValues": [
+            "Sentinela Preventivo",
+            "Controle Operacional",
+            "Maestro Engenharia"
+          ]
         }
       ],
       "indexes": [
@@ -241,7 +263,10 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["completo", "curto"]
+          "selectValues": [
+            "completo",
+            "curto"
+          ]
         },
         {
           "name": "client_name",
@@ -284,7 +309,11 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["sim", "nao", "nao_se_aplica"]
+          "selectValues": [
+            "sim",
+            "nao",
+            "nao_se_aplica"
+          ]
         },
         {
           "name": "score_general_satisfaction",
@@ -369,14 +398,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": [
@@ -426,7 +460,11 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["Sentinela Preventivo", "Controle Operacional", "Maestro Engenharia"]
+          "selectValues": [
+            "Sentinela Preventivo",
+            "Controle Operacional",
+            "Maestro Engenharia"
+          ]
         },
         {
           "name": "senha_alterada_em",
@@ -445,14 +483,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": [
@@ -508,14 +551,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         },
         {
           "name": "data",
@@ -528,7 +576,10 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["aberta", "executada"]
+          "selectValues": [
+            "aberta",
+            "executada"
+          ]
         },
         {
           "name": "arquivo",
@@ -559,7 +610,10 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["pendente", "respondido"]
+          "selectValues": [
+            "pendente",
+            "respondido"
+          ]
         }
       ],
       "indexes": [
@@ -590,7 +644,12 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["Manual", "Esquema", "Datasheet", "Certificado"]
+          "selectValues": [
+            "Manual",
+            "Esquema",
+            "Datasheet",
+            "Certificado"
+          ]
         },
         {
           "name": "arquivo_url",
@@ -603,7 +662,11 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["Sentinela Preventivo", "Controle Operacional", "Maestro Engenharia"]
+          "selectValues": [
+            "Sentinela Preventivo",
+            "Controle Operacional",
+            "Maestro Engenharia"
+          ]
         },
         {
           "name": "ativo",
@@ -628,14 +691,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": [
