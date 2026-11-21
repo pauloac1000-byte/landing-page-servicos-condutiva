@@ -994,11 +994,7 @@ export default function ContractsPage() {
               </Button>
             </Link>
 
-            <a
-              href="https://crm-condutiva-servicos.goskip.app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://condutivaservicoscrm.com.br" target="_blank" rel="noopener noreferrer">
               <Button
                 variant="outline"
                 size="sm"

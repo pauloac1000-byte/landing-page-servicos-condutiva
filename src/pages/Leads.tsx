@@ -348,11 +348,7 @@ export default function LeadsPage() {
                 Landing Page
               </Button>
             </Link>
-            <a
-              href="https://crm-condutiva-servicos.goskip.app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://condutivaservicoscrm.com.br" target="_blank" rel="noopener noreferrer">
               <Button
                 variant="outline"
                 size="sm"
