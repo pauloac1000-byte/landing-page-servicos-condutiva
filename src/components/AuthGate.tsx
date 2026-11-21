@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import logoImg from '@/assets/logo-removebg-previewedited-24401.jpg'
+import logoImg from '@/assets/logo-condutiva-servicos-389e5.png'
 import { Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -85,7 +85,11 @@ export function AuthGate({ title = 'Acesso Restrito à Equipe Condutiva' }: Auth
               <div className="bg-white rounded-xl p-2 mx-auto mb-3 border border-[#E5E7EB] w-fit">
                 <img src={logoImg} alt="Condutiva" className="h-10 w-auto object-contain" />
               </div>
-              <h1 className="text-xl font-bold text-[#212529] tracking-tight">{title}</h1>
+              <h1 className="text-xl font-bold text-[#212529] tracking-tight">
+                {title === 'Gestão de Leads & Diagnósticos Técnicos'
+                  ? 'Painel Comercial Serviços'
+                  : title}
+              </h1>
               <p className="text-[11px] font-semibold tracking-widest text-[#689F38] mt-1">
                 ACESSE SUA CONTA PARA CONTINUAR
               </p>

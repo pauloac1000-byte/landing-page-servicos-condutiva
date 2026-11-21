@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import logoImg from '@/assets/logo-removebg-previewedited-24401.jpg'
+import logoImg from '@/assets/logo-condutiva-servicos-389e5.png'
 import {
   FileText,
   Search,

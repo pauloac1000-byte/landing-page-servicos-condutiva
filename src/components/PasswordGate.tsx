@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import logoImg from '@/assets/logo-removebg-previewedited-24401.jpg'
+import logoImg from '@/assets/logo-condutiva-servicos-389e5.png'
 import { Lock, KeyRound, AlertCircle, Eye, EyeOff, Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

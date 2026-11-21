@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import logoImg from '@/assets/logo-removebg-previewedited-24401.jpg'
+import logoImg from '@/assets/logo-condutiva-servicos-389e5.png'
 import {
   Users,
   Search,
@@ -412,7 +412,7 @@ export default function LeadsPage() {
             <div>
               <div className="flex items-center gap-2 mb-1 text-xs font-mono text-[#689F38] uppercase tracking-wider">
                 <Users className="w-4 h-4" />
-                <span>Gestão de Leads & Diagnósticos</span>
+                <span>Painel Comercial Serviços</span>
               </div>
               <h1 className="text-2xl md:text-3xl font-black text-[#212529] tracking-tight">
                 Solicitações de Diagnóstico Técnico
