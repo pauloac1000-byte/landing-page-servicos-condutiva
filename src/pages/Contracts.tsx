@@ -910,13 +910,7 @@ export default function ContractsPage() {
 
   // Gate check: only authenticated internal users can view this panel
   if (!isAuthenticated) {
-    return (
-      <AuthGate
-        title="Painel de Contratos e Avaliações CSAT"
-        subtitle="Acesso restrito exclusivamente à equipe técnica e comercial da Condutiva Tecnologia. Faça login com seu e-mail corporativo."
-        areaLabel="Painel Interno"
-      />
-    )
+    return <AuthGate title="Painel de Contratos e Avaliações CSAT" />
   }
 
   return (

@@ -261,13 +261,7 @@ export default function LeadsPage() {
 
   // Auth Gate check: login required
   if (!isAuthenticated) {
-    return (
-      <AuthGate
-        title="Gestão de Leads & Diagnósticos Técnicos"
-        subtitle="Área restrita à equipe comercial e técnica da Condutiva. Faça login com seu e-mail corporativo."
-        areaLabel="Leads & Diagnósticos"
-      />
-    )
+    return <AuthGate title="Gestão de Leads & Diagnósticos Técnicos" />
   }
 
   return (

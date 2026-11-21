@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-21T21:53:14.063Z",
+  "generatedAt": "2026-11-21T22:17:08.897Z",
   "collections": [
     {
       "name": "users",
@@ -37,6 +37,31 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "status_acesso",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["em_analise", "aprovado"]
+        },
+        {
+          "name": "telefone",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "vinculo",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "senha_pendente",
+          "type": "bool",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": [
