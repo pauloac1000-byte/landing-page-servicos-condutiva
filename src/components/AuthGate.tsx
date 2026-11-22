@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ShieldAlert } from 'lucide-react'
+import { lerSinalSessaoEncerrada, limparSinalSessaoEncerrada } from '@/services/auth'
 import logoImg from '@/assets/logo-condutiva-servicos-389e5.png'
 import { Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -37,6 +39,17 @@ interface AuthGateProps {
 export function AuthGate({ title = 'Acesso Restrito à Equipe Condutiva' }: AuthGateProps) {
   const [tela, setTela] = useState<Tela>('entrar')
   const [ajudaAberta, setAjudaAberta] = useState(false)
+  const [sessaoEncerrada, setSessaoEncerrada] = useState(false)
+
+  // Sinal efêmero gravado no logout automático (saída da área restrita, fechamento
+  // de aba/navegador, restauração de cache do navegador): exibe o aviso de sessão
+  // encerrada por segurança e é limpo em seguida, para não reaparecer sem nova saída.
+  useEffect(() => {
+    if (lerSinalSessaoEncerrada()) {
+      setSessaoEncerrada(true)
+      limparSinalSessaoEncerrada()
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-[#212529] flex flex-col justify-between selection:bg-[#8BC34A] selection:text-[#1F2A16] relative overflow-hidden">
@@ -96,6 +109,23 @@ export function AuthGate({ title = 'Acesso Restrito à Equipe Condutiva' }: Auth
             </CardHeader>
 
             <CardContent className="pt-4">
+              {sessaoEncerrada && (
+                <div
+                  role="alert"
+                  className="mb-4 flex items-start gap-2.5 rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-3 text-left"
+                >
+                  <ShieldAlert className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
+                  <div>
+                    <p className="text-xs font-semibold text-amber-800">
+                      Sessão encerrada por segurança
+                    </p>
+                    <p className="text-xs text-amber-700 mt-0.5 leading-relaxed">
+                      Você saiu da área restrita e sua sessão foi encerrada automaticamente. Informe
+                      usuário e senha novamente para continuar.
+                    </p>
+                  </div>
+                </div>
+              )}
               {tela === 'solicitar' ? (
                 <SolicitarAcessoForm onVoltar={() => setTela('entrar')} />
               ) : (

@@ -8,6 +8,7 @@ import ContractsPage from './pages/Contracts'
 import CSATAccessPage from './pages/Avaliacao'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
+import { SessionGuard } from './components/SessionGuard'
 import { ClienteAuthProvider } from '@/contexts/ClienteAuthContext'
 import { purgeAuthStorage } from '@/services/auth'
 
@@ -18,6 +19,7 @@ const App = () => (
   <ClienteAuthProvider>
     <BrowserRouter>
       <TooltipProvider>
+        <SessionGuard />
         <Toaster />
         <Sonner />
         <Routes>
